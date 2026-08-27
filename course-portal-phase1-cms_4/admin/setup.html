@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>First-Time Setup — Penticton Robotics Prep Course</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-login-screen">
+        <form id="setup-form" class="admin-login-card">
+            <div class="admin-login-logo"><img src="../pr_logo2x.PNG" alt="Penticton Robotics"></div>
+            <h1>First-Time Setup</h1>
+            <p class="admin-login-sub">
+                Create your first instructor account. This page only works once —
+                it refuses to run again once any account exists, so it's safe to
+                leave in place afterward.
+            </p>
+
+            <label class="admin-field">
+                <span>Setup token</span>
+                <input type="text" id="setup-token" required>
+            </label>
+            <label class="admin-field">
+                <span>Your name</span>
+                <input type="text" id="setup-name" required>
+            </label>
+            <label class="admin-field">
+                <span>Your email</span>
+                <input type="email" id="setup-email" required>
+            </label>
+            <label class="admin-field">
+                <span>Choose a password</span>
+                <input type="password" id="setup-password" required minlength="8">
+            </label>
+
+            <p id="setup-error" class="admin-error" hidden></p>
+            <p id="setup-success" class="admin-muted" hidden></p>
+
+            <button type="submit" class="admin-btn admin-btn-primary admin-btn-block">Create Account</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("setup-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById("setup-error");
+            const successEl = document.getElementById("setup-success");
+            errorEl.hidden = true;
+            successEl.hidden = true;
+
+            try {
+                const res = await fetch("/api/admin/setup", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Setup-Token": document.getElementById("setup-token").value,
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById("setup-name").value,
+                        email: document.getElementById("setup-email").value,
+                        password: document.getElementById("setup-password").value,
+                    }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+                successEl.textContent = "Account created! You can now log in at /admin.";
+                successEl.style.color = "#1e8e3e";
+                successEl.hidden = false;
+                e.target.reset();
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.hidden = false;
+            }
+        });
+    </script>
+</body>
+</html>

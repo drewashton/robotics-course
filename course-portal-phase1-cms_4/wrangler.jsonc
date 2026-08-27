@@ -1,0 +1,21 @@
+{
+  "name": "robotics-course-final",
+  "compatibility_date": "2026-08-26",
+  "main": "worker.js",
+  "assets": {
+    "directory": "."
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pr-course-db",
+      "database_id": "6ebfc68c-9c20-4221-91b3-4e1135cbfc2f"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "UPLOADS",
+      "bucket_name": "pr-course-uploads"
+    }
+  ]
+}
