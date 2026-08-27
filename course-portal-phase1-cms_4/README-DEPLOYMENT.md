@@ -50,12 +50,15 @@ actually made it into the GitHub repo (see the note in Phase 1 step 4).
    everything, paste into the console, run it. This creates the tables and
    loads your existing 9 Business Stream units as folders.
 
-   Already have a database from before this update? Run `migration_v4.sql`
-   instead — it reshapes your existing data (moving Assignments/Resources
-   to the unit level) without losing anything. Not sure which schema
-   version your database is on? The simplest fix is deleting `pr-course-db`
-   and recreating it fresh with `schema.sql` — at this stage there's likely
-   little real content to lose either way.
+   Already have a database from before this update? Run `migration_v5.sql`
+   instead — it turns Assignments/Resources into real multi-entry
+   collections (same as Lessons) and adds the Mentors table, without
+   losing anything already written. Not sure which schema version you're
+   on? Deleting `pr-course-db` and recreating it fresh with `schema.sql`
+   is often simpler at this stage.
+   ```
+   wrangler d1 execute pr-course-db --remote --file=./migration_v5.sql
+   ```
 3. Sidebar → **R2** → **Create bucket** → name it `pr-course-uploads`.
 4. Back in your project → **Settings** → **Bindings** → **Add** → **D1 database binding**. Variable name `DB`, choose `pr-course-db`.
 5. **Add** again → **R2 bucket binding**. Variable name `UPLOADS`, choose `pr-course-uploads`.
@@ -93,13 +96,14 @@ bindings and secrets (Phase 3, last step) — they only take effect on the
   recommended schedule) but can't add or remove streams
 - Unit folders within each stream — instructors can freely create, rename,
   reorder, publish/unpublish, and delete these
-- Assignments and Resources belong to the unit as a whole (shared across
-  all its lessons), each independently editable with its own PDF/image
-  upload
-- A Lessons list inside each unit — instructors add, edit, reorder,
-  publish/unpublish, and delete individual lessons, each with its own title
-  and content
-- Rich text editing (Quill) throughout
+- Lessons, Assignments, and Resources are each their own collection inside
+  a unit — instructors add, edit, reorder, publish/unpublish, and delete
+  as many titled entries as they need in each, with PDF/PowerPoint/image
+  upload and Google Slides embedding on every entry
+- Up to 3 mentor contacts per stream — photo, name, title, short bio, and
+  an emailable contact button — shown to students next to the stream's
+  title/description
+- Rich text editing (Quill) throughout, styled to match the student portal
 - Public `/api/streams` endpoint the student portal reads from live —
   students only ever see published units and published lessons within them
 

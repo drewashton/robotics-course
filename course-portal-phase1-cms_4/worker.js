@@ -33,6 +33,24 @@ import {
   onRequestDelete as lessonsDelete,
 } from "./functions/api/admin/lessons.js";
 
+import {
+  onRequestPost as assignmentsPost,
+  onRequestPut as assignmentsPut,
+  onRequestDelete as assignmentsDelete,
+} from "./functions/api/admin/assignments.js";
+
+import {
+  onRequestPost as resourcesPost,
+  onRequestPut as resourcesPut,
+  onRequestDelete as resourcesDelete,
+} from "./functions/api/admin/resources.js";
+
+import {
+  onRequestPost as mentorsPost,
+  onRequestPut as mentorsPut,
+  onRequestDelete as mentorsDelete,
+} from "./functions/api/admin/mentors.js";
+
 import { onRequestPost as reorderPost } from "./functions/api/admin/reorder.js";
 import { onRequestPost as uploadPost } from "./functions/api/admin/upload.js";
 
@@ -64,6 +82,18 @@ export default {
       if (path === "/api/admin/lessons" && method === "POST") return lessonsPost(context);
       if (path === "/api/admin/lessons" && method === "PUT") return lessonsPut(context);
       if (path === "/api/admin/lessons" && method === "DELETE") return lessonsDelete(context);
+
+      if (path === "/api/admin/assignments" && method === "POST") return assignmentsPost(context);
+      if (path === "/api/admin/assignments" && method === "PUT") return assignmentsPut(context);
+      if (path === "/api/admin/assignments" && method === "DELETE") return assignmentsDelete(context);
+
+      if (path === "/api/admin/resources" && method === "POST") return resourcesPost(context);
+      if (path === "/api/admin/resources" && method === "PUT") return resourcesPut(context);
+      if (path === "/api/admin/resources" && method === "DELETE") return resourcesDelete(context);
+
+      if (path === "/api/admin/mentors" && method === "POST") return mentorsPost(context);
+      if (path === "/api/admin/mentors" && method === "PUT") return mentorsPut(context);
+      if (path === "/api/admin/mentors" && method === "DELETE") return mentorsDelete(context);
 
       if (path === "/api/admin/reorder" && method === "POST") return reorderPost(context);
       if (path === "/api/admin/upload" && method === "POST") return uploadPost(context);

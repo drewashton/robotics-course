@@ -1,5 +1,13 @@
 const STREAM_ICONS = { business: "fa-briefcase", build: "fa-hammer", programming: "fa-code" };
 
+// Lessons, Assignments, and Resources are managed with one shared editor —
+// this config drives which API endpoint, unit field, and labels apply.
+const ITEM_KINDS = {
+    lesson: { api: "/api/admin/lessons", field: "lessons", label: "Lesson", newLabel: "New Lesson" },
+    assignment: { api: "/api/admin/assignments", field: "assignments", label: "Assignment", newLabel: "New Assignment" },
+    resource: { api: "/api/admin/resources", field: "resources", label: "Resource", newLabel: "New Resource" },
+};
+
 // Register a custom Quill format so Google Slides / uploaded PowerPoint
 // files can be embedded as real inline iframes, not just links. Wrapped in
 // try/catch so a problem here can NEVER take down the rest of the panel —
@@ -29,8 +37,6 @@ try {
     console.warn("Presentation embedding unavailable:", err);
 }
 
-// Inserts a presentation as a real embed when supported, otherwise falls
-// back to a plain clickable link so the feature degrades instead of breaking.
 function insertPresentationEmbed(editor, index, url, label) {
     if (iframeEmbedsSupported) {
         editor.insertEmbed(index, "iframe", url);
@@ -39,8 +45,6 @@ function insertPresentationEmbed(editor, index, url, label) {
     }
 }
 
-// Turns a normal Google Slides share/edit link into its embeddable form.
-// Leaves already-embeddable or unrelated URLs untouched.
 function toSlidesEmbedUrl(rawUrl) {
     const url = rawUrl.trim();
     const match = url.match(/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
@@ -50,17 +54,17 @@ function toSlidesEmbedUrl(rawUrl) {
     return url;
 }
 
-// Builds a Microsoft Office Online viewer URL for an uploaded .pptx/.ppt
-// file, so it renders inline instead of just linking out to a download.
 function officeEmbedUrl(absoluteFileUrl) {
     return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(absoluteFileUrl)}`;
 }
 
-let streamsData = [];       // [{ id, stream_key, name, description, objectives_html, schedule_html, units: [{ id, unit_label, title, assignments_html, resources_html, published, lessons: [...] }] }]
+let streamsData = [];
 let currentStreamId = null;
 let currentUnitId = null;
-let currentLessonId = null; // null while creating a brand-new lesson
-const quillInstances = {};  // keyed by container id
+let currentItemKind = "lesson"; // "lesson" | "assignment" | "resource"
+let currentItemId = null;       // null while creating a brand-new item
+let currentMentorId = null;     // null while creating a brand-new mentor
+const quillInstances = {};
 
 const $ = (id) => document.getElementById(id);
 
@@ -262,6 +266,7 @@ $("btn-edit-syllabus").addEventListener("click", () => {
     setQuillHtml("syllabus-quill-objectives", stream.objectives_html);
     setQuillHtml("syllabus-quill-schedule", stream.schedule_html);
 
+    renderMentorsList();
     showView("syllabus-view");
 });
 
@@ -291,6 +296,109 @@ $("btn-save-syllabus").addEventListener("click", async () => {
     }
 });
 
+// ---------- MENTORS ----------
+
+function renderMentorsList() {
+    const stream = currentStream();
+    if (!stream) return;
+    const mentors = [...stream.mentors].sort((a, b) => a.sort_order - b.sort_order);
+    const list = $("mentors-list");
+    list.innerHTML = "";
+
+    mentors.forEach((mentor, index) => {
+        const li = document.createElement("li");
+        li.className = "admin-unit-row";
+        li.style.setProperty("--i", index);
+        li.innerHTML = `
+            <img class="admin-mentor-thumb" src="${mentor.photo_url ? escapeHtml(mentor.photo_url) : "../pr_logo2x.PNG"}" alt="">
+            <div class="admin-unit-main">
+                <div class="admin-unit-title">${escapeHtml(mentor.name)}</div>
+                <div class="admin-muted">${escapeHtml(mentor.title || "")}</div>
+            </div>
+        `;
+        li.querySelector(".admin-unit-main").addEventListener("click", () => openMentor(mentor));
+        list.appendChild(li);
+    });
+
+    $("btn-new-mentor").hidden = mentors.length >= 3;
+}
+
+$("btn-new-mentor").addEventListener("click", () => openMentor(null));
+$("btn-mentor-back").addEventListener("click", () => {
+    showView("syllabus-view");
+    renderMentorsList();
+});
+
+function openMentor(mentor) {
+    currentMentorId = mentor ? mentor.id : null;
+    $("mentor-name-input").value = mentor ? mentor.name : "";
+    $("mentor-title-input").value = mentor ? mentor.title : "";
+    $("mentor-description-input").value = mentor ? mentor.description : "";
+    $("mentor-email-input").value = mentor ? mentor.email : "";
+    $("mentor-photo-preview").src = mentor && mentor.photo_url ? mentor.photo_url : "../pr_logo2x.PNG";
+    $("mentor-status").textContent = "";
+    $("btn-delete-mentor").hidden = !mentor;
+    showView("mentor-view");
+}
+
+$("mentor-photo-input").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    $("mentor-status").textContent = "Uploading photo...";
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+        const res = await fetch("/api/admin/upload", { method: "POST", body: formData, credentials: "same-origin" });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        $("mentor-photo-preview").src = data.url;
+        $("mentor-photo-preview").dataset.url = data.url;
+        $("mentor-status").textContent = "Photo uploaded.";
+    } catch (err) {
+        $("mentor-status").textContent = err.message;
+    } finally {
+        e.target.value = "";
+    }
+});
+
+$("btn-save-mentor").addEventListener("click", async () => {
+    const name = $("mentor-name-input").value.trim();
+    if (!name) {
+        $("mentor-status").textContent = "Name is required.";
+        return;
+    }
+    const photoUrl = $("mentor-photo-preview").dataset.url || $("mentor-photo-preview").src;
+    const payload = {
+        name,
+        title: $("mentor-title-input").value.trim(),
+        description: $("mentor-description-input").value.trim(),
+        email: $("mentor-email-input").value.trim(),
+        photo_url: photoUrl.includes("pr_logo2x.PNG") ? "" : photoUrl,
+    };
+    try {
+        if (currentMentorId) {
+            await api("/api/admin/mentors", { method: "PUT", body: JSON.stringify({ id: currentMentorId, ...payload }) });
+        } else {
+            await api("/api/admin/mentors", { method: "POST", body: JSON.stringify({ stream_id: currentStreamId, ...payload }) });
+        }
+        await loadStreams();
+        showView("syllabus-view");
+        renderMentorsList();
+    } catch (err) {
+        $("mentor-status").textContent = err.message;
+    }
+});
+
+$("btn-delete-mentor").addEventListener("click", async () => {
+    if (!currentMentorId) return;
+    const ok = await openModal({ title: "Delete mentor?", message: "This can't be undone.", confirmLabel: "Delete", danger: true });
+    if (!ok) return;
+    await api("/api/admin/mentors", { method: "DELETE", body: JSON.stringify({ id: currentMentorId }) });
+    await loadStreams();
+    showView("syllabus-view");
+    renderMentorsList();
+});
+
 // ---------- UNIT FOLDERS ----------
 
 function renderUnitsList() {
@@ -308,13 +416,14 @@ function renderUnitsList() {
     units.forEach((unit, index) => {
         const li = document.createElement("li");
         li.className = "admin-unit-row";
+        li.style.setProperty("--i", index);
         li.innerHTML = `
             <div class="admin-unit-reorder">
                 <button type="button" data-dir="up" ${index === 0 ? "disabled" : ""} aria-label="Move up"><i class="fa-solid fa-chevron-up"></i></button>
                 <button type="button" data-dir="down" ${index === units.length - 1 ? "disabled" : ""} aria-label="Move down"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
             <div class="admin-unit-main">
-                <div class="admin-unit-label">${escapeHtml(unit.unit_label)}</div>
+                <span class="admin-tag">${escapeHtml(unit.unit_label)}</span>
                 <div class="admin-unit-title">${escapeHtml(unit.title)}</div>
             </div>
             <span class="admin-status ${unit.published ? "is-published" : "is-draft"}">
@@ -325,7 +434,7 @@ function renderUnitsList() {
         li.querySelectorAll("[data-dir]").forEach((btn) => {
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
-                reorder("units", units, index, btn.dataset.dir === "up" ? -1 : 1, () => renderUnitsList());
+                reorder("units", units, index, btn.dataset.dir === "up" ? -1 : 1);
             });
         });
         list.appendChild(li);
@@ -362,14 +471,10 @@ function openUnit(unitId) {
     $("unit-title-input").value = unit.title;
     $("unit-published").checked = Boolean(unit.published);
     $("unit-status").textContent = "";
-    document.querySelectorAll(".unit-upload-status").forEach((el) => (el.textContent = ""));
 
-    ensureQuill("unit-quill-assignments", "What should students complete for this unit?");
-    ensureQuill("unit-quill-resources", "Link or describe any supporting resources.");
-    setQuillHtml("unit-quill-assignments", unit.assignments_html);
-    setQuillHtml("unit-quill-resources", unit.resources_html);
-
-    renderLessonsList();
+    renderItemList("lesson");
+    renderItemList("assignment");
+    renderItemList("resource");
     showView("unit-view");
 }
 
@@ -385,14 +490,7 @@ $("btn-save-unit").addEventListener("click", async () => {
     try {
         await api("/api/admin/units", {
             method: "PUT",
-            body: JSON.stringify({
-                id: currentUnitId,
-                unit_label,
-                title,
-                assignments_html: quillInstances["unit-quill-assignments"].root.innerHTML,
-                resources_html: quillInstances["unit-quill-resources"].root.innerHTML,
-                published: $("unit-published").checked,
-            }),
+            body: JSON.stringify({ id: currentUnitId, unit_label, title, published: $("unit-published").checked }),
         });
         await loadStreams();
         openUnit(currentUnitId);
@@ -406,7 +504,7 @@ $("btn-delete-unit").addEventListener("click", async () => {
     if (!unit) return;
     const ok = await openModal({
         title: "Delete unit?",
-        message: `Delete "${unit.unit_label}: ${unit.title}" and every lesson inside it? This can't be undone.`,
+        message: `Delete "${unit.unit_label}: ${unit.title}" and everything inside it — lessons, assignments, and resources? This can't be undone.`,
         confirmLabel: "Delete",
         danger: true,
     });
@@ -416,108 +514,88 @@ $("btn-delete-unit").addEventListener("click", async () => {
     await loadStreams();
 });
 
-document.querySelectorAll(".unit-file-input").forEach((input) => {
-    input.addEventListener("change", async (e) => {
-        const file = e.target.files[0];
-        const target = input.dataset.target; // "assignments" | "resources"
-        const statusEl = document.querySelector(`.unit-upload-status[data-target="${target}"]`);
-        if (!file) return;
-        statusEl.textContent = `Uploading ${file.name}...`;
+// ---------- LESSONS / ASSIGNMENTS / RESOURCES (shared item editor) ----------
 
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const res = await fetch("/api/admin/upload", { method: "POST", body: formData, credentials: "same-origin" });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Upload failed");
-
-            const editor = quillInstances[`unit-quill-${target}`];
-            const range = editor.getSelection(true) || { index: editor.getLength() };
-            const isPresentation = /\.(pptx|ppt|key)$/i.test(file.name);
-
-            if (file.type.startsWith("image/")) {
-                editor.insertEmbed(range.index, "image", data.url);
-            } else if (isPresentation) {
-                const absoluteUrl = new URL(data.url, location.origin).href;
-                insertPresentationEmbed(editor, range.index, officeEmbedUrl(absoluteUrl), file.name);
-            } else {
-                editor.insertText(range.index, data.filename, "link", data.url);
-            }
-            editor.setSelection(range.index + 1);
-            statusEl.textContent = `Attached ${data.filename}`;
-        } catch (err) {
-            statusEl.textContent = err.message;
-        } finally {
-            e.target.value = "";
-        }
-    });
-});
-
-// ---------- LESSONS ----------
-
-function renderLessonsList() {
+function renderItemList(kind) {
     const unit = currentUnit();
     if (!unit) return;
-
-    const lessons = [...unit.lessons].sort((a, b) => a.sort_order - b.sort_order);
-    const list = $("lessons-list");
+    const { field } = ITEM_KINDS[kind];
+    const items = [...unit[field]].sort((a, b) => a.sort_order - b.sort_order);
+    const list = $(`${kind}s-list`);
     list.innerHTML = "";
-    $("lessons-empty").hidden = lessons.length > 0;
+    $(`${kind}s-empty`).hidden = items.length > 0;
 
-    lessons.forEach((lesson, index) => {
+    items.forEach((item, index) => {
         const li = document.createElement("li");
         li.className = "admin-unit-row";
+        li.style.setProperty("--i", index);
         li.innerHTML = `
             <div class="admin-unit-reorder">
                 <button type="button" data-dir="up" ${index === 0 ? "disabled" : ""} aria-label="Move up"><i class="fa-solid fa-chevron-up"></i></button>
-                <button type="button" data-dir="down" ${index === lessons.length - 1 ? "disabled" : ""} aria-label="Move down"><i class="fa-solid fa-chevron-down"></i></button>
+                <button type="button" data-dir="down" ${index === items.length - 1 ? "disabled" : ""} aria-label="Move down"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
             <div class="admin-unit-main">
-                <div class="admin-unit-title">${escapeHtml(lesson.title)}</div>
+                <div class="admin-unit-title">${escapeHtml(item.title)}</div>
             </div>
-            <span class="admin-status ${lesson.published ? "is-published" : "is-draft"}">
-                <span class="admin-status-dot"></span>${lesson.published ? "Published" : "Draft"}
+            <span class="admin-status ${item.published ? "is-published" : "is-draft"}">
+                <span class="admin-status-dot"></span>${item.published ? "Published" : "Draft"}
             </span>
         `;
-        li.querySelector(".admin-unit-main").addEventListener("click", () => openLessonEditor(lesson));
+        li.querySelector(".admin-unit-main").addEventListener("click", () => openItemEditor(kind, item));
         li.querySelectorAll("[data-dir]").forEach((btn) => {
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
-                reorder("lessons", lessons, index, btn.dataset.dir === "up" ? -1 : 1, () => renderLessonsList());
+                reorderItems(kind, items, index, btn.dataset.dir === "up" ? -1 : 1);
             });
         });
         list.appendChild(li);
     });
 }
 
-async function reorder(table, list, index, delta, rerender) {
+async function reorder(table, list, index, delta) {
+    const target = index + delta;
+    if (target < 0 || target >= list.length) return;
+    const reordered = [...list];
+    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+    await api("/api/admin/reorder", { method: "POST", body: JSON.stringify({ table, orderedIds: reordered.map((i) => i.id) }) });
+    await loadStreams();
+    selectStream(currentStreamId);
+}
+
+async function reorderItems(kind, list, index, delta) {
     const target = index + delta;
     if (target < 0 || target >= list.length) return;
     const reordered = [...list];
     [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
     await api("/api/admin/reorder", {
         method: "POST",
-        body: JSON.stringify({ table, orderedIds: reordered.map((item) => item.id) }),
+        body: JSON.stringify({ table: `${kind}s`, orderedIds: reordered.map((i) => i.id) }),
     });
     await loadStreams();
-    if (table === "units") selectStream(currentStreamId);
-    else openUnit(currentUnitId);
+    openUnit(currentUnitId);
 }
 
-$("btn-new-lesson").addEventListener("click", () => openLessonEditor(null));
-$("btn-editor-back").addEventListener("click", () => showView("unit-view"));
+$("btn-new-lesson").addEventListener("click", () => openItemEditor("lesson", null));
+$("btn-new-assignment").addEventListener("click", () => openItemEditor("assignment", null));
+$("btn-new-resource").addEventListener("click", () => openItemEditor("resource", null));
+$("btn-editor-back").addEventListener("click", () => {
+    showView("unit-view");
+});
 
-function openLessonEditor(lesson) {
-    currentLessonId = lesson ? lesson.id : null;
-    $("editor-title").value = lesson ? lesson.title : "";
-    $("editor-published").checked = lesson ? Boolean(lesson.published) : false;
+function openItemEditor(kind, item) {
+    currentItemKind = kind;
+    currentItemId = item ? item.id : null;
+    const { label } = ITEM_KINDS[kind];
+
+    $("editor-title-label").textContent = `${label} title`;
+    $("editor-title").value = item ? item.title : "";
+    $("editor-published").checked = item ? Boolean(item.published) : false;
     $("editor-status").textContent = "";
     $("editor-upload-status").textContent = "";
-    $("btn-delete-lesson").hidden = !lesson;
+    $("btn-delete-lesson").hidden = !item;
 
-    ensureQuill("editor-quill-content", "Write this lesson's content here...");
-    setQuillHtml("editor-quill-content", lesson ? lesson.content_html : "");
+    ensureQuill("editor-quill-content", `Write this ${label.toLowerCase()}'s content here...`);
+    setQuillHtml("editor-quill-content", item ? item.content_html : "");
 
     showView("editor-view");
 }
@@ -525,28 +603,20 @@ function openLessonEditor(lesson) {
 $("btn-save-lesson").addEventListener("click", async () => {
     const title = $("editor-title").value.trim();
     if (!title) {
-        $("editor-status").textContent = "Lesson title is required.";
+        $("editor-status").textContent = "Title is required.";
         return;
     }
+    const { api: apiPath } = ITEM_KINDS[currentItemKind];
     const published = $("editor-published").checked;
     const content_html = quillInstances["editor-quill-content"].root.innerHTML;
 
     try {
-        if (currentLessonId) {
-            await api("/api/admin/lessons", {
-                method: "PUT",
-                body: JSON.stringify({ id: currentLessonId, title, published, content_html }),
-            });
+        if (currentItemId) {
+            await api(apiPath, { method: "PUT", body: JSON.stringify({ id: currentItemId, title, published, content_html }) });
         } else {
-            const created = await api("/api/admin/lessons", {
-                method: "POST",
-                body: JSON.stringify({ unit_id: currentUnitId, title }),
-            });
-            currentLessonId = created.id;
-            await api("/api/admin/lessons", {
-                method: "PUT",
-                body: JSON.stringify({ id: currentLessonId, published, content_html }),
-            });
+            const created = await api(apiPath, { method: "POST", body: JSON.stringify({ unit_id: currentUnitId, title }) });
+            currentItemId = created.id;
+            await api(apiPath, { method: "PUT", body: JSON.stringify({ id: currentItemId, published, content_html }) });
         }
         await loadStreams();
         openUnit(currentUnitId);
@@ -556,15 +626,11 @@ $("btn-save-lesson").addEventListener("click", async () => {
 });
 
 $("btn-delete-lesson").addEventListener("click", async () => {
-    if (!currentLessonId) return;
-    const ok = await openModal({
-        title: "Delete lesson?",
-        message: "This can't be undone.",
-        confirmLabel: "Delete",
-        danger: true,
-    });
+    if (!currentItemId) return;
+    const { api: apiPath, label } = ITEM_KINDS[currentItemKind];
+    const ok = await openModal({ title: `Delete ${label.toLowerCase()}?`, message: "This can't be undone.", confirmLabel: "Delete", danger: true });
     if (!ok) return;
-    await api("/api/admin/lessons", { method: "DELETE", body: JSON.stringify({ id: currentLessonId }) });
+    await api(apiPath, { method: "DELETE", body: JSON.stringify({ id: currentItemId }) });
     await loadStreams();
     openUnit(currentUnitId);
 });
@@ -627,9 +693,10 @@ async function loadInstructors() {
     const instructors = await api("/api/admin/instructors");
     const list = $("instructors-list");
     list.innerHTML = "";
-    instructors.forEach((person) => {
+    instructors.forEach((person, index) => {
         const li = document.createElement("li");
         li.className = "admin-unit-row";
+        li.style.setProperty("--i", index);
         li.innerHTML = `
             <div class="admin-unit-main" style="cursor:default;">
                 <div class="admin-unit-title">${escapeHtml(person.name)}</div>

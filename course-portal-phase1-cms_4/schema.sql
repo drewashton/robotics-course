@@ -18,22 +18,20 @@ CREATE TABLE IF NOT EXISTS streams (
   sort_order INTEGER NOT NULL DEFAULT 0
 );
 
--- A unit is a folder inside a stream (e.g. "Unit 1: Intro to FIRST").
--- Instructors can freely add, rename, reorder, and delete these. Assignments
--- and Resources belong to the whole unit, not to individual lessons.
+-- A unit is a folder inside a stream. Purely a container now — its
+-- Lessons, Assignments, and Resources are each their own collection below.
 CREATE TABLE IF NOT EXISTS units (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   stream_id INTEGER NOT NULL REFERENCES streams(id) ON DELETE CASCADE,
   unit_label TEXT NOT NULL,
   title TEXT NOT NULL,
-  assignments_html TEXT NOT NULL DEFAULT '',
-  resources_html TEXT NOT NULL DEFAULT '',
   published INTEGER NOT NULL DEFAULT 0,
   sort_order INTEGER NOT NULL DEFAULT 0
 );
 
--- A lesson is one individual entry inside a unit's Lessons list — just a
--- title and its own content.
+-- Lessons, Assignments, and Resources are all the same shape: a titled
+-- entry with its own content, inside a unit. Kept as three tables (rather
+-- than one generic one) since each is queried/managed independently.
 CREATE TABLE IF NOT EXISTS lessons (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   unit_id INTEGER NOT NULL REFERENCES units(id) ON DELETE CASCADE,
@@ -43,6 +41,42 @@ CREATE TABLE IF NOT EXISTS lessons (
   sort_order INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS assignments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  unit_id INTEGER NOT NULL REFERENCES units(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content_html TEXT NOT NULL DEFAULT '',
+  published INTEGER NOT NULL DEFAULT 0,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS resources (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  unit_id INTEGER NOT NULL REFERENCES units(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content_html TEXT NOT NULL DEFAULT '',
+  published INTEGER NOT NULL DEFAULT 0,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Up to 3 per stream (enforced in the admin API, not here). Shown next to
+-- the stream's title/description on the student portal as "who to ask for
+-- help" contacts.
+CREATE TABLE IF NOT EXISTS mentors (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  stream_id INTEGER NOT NULL REFERENCES streams(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  title TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  email TEXT NOT NULL DEFAULT '',
+  photo_url TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS assets (
@@ -61,8 +95,8 @@ INSERT OR IGNORE INTO streams (stream_key, name, description, sort_order) VALUES
   ('build', 'Build Stream', '[Course Description Placeholder]', 2),
   ('programming', 'Programming Stream', '[Course Description Placeholder]', 3);
 
--- Seed the existing Business Stream units as folders (published so they
--- stay visible), each with one starter lesson carrying its old title.
+-- Seed the existing Business Stream units as folders, each with one
+-- starter lesson carrying its old title.
 INSERT OR IGNORE INTO units (stream_id, unit_label, title, sort_order, published)
 SELECT id, 'Unit 1', 'Intro to FIRST', 1, 1 FROM streams WHERE stream_key = 'business';
 INSERT OR IGNORE INTO units (stream_id, unit_label, title, sort_order, published)

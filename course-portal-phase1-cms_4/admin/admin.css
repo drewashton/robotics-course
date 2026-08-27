@@ -108,20 +108,23 @@ body { background-color: var(--admin-surface); }
     font-weight: 700;
 }
 
+/* Default: white/light fields, for forms that live in the white content
+   area (unit title, lesson title, syllabus name, mentor fields, etc.) —
+   matching the same white boxes used for the rich text editors. */
 .admin-field input,
 .admin-field textarea,
 .admin-inline-form input {
     width: 100%;
     padding: 10px 12px;
-    background: #141414;
-    border: 1px solid var(--sidebar-border);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
-    color: #ffffff;
+    color: var(--text-dark);
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.9rem;
-    transition: border-color 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.admin-field input:hover, .admin-field textarea:hover { border-color: #333; }
+.admin-field input:hover, .admin-field textarea:hover { border-color: #bbb; }
 
 .admin-field input:focus,
 .admin-field textarea:focus,
@@ -131,42 +134,59 @@ button:focus-visible {
     outline-offset: 1px;
 }
 
+/* Only the login screen (dark, on the photo background) needs dark fields
+   so they read correctly against that background. */
+.admin-login-card .admin-field span { color: var(--sidebar-label); }
+.admin-login-card .admin-field input {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ffffff;
+}
+.admin-login-card .admin-field input:hover { border-color: rgba(255,255,255,0.3); }
+
 .admin-error {
     color: #ff7a7a;
     font-size: 0.85rem;
     margin-bottom: 16px;
 }
 
+/* Buttons in the main (light) content area match the portal's stream-btn
+   component: neutral outline by default, gold on hover, solid gold fill
+   for the primary/emphasized action — the same "gold = active" language
+   used by the portal's nav-item.active state. */
 .admin-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     padding: 10px 18px;
-    border-radius: 6px;
+    border-radius: var(--radius);
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
-    border: 1px solid transparent;
-    transition: transform 0.1s ease, filter 0.15s ease, background-color 0.15s ease;
+    border: 1px solid var(--border-color);
+    background-color: transparent;
+    color: var(--text-dark);
+    transition: transform 0.1s ease, filter 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 .admin-btn:active { transform: translateY(1px); }
+.admin-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); transform: translateY(-1px); }
 
 .admin-btn-block { width: 100%; }
 
 .admin-btn-primary {
     background-color: var(--accent-gold);
+    border-color: var(--accent-gold);
     color: var(--bg-sidebar);
 }
-.admin-btn-primary:hover { filter: brightness(1.08); }
+.admin-btn-primary:hover { filter: brightness(1.08); color: var(--bg-sidebar); border-color: var(--accent-gold); }
 
 .admin-btn-secondary {
     background: transparent;
     border-color: var(--border-color);
     color: var(--text-dark);
 }
-.admin-btn-secondary:hover { border-color: var(--accent-gold); color: var(--text-dark); background: rgba(10,10,10,0.03); }
 
 .admin-btn-danger {
     background: transparent;
@@ -230,41 +250,45 @@ button:focus-visible {
     gap: 3px;
 }
 
+/* Matches the student portal's .nav-item / .nav-item.active exactly:
+   transparent by default, sidebar-hover bg on hover, solid gold fill with
+   black bold text when active. */
 .admin-nav-item,
 .stream-nav-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 14px;
     background: transparent;
     border: 1px solid transparent;
-    border-left: 3px solid transparent;
     color: var(--sidebar-text-inactive);
     text-align: left;
     font-size: 0.85rem;
     font-weight: 500;
-    border-radius: 0 6px 6px 0;
+    border-radius: var(--radius);
     cursor: pointer;
+    margin-bottom: 2px;
     text-decoration: none;
     font-family: 'Space Grotesk', sans-serif;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    transition: background-color 0.1s ease, color 0.1s ease;
 }
 
-.admin-nav-item i, .stream-nav-item i { color: var(--accent-gold); width: 16px; text-align: center; }
+.admin-nav-item i, .stream-nav-item i { width: 16px; text-align: center; color: var(--accent-gold); transition: color 0.1s ease; }
 
 .admin-nav-item:hover, .stream-nav-item:hover {
     background-color: var(--sidebar-hover);
     color: #fff;
 }
+.admin-nav-item:hover i, .stream-nav-item:hover i { color: #fff; }
 
 .stream-nav-item.active {
-    background-color: rgba(243,179,24,0.1);
-    border-left-color: var(--accent-gold);
-    color: #fff;
+    background-color: var(--accent-gold);
+    border-color: var(--accent-gold);
+    color: var(--bg-sidebar);
     font-weight: 700;
 }
-.stream-nav-item.active i { color: var(--accent-gold); }
+.stream-nav-item.active i { color: var(--bg-sidebar); }
 
 .admin-sidebar-footer {
     display: flex;
@@ -372,29 +396,28 @@ button:focus-visible {
     line-height: 1.5;
 }
 
-/* Matches the student portal's home-icon-btn exactly: gold outline,
-   fills solid gold with black text on hover. */
+/* Matches the student portal's stream-btn exactly, since back buttons
+   live in the same white content area: neutral border, gold on hover. */
 .admin-btn-back {
-    background: transparent;
-    border: 1px solid var(--accent-gold);
-    color: var(--accent-gold);
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+    font-weight: 600;
     border-radius: var(--radius);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 14px;
+    padding: 8px 16px;
     transition: all 0.15s ease;
 }
 .admin-btn-back:hover {
-    background-color: var(--accent-gold);
-    color: var(--bg-sidebar);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
 }
+.admin-btn-back:active { transform: translateY(1px); }
 
 /* ---------- LIST ROWS (units / lessons / instructors) ---------- */
 .admin-units-list {
@@ -451,10 +474,58 @@ button:focus-visible {
     letter-spacing: 0.06em;
 }
 
+/* Same recipe as .admin-card-header (black bg, gold left border, gold
+   text) sized down as an inline tag, with no icon — used for the unit
+   number shown in each unit row. */
+.admin-tag {
+    display: inline-block;
+    background-color: var(--bg-sidebar);
+    color: var(--accent-gold);
+    border-left: 3px solid var(--accent-gold);
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+}
+
 .admin-unit-title {
     font-weight: 700;
     font-size: 0.95rem;
     color: var(--text-dark);
+}
+
+.admin-hint {
+    margin: -4px 0 16px 0;
+}
+
+/* ---------- MENTORS ---------- */
+.admin-mentor-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--border-color);
+}
+
+.admin-mentor-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.admin-mentor-photo-preview {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    background: #f0f0f0;
 }
 
 /* Status LED — a small glowing dot reads as "engineering panel" rather
@@ -480,6 +551,7 @@ button:focus-visible {
 .admin-status.is-published .admin-status-dot {
     background: var(--led-published);
     box-shadow: 0 0 8px rgba(47,180,99,0.6), 0 0 0 3px rgba(47,180,99,0.12);
+    animation: admin-led-pulse 2.4s ease-in-out infinite;
 }
 .admin-status.is-draft .admin-status-dot {
     background: var(--led-draft);
@@ -487,6 +559,21 @@ button:focus-visible {
 }
 .admin-status.is-published { color: #1e7a44; }
 .admin-status.is-draft { color: var(--text-muted); }
+
+@keyframes admin-led-pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(47,180,99,0.6), 0 0 0 3px rgba(47,180,99,0.12); }
+    50% { box-shadow: 0 0 12px rgba(47,180,99,0.85), 0 0 0 4px rgba(47,180,99,0.16); }
+}
+
+/* Staggered entrance for list rows — admin.js sets --i on each row */
+.admin-unit-row {
+    animation: admin-row-in 0.25s ease backwards;
+    animation-delay: calc(var(--i, 0) * 0.03s);
+}
+@keyframes admin-row-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 /* Kept for compatibility where referenced elsewhere */
 .admin-badge {

@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const homeDescriptionContainer = document.getElementById("home-description-container");
     const homeObjectivesBox = document.getElementById("home-objectives-box");
     const homeScheduleBox = document.getElementById("home-schedule-box");
+    const mentorColumn = document.getElementById("mentor-column");
 
     // Dynamic Unit View Elements
     const viewChapterNum = document.getElementById("view-chapter-num");
@@ -35,7 +36,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const viewChapterAssignments = document.getElementById("view-chapter-assignments");
     const viewChapterResources = document.getElementById("view-chapter-resources");
 
-    // Fetch every stream (with its published units and lessons) from the CMS
+    // Fetch every stream (with its published units, lessons, assignments,
+    // resources, and mentors) from the CMS backend
     async function loadCourseData() {
         try {
             const res = await fetch("/api/streams");
@@ -126,6 +128,54 @@ document.addEventListener("DOMContentLoaded", async () => {
         container.innerHTML = hasContent ? html : `<p>${emptyMessage}</p>`;
     }
 
+    // Renders a container as a stack of titled entries (used for Lessons,
+    // Assignments, and Resources — all the same shape now).
+    function fillEntryList(container, entries, emptyMessage) {
+        if (!entries || entries.length === 0) {
+            container.classList.remove("content-box");
+            container.classList.add("placeholder-box");
+            container.innerHTML = `<p>${emptyMessage}</p>`;
+            return;
+        }
+        container.classList.remove("placeholder-box");
+        container.classList.add("content-box");
+        container.innerHTML = entries
+            .map(
+                (entry) => `
+                    <div class="lesson-block">
+                        <h4>${escapeHtml(entry.title)}</h4>
+                        ${entry.content && entry.content.trim() ? entry.content : "<p><em>No content added yet.</em></p>"}
+                    </div>
+                `
+            )
+            .join("");
+    }
+
+    function renderMentors(mentors) {
+        mentorColumn.innerHTML = "";
+        if (!mentors || mentors.length === 0) return;
+
+        const header = document.createElement("div");
+        header.className = "card-header mentor-column-header";
+        header.innerHTML = `<i class="fa-solid fa-user-graduate"></i> Mentor Help Contacts`;
+        mentorColumn.appendChild(header);
+
+        mentors.forEach((mentor, index) => {
+            const card = document.createElement("div");
+            card.className = "mentor-card";
+            card.style.setProperty("--i", index);
+            const photo = mentor.photo && mentor.photo.trim() ? mentor.photo : "pr_logo2x.PNG";
+            card.innerHTML = `
+                <img class="mentor-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(mentor.name)}">
+                <div class="mentor-name">${escapeHtml(mentor.name)}</div>
+                ${mentor.title ? `<div class="mentor-title">${escapeHtml(mentor.title)}</div>` : ""}
+                ${mentor.description ? `<p class="mentor-desc">${escapeHtml(mentor.description)}</p>` : ""}
+                ${mentor.email ? `<a class="mentor-email-btn" href="mailto:${escapeHtml(mentor.email)}"><i class="fa-solid fa-envelope"></i> Email</a>` : ""}
+            `;
+            mentorColumn.appendChild(card);
+        });
+    }
+
     // Load Stream Data to Workspace
     function loadStream(streamKey) {
         const stream = courseStreamsByKey[streamKey];
@@ -135,6 +185,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         homeDescriptionContainer.innerHTML = `<p>${stream.description || ""}</p>`;
         fillBox(homeObjectivesBox, stream.objectives, "Learning objectives haven't been added yet.");
         fillBox(homeScheduleBox, stream.schedule, "A recommended schedule hasn't been added yet.");
+        renderMentors(stream.mentors);
 
         // Populate Left-hand Units list
         chaptersNav.innerHTML = "";
@@ -181,25 +232,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         viewChapterName.textContent = unit.title;
         viewChapterDesc.textContent = "";
 
-        if (unit.lessons.length === 0) {
-            viewChapterLessons.classList.remove("content-box");
-            viewChapterLessons.classList.add("placeholder-box");
-            viewChapterLessons.innerHTML = "<p>No lessons added yet.</p>";
-        } else {
-            viewChapterLessons.classList.remove("placeholder-box");
-            viewChapterLessons.classList.add("content-box");
-            viewChapterLessons.innerHTML = unit.lessons
-                .map((lesson) => `
-                    <div class="lesson-block">
-                        <h4>${escapeHtml(lesson.title)}</h4>
-                        ${lesson.content && lesson.content.trim() ? lesson.content : "<p><em>No content added yet.</em></p>"}
-                    </div>
-                `)
-                .join("");
-        }
-
-        fillBox(viewChapterAssignments, unit.assignments, "No assignments added yet.");
-        fillBox(viewChapterResources, unit.resources, "No resources added yet.");
+        fillEntryList(viewChapterLessons, unit.lessons, "No lessons added yet.");
+        fillEntryList(viewChapterAssignments, unit.assignments, "No assignments added yet.");
+        fillEntryList(viewChapterResources, unit.resources, "No resources added yet.");
     }
 
     function clearActiveSidebarItems() {

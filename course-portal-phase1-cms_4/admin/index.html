@@ -115,6 +115,18 @@
                     <div id="syllabus-quill-schedule"></div>
                 </div>
 
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-user-graduate"></i> Mentors</h3>
+                    <p class="admin-muted admin-hint">
+                        These are shown to students as help contacts for this stream — up to 3 mentors,
+                        each with a photo, name, role, short description, and an emailable contact button.
+                    </p>
+                    <ul id="mentors-list" class="admin-units-list"></ul>
+                    <button class="admin-btn admin-btn-secondary" id="btn-new-mentor" type="button">
+                        <i class="fa-solid fa-user-plus"></i> Add Mentor
+                    </button>
+                </div>
+
                 <footer class="admin-editor-actions admin-editor-actions-end">
                     <button class="admin-btn admin-btn-primary" id="btn-save-syllabus" type="button">
                         <i class="fa-solid fa-check"></i> Save
@@ -123,7 +135,54 @@
                 <p id="syllabus-status" class="admin-muted" role="status"></p>
             </section>
 
-            <!-- UNIT DETAIL: rename the folder, manage its shared Assignments/Resources, list its lessons -->
+            <!-- MENTOR EDITOR (add/edit a single mentor card) -->
+            <section id="mentor-view" class="admin-view">
+                <header class="admin-view-header">
+                    <button class="admin-btn-back" id="btn-mentor-back" type="button">
+                        <i class="fa-solid fa-arrow-left"></i> Back to syllabus
+                    </button>
+                </header>
+
+                <div class="admin-mentor-photo-row">
+                    <img id="mentor-photo-preview" class="admin-mentor-photo-preview" alt="">
+                    <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
+                        <i class="fa-solid fa-camera"></i> Upload photo
+                        <input type="file" id="mentor-photo-input" hidden accept="image/*">
+                    </label>
+                </div>
+
+                <label class="admin-field">
+                    <span>Name</span>
+                    <input type="text" id="mentor-name-input" placeholder="Jane Mentor">
+                </label>
+                <label class="admin-field">
+                    <span>Title</span>
+                    <input type="text" id="mentor-title-input" placeholder="Business Mentor">
+                </label>
+                <label class="admin-field">
+                    <span>Short description</span>
+                    <textarea id="mentor-description-input" rows="2" placeholder="A sentence or two about them"></textarea>
+                </label>
+                <label class="admin-field">
+                    <span>Email</span>
+                    <input type="email" id="mentor-email-input" placeholder="jane@example.com">
+                </label>
+
+                <footer class="admin-editor-actions">
+                    <div></div>
+                    <div class="admin-editor-actions-right">
+                        <button class="admin-btn admin-btn-danger" id="btn-delete-mentor" type="button">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                        <button class="admin-btn admin-btn-primary" id="btn-save-mentor" type="button">
+                            <i class="fa-solid fa-check"></i> Save
+                        </button>
+                    </div>
+                </footer>
+                <p id="mentor-status" class="admin-muted" role="status"></p>
+            </section>
+
+            <!-- UNIT DETAIL: rename the folder, and manage its Lessons / Assignments / Resources -->
             <section id="unit-view" class="admin-view">
                 <header class="admin-view-header">
                     <button class="admin-btn-back" id="btn-unit-back" type="button">
@@ -145,7 +204,7 @@
                 <div class="admin-editor-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-list-check"></i> Lessons</h3>
                     <ul id="lessons-list" class="admin-units-list"></ul>
-                    <p id="lessons-empty" class="admin-muted" hidden>No lessons yet. Click "New Lesson" to add the first one.</p>
+                    <p id="lessons-empty" class="admin-muted" hidden>No lessons yet.</p>
                     <button class="admin-btn admin-btn-secondary" id="btn-new-lesson" type="button">
                         <i class="fa-solid fa-plus"></i> New Lesson
                     </button>
@@ -153,26 +212,20 @@
 
                 <div class="admin-editor-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-clipboard-list"></i> Assignments</h3>
-                    <div id="unit-quill-assignments"></div>
-                    <div class="admin-editor-upload">
-                        <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
-                            <i class="fa-solid fa-paperclip"></i> Attach file
-                            <input type="file" class="unit-file-input" data-target="assignments" hidden accept=".pdf,.pptx,.ppt,image/*">
-                        </label>
-                        <span class="unit-upload-status admin-muted" data-target="assignments"></span>
-                    </div>
+                    <ul id="assignments-list" class="admin-units-list"></ul>
+                    <p id="assignments-empty" class="admin-muted" hidden>No assignments yet.</p>
+                    <button class="admin-btn admin-btn-secondary" id="btn-new-assignment" type="button">
+                        <i class="fa-solid fa-plus"></i> New Assignment
+                    </button>
                 </div>
 
                 <div class="admin-editor-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-file-pdf"></i> Resources</h3>
-                    <div id="unit-quill-resources"></div>
-                    <div class="admin-editor-upload">
-                        <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
-                            <i class="fa-solid fa-paperclip"></i> Attach file
-                            <input type="file" class="unit-file-input" data-target="resources" hidden accept=".pdf,.pptx,.ppt,image/*">
-                        </label>
-                        <span class="unit-upload-status admin-muted" data-target="resources"></span>
-                    </div>
+                    <ul id="resources-list" class="admin-units-list"></ul>
+                    <p id="resources-empty" class="admin-muted" hidden>No resources yet.</p>
+                    <button class="admin-btn admin-btn-secondary" id="btn-new-resource" type="button">
+                        <i class="fa-solid fa-plus"></i> New Resource
+                    </button>
                 </div>
 
                 <footer class="admin-editor-actions">
@@ -192,7 +245,7 @@
                 <p id="unit-status" class="admin-muted" role="status"></p>
             </section>
 
-            <!-- LESSON EDITOR VIEW -->
+            <!-- ITEM EDITOR: shared by Lessons, Assignments, and Resources -->
             <section id="editor-view" class="admin-view">
                 <header class="admin-view-header">
                     <button class="admin-btn-back" id="btn-editor-back" type="button">
@@ -201,7 +254,7 @@
                 </header>
 
                 <label class="admin-field">
-                    <span>Lesson title</span>
+                    <span id="editor-title-label">Lesson title</span>
                     <input type="text" id="editor-title" placeholder="Getting Started with FIRST">
                 </label>
 
