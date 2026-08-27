@@ -428,7 +428,7 @@ function renderUnitsList() {
                 <span class="admin-status-dot"></span>${unit.published ? "Published" : "Draft"}
             </span>
         `;
-        li.querySelector(".admin-unit-main").addEventListener("click", () => openUnit(unit.id));
+        li.querySelector(".admin-unit-main").addEventListener("click", () => openUnit(unit.id, true));
         li.querySelectorAll("[data-dir]").forEach((btn) => {
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -457,10 +457,10 @@ $("btn-new-unit").addEventListener("click", async () => {
         body: JSON.stringify({ stream_id: currentStreamId, unit_label, title }),
     });
     await loadStreams();
-    openUnit(created.id);
+    openUnit(created.id, true);
 });
 
-function openUnit(unitId) {
+function openUnit(unitId, resetTab = false) {
     currentUnitId = unitId;
     const unit = currentUnit();
     if (!unit) return;
@@ -473,8 +473,30 @@ function openUnit(unitId) {
     renderItemList("lesson");
     renderItemList("assignment");
     renderItemList("resource");
+
+    $("admin-count-lessons").textContent = unit.lessons.length ? `(${unit.lessons.length})` : "";
+    $("admin-count-assignments").textContent = unit.assignments.length ? `(${unit.assignments.length})` : "";
+    $("admin-count-resources").textContent = unit.resources.length ? `(${unit.resources.length})` : "";
+
+    // Only reset to the Lessons tab when actually navigating to a unit —
+    // refreshing the currently-open unit's data after a save/reorder should
+    // leave whichever tab the instructor was already working in alone.
+    if (resetTab) {
+        document.querySelectorAll("#unit-view .chapter-tab").forEach((t) => t.classList.toggle("active", t.dataset.unitTab === "lessons"));
+        document.querySelectorAll("#unit-view .chapter-tab-panel").forEach((p) => p.classList.toggle("active", p.id === "unit-panel-lessons"));
+    }
+
     showView("unit-view");
 }
+
+document.querySelectorAll("#unit-view .chapter-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+        document.querySelectorAll("#unit-view .chapter-tab").forEach((t) => t.classList.remove("active"));
+        document.querySelectorAll("#unit-view .chapter-tab-panel").forEach((p) => p.classList.remove("active"));
+        tab.classList.add("active");
+        $(`unit-panel-${tab.dataset.unitTab}`).classList.add("active");
+    });
+});
 
 $("btn-unit-back").addEventListener("click", () => selectStream(currentStreamId));
 

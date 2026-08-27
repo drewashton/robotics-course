@@ -200,37 +200,31 @@
                         <p class="chapter-desc-placeholder" id="view-chapter-desc">[Unit Description Placeholder]</p>
                     </div>
 
-                    <div class="grid-layout">
-                        <div class="card main-card">
-                            <div class="card-header">
-                                <i class="fa-solid fa-list-check"></i>
-                                <span>Lessons</span>
-                            </div>
-                            <div class="placeholder-box" id="view-chapter-lessons">
-                                <p>[Lessons placeholder]</p>
-                            </div>
+                    <div class="chapter-tabs" role="tablist">
+                        <button class="chapter-tab active" data-tab="lessons" type="button">
+                            <i class="fa-solid fa-list-check"></i> Lessons <span class="chapter-tab-count" id="count-lessons"></span>
+                        </button>
+                        <button class="chapter-tab" data-tab="assignments" type="button">
+                            <i class="fa-solid fa-clipboard-list"></i> Assignments <span class="chapter-tab-count" id="count-assignments"></span>
+                        </button>
+                        <button class="chapter-tab" data-tab="resources" type="button">
+                            <i class="fa-solid fa-file-pdf"></i> Resources <span class="chapter-tab-count" id="count-resources"></span>
+                        </button>
+                    </div>
+
+                    <div class="chapter-tab-panel active" id="panel-lessons">
+                        <div class="placeholder-box" id="view-chapter-lessons">
+                            <p>[Lessons placeholder]</p>
                         </div>
-
-                        <div class="side-column">
-                            <div class="card">
-                                <div class="card-header">
-                                    <i class="fa-solid fa-clipboard-list"></i>
-                                    <span>Assignments</span>
-                                </div>
-                                <div class="placeholder-box" id="view-chapter-assignments">
-                                    <p>[Assignments placeholder]</p>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <div class="card-header">
-                                    <i class="fa-solid fa-file-pdf"></i>
-                                    <span>Resources</span>
-                                </div>
-                                <div class="placeholder-box" id="view-chapter-resources">
-                                    <p>[Resources placeholder]</p>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="chapter-tab-panel" id="panel-assignments">
+                        <div class="placeholder-box" id="view-chapter-assignments">
+                            <p>[Assignments placeholder]</p>
+                        </div>
+                    </div>
+                    <div class="chapter-tab-panel" id="panel-resources">
+                        <div class="placeholder-box" id="view-chapter-resources">
+                            <p>[Resources placeholder]</p>
                         </div>
                     </div>
                 </section>
