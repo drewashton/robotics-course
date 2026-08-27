@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const homeObjectivesBox = document.getElementById("home-objectives-box");
     const homeScheduleBox = document.getElementById("home-schedule-box");
     const mentorColumn = document.getElementById("mentor-column");
+    const mentorSectionHeader = document.getElementById("mentor-section-header");
 
     // Dynamic Unit View Elements
     const viewChapterNum = document.getElementById("view-chapter-num");
@@ -72,10 +73,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             grid.innerHTML = `<p class="chapter-desc-placeholder" style="color:#999;">No streams available yet. Check back soon.</p>`;
             return;
         }
-        courseStreamsList.forEach((stream) => {
+        courseStreamsList.forEach((stream, index) => {
             const btn = document.createElement("button");
             btn.className = "portal-stream-card";
             btn.dataset.selectStream = stream.key;
+            btn.style.setProperty("--i", index);
             btn.innerHTML = `
                 <div class="stream-icon"><i class="fa-solid ${streamIcon(stream.key)}"></i></div>
                 <h3>${escapeHtml(stream.name)}</h3>
@@ -153,12 +155,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function renderMentors(mentors) {
         mentorColumn.innerHTML = "";
+        mentorSectionHeader.hidden = !mentors || mentors.length === 0;
         if (!mentors || mentors.length === 0) return;
-
-        const header = document.createElement("div");
-        header.className = "card-header mentor-column-header";
-        header.innerHTML = `<i class="fa-solid fa-user-graduate"></i> Mentor Help Contacts`;
-        mentorColumn.appendChild(header);
 
         mentors.forEach((mentor, index) => {
             const card = document.createElement("div");
