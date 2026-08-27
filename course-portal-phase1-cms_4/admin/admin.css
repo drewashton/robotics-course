@@ -9,12 +9,22 @@ html, body {
     overflow-y: auto;
 }
 
+/* The [hidden] attribute is how every show/hide toggle in admin.js works
+   (login screen vs. dashboard, the modal, empty-states, etc). Several
+   classes below set their own unconditional `display`, which — depending
+   on browser default stylesheet specificity — can silently beat the
+   attribute and leave an element visibly rendered even while "hidden".
+   This single rule guarantees [hidden] always wins, everywhere, for good. */
+[hidden] {
+    display: none !important;
+}
+
 :root {
     --admin-surface: #f4f3f0;
     --admin-shadow: 0 1px 2px rgba(10,10,10,0.04), 0 4px 12px rgba(10,10,10,0.06);
     --admin-shadow-hover: 0 2px 4px rgba(10,10,10,0.06), 0 8px 20px rgba(10,10,10,0.09);
     --led-published: #2fb463;
-    --led-draft: #b8860b;
+    --led-draft: #8a8a8a;
 }
 
 body { background-color: var(--admin-surface); }
@@ -147,7 +157,7 @@ button:focus-visible {
     border-color: var(--border-color);
     color: var(--text-dark);
 }
-.admin-btn-secondary:hover { border-color: var(--accent-gold); color: #8a6407; background: rgba(243,179,24,0.06); }
+.admin-btn-secondary:hover { border-color: var(--accent-gold); color: var(--text-dark); background: rgba(10,10,10,0.03); }
 
 .admin-btn-danger {
     background: transparent;
@@ -161,7 +171,7 @@ button:focus-visible {
     border: 1px solid var(--border-color);
     color: var(--text-dark);
 }
-.admin-upload-btn:hover { border-color: var(--accent-gold); color: #8a6407; background: rgba(243,179,24,0.06); }
+.admin-upload-btn:hover { border-color: var(--accent-gold); color: var(--text-dark); background: rgba(10,10,10,0.03); }
 
 /* ---------- DASHBOARD SHELL ---------- */
 .admin-shell {
@@ -314,7 +324,7 @@ button:focus-visible {
     gap: 8px;
     padding: 4px 0;
 }
-.admin-btn-back:hover { color: var(--accent-gold); }
+.admin-btn-back:hover { color: var(--text-dark); }
 
 /* ---------- LIST ROWS (units / lessons / instructors) ---------- */
 .admin-units-list {
@@ -354,7 +364,7 @@ button:focus-visible {
     padding: 2px 6px;
     border-radius: 4px;
 }
-.admin-unit-reorder button:hover { color: var(--accent-gold); background: rgba(243,179,24,0.08); }
+.admin-unit-reorder button:hover { color: var(--text-dark); background: rgba(10,10,10,0.04); }
 .admin-unit-reorder button:disabled { opacity: 0.2; cursor: default; }
 .admin-unit-reorder button:disabled:hover { background: none; }
 
@@ -366,7 +376,7 @@ button:focus-visible {
 .admin-unit-label {
     font-family: 'Space Mono', monospace;
     font-size: 0.68rem;
-    color: var(--accent-gold);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
@@ -406,7 +416,7 @@ button:focus-visible {
     box-shadow: 0 0 0 3px rgba(184,134,11,0.12);
 }
 .admin-status.is-published { color: #1e7a44; }
-.admin-status.is-draft { color: #8a6407; }
+.admin-status.is-draft { color: var(--text-muted); }
 
 /* Kept for compatibility where referenced elsewhere */
 .admin-badge {
@@ -456,7 +466,7 @@ button:focus-visible {
     color: var(--text-muted);
     margin-bottom: 12px;
 }
-.admin-editor-section h3 i { color: var(--accent-gold); font-size: 0.9rem; }
+.admin-editor-section h3 i { color: var(--text-dark); font-size: 0.9rem; }
 
 .admin-editor-section [id^="editor-quill-"],
 .admin-editor-section [id^="syllabus-quill-"],
@@ -518,7 +528,7 @@ button:focus-visible {
     cursor: pointer;
     color: var(--text-dark);
 }
-.admin-toggle input { accent-color: var(--accent-gold); width: 16px; height: 16px; }
+.admin-toggle input { accent-color: var(--text-dark); width: 16px; height: 16px; }
 
 #lessons-list { margin-bottom: 12px; }
 #btn-new-lesson { margin-bottom: 8px; }

@@ -1,24 +1,43 @@
 const STREAM_ICONS = { business: "fa-briefcase", build: "fa-hammer", programming: "fa-code" };
 
 // Register a custom Quill format so Google Slides / uploaded PowerPoint
-// files can be embedded as real inline iframes, not just links.
-const BlockEmbed = Quill.import("blots/block/embed");
-class IframeBlot extends BlockEmbed {
-    static create(url) {
-        const node = super.create();
-        node.setAttribute("src", url);
-        node.setAttribute("frameborder", "0");
-        node.setAttribute("allowfullscreen", "true");
-        node.classList.add("ql-iframe");
-        return node;
+// files can be embedded as real inline iframes, not just links. Wrapped in
+// try/catch so a problem here can NEVER take down the rest of the panel —
+// login, units, and lessons must keep working even if this fails. Worst
+// case, presentation embeds fall back to plain links (see iframeEmbedsSupported).
+let iframeEmbedsSupported = false;
+try {
+    const BlockEmbed = Quill.import("blots/block/embed");
+    class IframeBlot extends BlockEmbed {
+        static create(url) {
+            const node = super.create();
+            node.setAttribute("src", url);
+            node.setAttribute("frameborder", "0");
+            node.setAttribute("allowfullscreen", "true");
+            node.classList.add("ql-iframe");
+            return node;
+        }
+        static value(node) {
+            return node.getAttribute("src");
+        }
     }
-    static value(node) {
-        return node.getAttribute("src");
+    IframeBlot.blotName = "iframe";
+    IframeBlot.tagName = "iframe";
+    Quill.register(IframeBlot);
+    iframeEmbedsSupported = true;
+} catch (err) {
+    console.warn("Presentation embedding unavailable:", err);
+}
+
+// Inserts a presentation as a real embed when supported, otherwise falls
+// back to a plain clickable link so the feature degrades instead of breaking.
+function insertPresentationEmbed(editor, index, url, label) {
+    if (iframeEmbedsSupported) {
+        editor.insertEmbed(index, "iframe", url);
+    } else {
+        editor.insertText(index, label, "link", url);
     }
 }
-IframeBlot.blotName = "iframe";
-IframeBlot.tagName = "iframe";
-Quill.register(IframeBlot);
 
 // Turns a normal Google Slides share/edit link into its embeddable form.
 // Leaves already-embeddable or unrelated URLs untouched.
@@ -421,7 +440,7 @@ document.querySelectorAll(".unit-file-input").forEach((input) => {
                 editor.insertEmbed(range.index, "image", data.url);
             } else if (isPresentation) {
                 const absoluteUrl = new URL(data.url, location.origin).href;
-                editor.insertEmbed(range.index, "iframe", officeEmbedUrl(absoluteUrl));
+                insertPresentationEmbed(editor, range.index, officeEmbedUrl(absoluteUrl), file.name);
             } else {
                 editor.insertText(range.index, data.filename, "link", data.url);
             }
@@ -571,7 +590,7 @@ $("editor-file-input").addEventListener("change", async (e) => {
             editor.insertEmbed(range.index, "image", data.url);
         } else if (isPresentation) {
             const absoluteUrl = new URL(data.url, location.origin).href;
-            editor.insertEmbed(range.index, "iframe", officeEmbedUrl(absoluteUrl));
+            insertPresentationEmbed(editor, range.index, officeEmbedUrl(absoluteUrl), file.name);
         } else {
             editor.insertText(range.index, data.filename, "link", data.url);
         }
@@ -597,9 +616,9 @@ $("btn-embed-slides").addEventListener("click", async () => {
 
     const editor = quillInstances["editor-quill-content"];
     const range = editor.getSelection(true) || { index: editor.getLength() };
-    editor.insertEmbed(range.index, "iframe", toSlidesEmbedUrl(rawUrl));
+    insertPresentationEmbed(editor, range.index, toSlidesEmbedUrl(rawUrl), "Slides presentation");
     editor.setSelection(range.index + 1);
-    $("editor-upload-status").textContent = "Slides embedded.";
+    $("editor-upload-status").textContent = iframeEmbedsSupported ? "Slides embedded." : "Slides link added.";
 });
 
 // ---------- INSTRUCTORS ----------
