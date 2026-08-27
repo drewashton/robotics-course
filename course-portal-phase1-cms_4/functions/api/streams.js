@@ -22,7 +22,7 @@ export async function onRequestGet({ env }) {
   ).all();
 
   const { results: mentors } = await env.DB.prepare(
-    "SELECT id, stream_id, name, title, description, email, photo_url FROM mentors ORDER BY sort_order"
+    "SELECT id, stream_id, name, title, email, photo_url FROM mentors ORDER BY sort_order"
   ).all();
 
   const data = streams.map((s) => ({
@@ -33,7 +33,7 @@ export async function onRequestGet({ env }) {
     schedule: s.schedule_html,
     mentors: mentors
       .filter((m) => m.stream_id === s.id)
-      .map((m) => ({ name: m.name, title: m.title, description: m.description, email: m.email, photo: m.photo_url })),
+      .map((m) => ({ name: m.name, title: m.title, email: m.email, photo: m.photo_url })),
     units: units
       .filter((u) => u.stream_id === s.id)
       .map((u) => ({

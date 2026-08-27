@@ -333,7 +333,6 @@ function openMentor(mentor) {
     currentMentorId = mentor ? mentor.id : null;
     $("mentor-name-input").value = mentor ? mentor.name : "";
     $("mentor-title-input").value = mentor ? mentor.title : "";
-    $("mentor-description-input").value = mentor ? mentor.description : "";
     $("mentor-email-input").value = mentor ? mentor.email : "";
     $("mentor-photo-preview").src = mentor && mentor.photo_url ? mentor.photo_url : "../pr_logo2x.PNG";
     $("mentor-status").textContent = "";
@@ -371,7 +370,6 @@ $("btn-save-mentor").addEventListener("click", async () => {
     const payload = {
         name,
         title: $("mentor-title-input").value.trim(),
-        description: $("mentor-description-input").value.trim(),
         email: $("mentor-email-input").value.trim(),
         photo_url: photoUrl.includes("pr_logo2x.PNG") ? "" : photoUrl,
     };

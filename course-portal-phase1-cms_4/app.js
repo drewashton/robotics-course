@@ -167,7 +167,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <img class="mentor-photo" src="${escapeHtml(photo)}" alt="${escapeHtml(mentor.name)}">
                 <div class="mentor-name">${escapeHtml(mentor.name)}</div>
                 ${mentor.title ? `<div class="mentor-title">${escapeHtml(mentor.title)}</div>` : ""}
-                ${mentor.description ? `<p class="mentor-desc">${escapeHtml(mentor.description)}</p>` : ""}
                 ${mentor.email ? `<a class="mentor-email-btn" href="mailto:${escapeHtml(mentor.email)}"><i class="fa-solid fa-envelope"></i> Email</a>` : ""}
             `;
             mentorColumn.appendChild(card);

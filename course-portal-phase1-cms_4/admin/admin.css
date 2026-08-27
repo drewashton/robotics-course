@@ -103,14 +103,21 @@ body { background-color: var(--admin-surface); }
     margin-bottom: 16px;
 }
 
+/* Every field label site-wide uses the same recipe as the section headers
+   (black bg, gold left accent, gold text) instead of plain text, for full
+   consistency across every "title" caption in the admin panel. */
 .admin-field span {
-    display: block;
+    display: inline-block;
     font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-dark);
-    margin-bottom: 6px;
+    letter-spacing: 0.06em;
+    background-color: var(--bg-sidebar);
+    color: var(--accent-gold);
+    border-left: 3px solid var(--accent-gold);
+    padding: 3px 9px;
+    border-radius: 4px;
+    margin-bottom: 8px;
     font-weight: 700;
 }
 
@@ -140,9 +147,9 @@ button:focus-visible {
     outline-offset: 1px;
 }
 
-/* Only the login screen (dark, on the photo background) needs dark fields
-   so they read correctly against that background. */
-.admin-login-card .admin-field span { color: var(--sidebar-label); }
+/* The login screen's inputs still need a dark treatment to read correctly
+   against that background — field labels already work fine as-is since
+   the badge is solid black regardless of what's behind it. */
 .admin-login-card .admin-field input {
     background: rgba(0,0,0,0.35);
     border: 1px solid rgba(255,255,255,0.15);
@@ -437,6 +444,7 @@ button:focus-visible {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 14px;
 }
 
 .admin-unit-row {
@@ -686,8 +694,6 @@ button:focus-visible {
 }
 .admin-toggle input { accent-color: var(--text-dark); width: 16px; height: 16px; }
 
-#lessons-list { margin-bottom: 12px; }
-#btn-new-lesson { margin-bottom: 8px; }
 
 /* ---------- INSTRUCTORS ---------- */
 .admin-inline-form {
