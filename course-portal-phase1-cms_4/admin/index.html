@@ -69,11 +69,11 @@
 
             <!-- UNIT FOLDER LIST (per stream) -->
             <section id="units-view" class="admin-view active-view">
-                <header class="admin-view-header">
-                    <div>
-                        <h2 id="units-stream-name">Stream</h2>
-                        <p id="units-stream-desc" class="admin-muted"></p>
-                    </div>
+                <div class="admin-welcome-card">
+                    <h2 id="units-stream-name">Stream</h2>
+                    <p id="units-stream-desc"></p>
+                </div>
+                <header class="admin-view-header admin-view-header-actions-only">
                     <div class="admin-view-header-actions">
                         <button class="admin-btn admin-btn-secondary" id="btn-edit-syllabus" type="button">
                             <i class="fa-solid fa-pen"></i> Edit Syllabus
@@ -106,12 +106,12 @@
                 </label>
 
                 <div class="admin-editor-section">
-                    <h3><i class="fa-solid fa-graduation-cap"></i> Learning Objectives</h3>
+                    <h3 class="admin-card-header"><i class="fa-solid fa-graduation-cap"></i> Learning Objectives</h3>
                     <div id="syllabus-quill-objectives"></div>
                 </div>
 
                 <div class="admin-editor-section">
-                    <h3><i class="fa-solid fa-calendar-days"></i> Recommended Schedule</h3>
+                    <h3 class="admin-card-header"><i class="fa-solid fa-calendar-days"></i> Recommended Schedule</h3>
                     <div id="syllabus-quill-schedule"></div>
                 </div>
 
@@ -143,7 +143,7 @@
                 </div>
 
                 <div class="admin-editor-section">
-                    <h3><i class="fa-solid fa-list-check"></i> Lessons</h3>
+                    <h3 class="admin-card-header"><i class="fa-solid fa-list-check"></i> Lessons</h3>
                     <ul id="lessons-list" class="admin-units-list"></ul>
                     <p id="lessons-empty" class="admin-muted" hidden>No lessons yet. Click "New Lesson" to add the first one.</p>
                     <button class="admin-btn admin-btn-secondary" id="btn-new-lesson" type="button">
@@ -152,7 +152,7 @@
                 </div>
 
                 <div class="admin-editor-section">
-                    <h3><i class="fa-solid fa-clipboard-list"></i> Assignments</h3>
+                    <h3 class="admin-card-header"><i class="fa-solid fa-clipboard-list"></i> Assignments</h3>
                     <div id="unit-quill-assignments"></div>
                     <div class="admin-editor-upload">
                         <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
@@ -164,7 +164,7 @@
                 </div>
 
                 <div class="admin-editor-section">
-                    <h3><i class="fa-solid fa-file-pdf"></i> Resources</h3>
+                    <h3 class="admin-card-header"><i class="fa-solid fa-file-pdf"></i> Resources</h3>
                     <div id="unit-quill-resources"></div>
                     <div class="admin-editor-upload">
                         <label class="admin-btn admin-upload-btn admin-upload-btn-sm">

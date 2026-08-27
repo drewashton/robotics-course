@@ -30,6 +30,8 @@ html, body {
 body { background-color: var(--admin-surface); }
 
 /* ---------- LOGIN SCREEN ---------- */
+/* Matches the student portal's landing background exactly: dark gradient
+   overlay on top of the team photo. */
 .admin-login-screen {
     min-height: 100vh;
     min-height: 100dvh;
@@ -38,19 +40,26 @@ body { background-color: var(--admin-surface); }
     justify-content: center;
     background-color: var(--bg-sidebar);
     background-image:
-        radial-gradient(circle at 18% 22%, rgba(243,179,24,0.08), transparent 40%),
-        repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 22px);
+        linear-gradient(rgba(10, 10, 10, 0.85), rgba(10, 10, 10, 0.85)),
+        url('../robotphoto.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
     padding: 24px;
 }
 
+/* Matches the student portal's stream-card "glass" treatment: translucent
+   dark panel with blur, over the photo background. */
 .admin-login-card {
     width: 100%;
     max-width: 380px;
     max-height: 100dvh;
     overflow-y: auto;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(15, 15, 15, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: var(--radius);
     padding: 40px 32px;
     text-align: center;
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
@@ -305,26 +314,87 @@ button:focus-visible {
     color: var(--text-dark);
 }
 
+/* Matches the student portal's welcome-card exactly: dark card, gold
+   uppercase title, left gold accent border, light gray body text. */
+.admin-welcome-card {
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    padding: 32px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    border-left: 4px solid var(--accent-gold);
+}
+.admin-welcome-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.admin-welcome-card p {
+    color: #cccccc;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.admin-view-header-actions-only {
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+/* Matches the student portal's card-header exactly: dark bar, gold left
+   accent border, gold icon + gold uppercase label. Used for section
+   headings within a unit or syllabus (Lessons, Assignments, Resources,
+   Learning Objectives, Recommended Schedule). */
+.admin-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    background-color: var(--bg-sidebar);
+    color: var(--accent-gold);
+    padding: 10px 14px;
+    border-left: 3px solid var(--accent-gold);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.admin-card-header i {
+    color: var(--accent-gold);
+    font-size: 0.85rem;
+}
+
 .admin-muted {
     color: var(--text-muted);
     font-size: 0.85rem;
     line-height: 1.5;
 }
 
+/* Matches the student portal's home-icon-btn exactly: gold outline,
+   fills solid gold with black text on hover. */
 .admin-btn-back {
-    background: none;
-    border: none;
-    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius);
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 0;
+    padding: 6px 14px;
+    transition: all 0.15s ease;
 }
-.admin-btn-back:hover { color: var(--text-dark); }
+.admin-btn-back:hover {
+    background-color: var(--accent-gold);
+    color: var(--bg-sidebar);
+}
 
 /* ---------- LIST ROWS (units / lessons / instructors) ---------- */
 .admin-units-list {
@@ -454,19 +524,6 @@ button:focus-visible {
     border-bottom: 1px solid var(--border-color);
 }
 .admin-editor-section:last-of-type { border-bottom: none; }
-
-.admin-editor-section h3 {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-}
-.admin-editor-section h3 i { color: var(--text-dark); font-size: 0.9rem; }
 
 .admin-editor-section [id^="editor-quill-"],
 .admin-editor-section [id^="syllabus-quill-"],
