@@ -78,7 +78,7 @@
                         <button class="admin-btn admin-btn-secondary" id="btn-edit-syllabus" type="button">
                             <i class="fa-solid fa-pen"></i> Edit Syllabus
                         </button>
-                        <button class="admin-btn admin-btn-primary" id="btn-new-unit" type="button">
+                        <button class="admin-btn admin-btn-dashed" id="btn-new-unit" type="button">
                             <i class="fa-solid fa-folder-plus"></i> New Unit
                         </button>
                     </div>
@@ -108,21 +108,35 @@
                 <div class="admin-editor-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-graduation-cap"></i> Learning Objectives</h3>
                     <div id="syllabus-quill-objectives"></div>
+                    <div class="admin-editor-upload">
+                        <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
+                            <i class="fa-solid fa-paperclip"></i> Attach file
+                            <input type="file" class="syllabus-file-input" data-target="objectives" hidden accept=".pdf,.pptx,.ppt,image/*">
+                        </label>
+                        <span class="syllabus-upload-status admin-muted" data-target="objectives"></span>
+                    </div>
                 </div>
 
                 <div class="admin-editor-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-calendar-days"></i> Recommended Schedule</h3>
                     <div id="syllabus-quill-schedule"></div>
+                    <div class="admin-editor-upload">
+                        <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
+                            <i class="fa-solid fa-paperclip"></i> Attach file
+                            <input type="file" class="syllabus-file-input" data-target="schedule" hidden accept=".pdf,.pptx,.ppt,image/*">
+                        </label>
+                        <span class="syllabus-upload-status admin-muted" data-target="schedule"></span>
+                    </div>
                 </div>
 
                 <div class="admin-editor-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-user-graduate"></i> Mentors</h3>
                     <p class="admin-muted admin-hint">
-                        These are shown to students as help contacts for this stream — up to 3 mentors,
-                        each with a photo, name, role, short description, and an emailable contact button.
+                        Shown to students as help contacts for this stream — up to 3 mentors,
+                        each with a photo, name, role, and an emailable contact button.
                     </p>
                     <ul id="mentors-list" class="admin-units-list"></ul>
-                    <button class="admin-btn admin-btn-secondary" id="btn-new-mentor" type="button">
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-mentor" type="button">
                         <i class="fa-solid fa-user-plus"></i> Add Mentor
                     </button>
                 </div>
@@ -201,7 +215,7 @@
                     <h3 class="admin-card-header"><i class="fa-solid fa-list-check"></i> Lessons</h3>
                     <ul id="lessons-list" class="admin-units-list"></ul>
                     <p id="lessons-empty" class="admin-muted" hidden>No lessons yet.</p>
-                    <button class="admin-btn admin-btn-secondary" id="btn-new-lesson" type="button">
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-lesson" type="button">
                         <i class="fa-solid fa-plus"></i> New Lesson
                     </button>
                 </div>
@@ -210,7 +224,7 @@
                     <h3 class="admin-card-header"><i class="fa-solid fa-clipboard-list"></i> Assignments</h3>
                     <ul id="assignments-list" class="admin-units-list"></ul>
                     <p id="assignments-empty" class="admin-muted" hidden>No assignments yet.</p>
-                    <button class="admin-btn admin-btn-secondary" id="btn-new-assignment" type="button">
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-assignment" type="button">
                         <i class="fa-solid fa-plus"></i> New Assignment
                     </button>
                 </div>
@@ -219,7 +233,7 @@
                     <h3 class="admin-card-header"><i class="fa-solid fa-file-pdf"></i> Resources</h3>
                     <ul id="resources-list" class="admin-units-list"></ul>
                     <p id="resources-empty" class="admin-muted" hidden>No resources yet.</p>
-                    <button class="admin-btn admin-btn-secondary" id="btn-new-resource" type="button">
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-resource" type="button">
                         <i class="fa-solid fa-plus"></i> New Resource
                     </button>
                 </div>

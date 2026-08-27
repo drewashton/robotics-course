@@ -181,7 +181,7 @@ $("login-form").addEventListener("submit", async (e) => {
         showApp();
         await loadStreams();
     } catch (err) {
-        $("login-error").textContent = err.message;
+        setStatus($("login-error"), err.message, "error");
         $("login-error").hidden = false;
     }
 });
@@ -259,7 +259,7 @@ $("btn-edit-syllabus").addEventListener("click", () => {
 
     $("syllabus-name").value = stream.name;
     $("syllabus-description").value = stream.description || "";
-    $("syllabus-status").textContent = "";
+    setStatus($("syllabus-status"), "");
 
     ensureQuill("syllabus-quill-objectives", "What will students learn in this stream?");
     ensureQuill("syllabus-quill-schedule", "How should students pace themselves through this stream?");
@@ -275,7 +275,7 @@ $("btn-syllabus-back").addEventListener("click", () => selectStream(currentStrea
 $("btn-save-syllabus").addEventListener("click", async () => {
     const name = $("syllabus-name").value.trim();
     if (!name) {
-        $("syllabus-status").textContent = "Stream name can't be empty.";
+        setStatus($("syllabus-status"), "Stream name can't be empty.", "error");
         return;
     }
     try {
@@ -292,7 +292,7 @@ $("btn-save-syllabus").addEventListener("click", async () => {
         await loadStreams();
         selectStream(currentStreamId);
     } catch (err) {
-        $("syllabus-status").textContent = err.message;
+        setStatus($("syllabus-status"), err.message, "error");
     }
 });
 
@@ -335,7 +335,7 @@ function openMentor(mentor) {
     $("mentor-title-input").value = mentor ? mentor.title : "";
     $("mentor-email-input").value = mentor ? mentor.email : "";
     $("mentor-photo-preview").src = mentor && mentor.photo_url ? mentor.photo_url : "../pr_logo2x.PNG";
-    $("mentor-status").textContent = "";
+    setStatus($("mentor-status"), "");
     $("btn-delete-mentor").hidden = !mentor;
     showView("mentor-view");
 }
@@ -343,7 +343,7 @@ function openMentor(mentor) {
 $("mentor-photo-input").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    $("mentor-status").textContent = "Uploading photo...";
+    setStatus($("mentor-status"), "Uploading photo...");
     const formData = new FormData();
     formData.append("file", file);
     try {
@@ -352,9 +352,9 @@ $("mentor-photo-input").addEventListener("change", async (e) => {
         if (!res.ok) throw new Error(data.error || "Upload failed");
         $("mentor-photo-preview").src = data.url;
         $("mentor-photo-preview").dataset.url = data.url;
-        $("mentor-status").textContent = "Photo uploaded.";
+        setStatus($("mentor-status"), "Photo uploaded.", "success");
     } catch (err) {
-        $("mentor-status").textContent = err.message;
+        setStatus($("mentor-status"), err.message, "error");
     } finally {
         e.target.value = "";
     }
@@ -363,7 +363,7 @@ $("mentor-photo-input").addEventListener("change", async (e) => {
 $("btn-save-mentor").addEventListener("click", async () => {
     const name = $("mentor-name-input").value.trim();
     if (!name) {
-        $("mentor-status").textContent = "Name is required.";
+        setStatus($("mentor-status"), "Name is required.", "error");
         return;
     }
     const photoUrl = $("mentor-photo-preview").dataset.url || $("mentor-photo-preview").src;
@@ -383,7 +383,7 @@ $("btn-save-mentor").addEventListener("click", async () => {
         showView("syllabus-view");
         renderMentorsList();
     } catch (err) {
-        $("mentor-status").textContent = err.message;
+        setStatus($("mentor-status"), err.message, "error");
     }
 });
 
@@ -468,7 +468,7 @@ function openUnit(unitId) {
     $("unit-label-input").value = unit.unit_label;
     $("unit-title-input").value = unit.title;
     $("unit-published").checked = Boolean(unit.published);
-    $("unit-status").textContent = "";
+    setStatus($("unit-status"), "");
 
     renderItemList("lesson");
     renderItemList("assignment");
@@ -482,7 +482,7 @@ $("btn-save-unit").addEventListener("click", async () => {
     const unit_label = $("unit-label-input").value.trim();
     const title = $("unit-title-input").value.trim();
     if (!unit_label || !title) {
-        $("unit-status").textContent = "Unit number and title are both required.";
+        setStatus($("unit-status"), "Unit number and title are both required.", "error");
         return;
     }
     try {
@@ -493,7 +493,7 @@ $("btn-save-unit").addEventListener("click", async () => {
         await loadStreams();
         openUnit(currentUnitId);
     } catch (err) {
-        $("unit-status").textContent = err.message;
+        setStatus($("unit-status"), err.message, "error");
     }
 });
 
@@ -588,8 +588,8 @@ function openItemEditor(kind, item) {
     $("editor-title-label").textContent = `${label} title`;
     $("editor-title").value = item ? item.title : "";
     $("editor-published").checked = item ? Boolean(item.published) : false;
-    $("editor-status").textContent = "";
-    $("editor-upload-status").textContent = "";
+    setStatus($("editor-status"), "");
+    setStatus($("editor-upload-status"), "");
     $("btn-delete-lesson").hidden = !item;
 
     ensureQuill("editor-quill-content", `Write this ${label.toLowerCase()}'s content here...`);
@@ -601,7 +601,7 @@ function openItemEditor(kind, item) {
 $("btn-save-lesson").addEventListener("click", async () => {
     const title = $("editor-title").value.trim();
     if (!title) {
-        $("editor-status").textContent = "Title is required.";
+        setStatus($("editor-status"), "Title is required.", "error");
         return;
     }
     const { api: apiPath } = ITEM_KINDS[currentItemKind];
@@ -619,7 +619,7 @@ $("btn-save-lesson").addEventListener("click", async () => {
         await loadStreams();
         openUnit(currentUnitId);
     } catch (err) {
-        $("editor-status").textContent = err.message;
+        setStatus($("editor-status"), err.message, "error");
     }
 });
 
@@ -636,7 +636,7 @@ $("btn-delete-lesson").addEventListener("click", async () => {
 $("editor-file-input").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    $("editor-upload-status").textContent = `Uploading ${file.name}...`;
+    setStatus($("editor-upload-status"), `Uploading ${file.name}...`);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -659,12 +659,50 @@ $("editor-file-input").addEventListener("change", async (e) => {
             editor.insertText(range.index, data.filename, "link", data.url);
         }
         editor.setSelection(range.index + 1);
-        $("editor-upload-status").textContent = `Attached ${data.filename}`;
+        setStatus($("editor-upload-status"), `Attached ${data.filename}`, "success");
     } catch (err) {
-        $("editor-upload-status").textContent = err.message;
+        setStatus($("editor-upload-status"), err.message, "error");
     } finally {
         e.target.value = "";
     }
+});
+
+document.querySelectorAll(".syllabus-file-input").forEach((input) => {
+    input.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        const target = input.dataset.target; // "objectives" | "schedule"
+        const statusEl = document.querySelector(`.syllabus-upload-status[data-target="${target}"]`);
+        if (!file) return;
+        setStatus(statusEl, `Uploading ${file.name}...`);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch("/api/admin/upload", { method: "POST", body: formData, credentials: "same-origin" });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Upload failed");
+
+            const editor = quillInstances[`syllabus-quill-${target}`];
+            const range = editor.getSelection(true) || { index: editor.getLength() };
+            const isPresentation = /\.(pptx|ppt|key)$/i.test(file.name);
+
+            if (file.type.startsWith("image/")) {
+                editor.insertEmbed(range.index, "image", data.url);
+            } else if (isPresentation) {
+                const absoluteUrl = new URL(data.url, location.origin).href;
+                insertPresentationEmbed(editor, range.index, officeEmbedUrl(absoluteUrl), file.name);
+            } else {
+                editor.insertText(range.index, data.filename, "link", data.url);
+            }
+            editor.setSelection(range.index + 1);
+            setStatus(statusEl, `Attached ${data.filename}`, "success");
+        } catch (err) {
+            setStatus(statusEl, err.message, "error");
+        } finally {
+            e.target.value = "";
+        }
+    });
 });
 
 $("btn-embed-slides").addEventListener("click", async () => {
@@ -682,7 +720,7 @@ $("btn-embed-slides").addEventListener("click", async () => {
     const range = editor.getSelection(true) || { index: editor.getLength() };
     insertPresentationEmbed(editor, range.index, toSlidesEmbedUrl(rawUrl), "Slides presentation");
     editor.setSelection(range.index + 1);
-    $("editor-upload-status").textContent = iframeEmbedsSupported ? "Slides embedded." : "Slides link added.";
+    setStatus($("editor-upload-status"), iframeEmbedsSupported ? "Slides embedded." : "Slides link added.", "success");
 });
 
 // ---------- INSTRUCTORS ----------
@@ -707,7 +745,7 @@ async function loadInstructors() {
 
 $("new-instructor-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    $("instructor-status").textContent = "";
+    setStatus($("instructor-status"), "");
     try {
         await api("/api/admin/instructors", {
             method: "POST",
@@ -720,7 +758,7 @@ $("new-instructor-form").addEventListener("submit", async (e) => {
         e.target.reset();
         await loadInstructors();
     } catch (err) {
-        $("instructor-status").textContent = err.message;
+        setStatus($("instructor-status"), err.message, "error");
     }
 });
 
@@ -730,6 +768,18 @@ function escapeHtml(str) {
     const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
+}
+
+// Central helper so every status message looks consistent: errors turn red
+// and briefly flash, confirmations turn green, everything else stays muted.
+function setStatus(el, message, tone) {
+    el.textContent = message;
+    el.classList.remove("is-error", "is-success", "status-flash");
+    if (tone) el.classList.add(tone === "error" ? "is-error" : "is-success");
+    if (tone) {
+        void el.offsetWidth; // restart the animation if it's already mid-flash
+        el.classList.add("status-flash");
+    }
 }
 
 checkSession();
