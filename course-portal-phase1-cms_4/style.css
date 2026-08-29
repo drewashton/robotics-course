@@ -643,56 +643,6 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     margin-bottom: 4px;
 }
 
-/* Tabbed Lessons/Assignments/Resources — each is a full, equal-weight
-   collection now, so they get equal-weight tabs instead of a "main content
-   + sidebar notes" layout that no longer matches what's actually there. */
-.chapter-tabs {
-    display: flex;
-    gap: 8px;
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 24px;
-}
-
-.chapter-tab {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: transparent;
-    border: none;
-    padding: 12px 4px;
-    margin-bottom: -2px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease;
-}
-.chapter-tab + .chapter-tab { margin-left: 20px; }
-.chapter-tab i { color: var(--text-muted); transition: color 0.15s ease; }
-.chapter-tab:hover { color: var(--text-dark); }
-.chapter-tab.active {
-    color: var(--text-dark);
-    border-bottom-color: var(--accent-gold);
-}
-.chapter-tab.active i { color: var(--accent-gold); }
-
-.chapter-tab-count {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: inherit;
-    opacity: 0.6;
-}
-
-.chapter-tab-panel {
-    display: none;
-}
-.chapter-tab-panel.active {
-    display: block;
-    animation: view-fade-in 0.25s ease;
-}
-
 .chapter-header-card h3 {
     font-size: 1.4rem;
     color: var(--accent-gold);

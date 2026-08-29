@@ -173,17 +173,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // Chapter view tabs (Lessons / Assignments / Resources)
-    const chapterTabs = document.querySelectorAll(".chapter-tab");
-    chapterTabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-            chapterTabs.forEach((t) => t.classList.remove("active"));
-            document.querySelectorAll(".chapter-tab-panel").forEach((p) => p.classList.remove("active"));
-            tab.classList.add("active");
-            document.getElementById(`panel-${tab.dataset.tab}`).classList.add("active");
-        });
-    });
-
     // Load Stream Data to Workspace
     function loadStream(streamKey) {
         const stream = courseStreamsByKey[streamKey];
@@ -240,18 +229,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         viewChapterName.textContent = unit.title;
         viewChapterDesc.textContent = "";
 
-        // Always land back on the Lessons tab when opening a (possibly
-        // different) unit, so the previous unit's tab choice doesn't linger.
-        chapterTabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === "lessons"));
-        document.querySelectorAll(".chapter-tab-panel").forEach((p) => p.classList.toggle("active", p.id === "panel-lessons"));
-
         fillEntryList(viewChapterLessons, unit.lessons, "No lessons added yet.");
         fillEntryList(viewChapterAssignments, unit.assignments, "No assignments added yet.");
         fillEntryList(viewChapterResources, unit.resources, "No resources added yet.");
-
-        document.getElementById("count-lessons").textContent = unit.lessons.length ? `(${unit.lessons.length})` : "";
-        document.getElementById("count-assignments").textContent = unit.assignments.length ? `(${unit.assignments.length})` : "";
-        document.getElementById("count-resources").textContent = unit.resources.length ? `(${unit.resources.length})` : "";
     }
 
     function clearActiveSidebarItems() {

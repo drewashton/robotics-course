@@ -84,7 +84,7 @@
                     </div>
                 </header>
                 <ul id="units-list" class="admin-units-list"></ul>
-                <div id="units-empty" class="admin-empty-state" hidden><i class="fa-solid fa-folder-open"></i><p>No units yet — click "New Unit" to start this stream's first folder.</p></div>
+                <p id="units-empty" class="admin-muted" hidden>No units yet in this stream. Click "New Unit" to add the first folder.</p>
             </section>
 
             <!-- SYLLABUS EDITOR VIEW -->
@@ -211,37 +211,28 @@
                     </label>
                 </div>
 
-                <div class="chapter-tabs" role="tablist">
-                    <button class="chapter-tab active" data-unit-tab="lessons" type="button">
-                        <i class="fa-solid fa-list-check"></i> Lessons <span class="chapter-tab-count" id="admin-count-lessons"></span>
-                    </button>
-                    <button class="chapter-tab" data-unit-tab="assignments" type="button">
-                        <i class="fa-solid fa-clipboard-list"></i> Assignments <span class="chapter-tab-count" id="admin-count-assignments"></span>
-                    </button>
-                    <button class="chapter-tab" data-unit-tab="resources" type="button">
-                        <i class="fa-solid fa-file-pdf"></i> Resources <span class="chapter-tab-count" id="admin-count-resources"></span>
-                    </button>
-                </div>
-
-                <div class="chapter-tab-panel active" id="unit-panel-lessons">
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-list-check"></i> Lessons</h3>
                     <ul id="lessons-list" class="admin-units-list"></ul>
-                    <div id="lessons-empty" class="admin-empty-state" hidden><i class="fa-solid fa-list-check"></i><p>No lessons yet.</p></div>
+                    <p id="lessons-empty" class="admin-muted" hidden>No lessons yet.</p>
                     <button class="admin-btn admin-btn-dashed" id="btn-new-lesson" type="button">
                         <i class="fa-solid fa-plus"></i> New Lesson
                     </button>
                 </div>
 
-                <div class="chapter-tab-panel" id="unit-panel-assignments">
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-clipboard-list"></i> Assignments</h3>
                     <ul id="assignments-list" class="admin-units-list"></ul>
-                    <div id="assignments-empty" class="admin-empty-state" hidden><i class="fa-solid fa-clipboard-list"></i><p>No assignments yet.</p></div>
+                    <p id="assignments-empty" class="admin-muted" hidden>No assignments yet.</p>
                     <button class="admin-btn admin-btn-dashed" id="btn-new-assignment" type="button">
                         <i class="fa-solid fa-plus"></i> New Assignment
                     </button>
                 </div>
 
-                <div class="chapter-tab-panel" id="unit-panel-resources">
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-file-pdf"></i> Resources</h3>
                     <ul id="resources-list" class="admin-units-list"></ul>
-                    <div id="resources-empty" class="admin-empty-state" hidden><i class="fa-solid fa-file-pdf"></i><p>No resources yet.</p></div>
+                    <p id="resources-empty" class="admin-muted" hidden>No resources yet.</p>
                     <button class="admin-btn admin-btn-dashed" id="btn-new-resource" type="button">
                         <i class="fa-solid fa-plus"></i> New Resource
                     </button>
