@@ -251,27 +251,29 @@ button:focus-visible {
 
 /* ---------- DASHBOARD SHELL ---------- */
 .admin-shell {
-    display: flex;
-    align-items: flex-start;
     min-height: 100vh;
     min-height: 100dvh;
 }
 
+/* Fixed rather than sticky — sticky has real edge cases with flexbox and
+   ancestor overflow/height settings that are hard to guarantee everywhere.
+   Fixed is simpler and unconditionally reliable for "always visible":
+   the sidebar is pulled out of the document flow entirely, so admin-main
+   gets a matching left margin instead. */
 .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 264px;
-    flex-shrink: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
     background-color: var(--bg-sidebar);
     color: #fff;
     display: flex;
     flex-direction: column;
     padding: 20px 14px;
-    position: sticky;
-    top: 0;
-    left: 0;
-    align-self: flex-start;
-    height: 100vh;
-    height: 100dvh;
-    overflow-y: auto;
+    z-index: 20;
 }
 
 .admin-sidebar-header {
@@ -365,7 +367,7 @@ button:focus-visible {
 }
 
 .admin-main {
-    flex: 1;
+    margin-left: 264px;
     padding: 44px 48px;
     max-width: 920px;
 }
@@ -810,14 +812,18 @@ button:focus-visible {
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 900px) {
-    .admin-shell { flex-direction: column; }
+    /* A permanently fixed sidebar would cover most of a narrow screen from
+       the moment the page loads (not just while scrolling), so on small
+       screens it goes back to sitting in normal flow at the top instead. */
     .admin-sidebar {
+        position: static;
         width: 100%;
         height: auto;
-        max-height: 60vh;
-        max-height: 60dvh;
     }
-    .admin-main { padding: 24px 20px; }
+    .admin-main {
+        margin-left: 0;
+        padding: 24px 20px;
+    }
     .admin-editor-fields { grid-template-columns: 1fr; }
     .admin-view-header {
         flex-direction: column;
