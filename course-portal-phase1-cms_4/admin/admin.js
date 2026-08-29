@@ -161,7 +161,7 @@ function currentUnit() {
 async function checkSession() {
     try {
         const session = await api("/api/admin/session");
-        $("signed-in-as").textContent = `${session.name} · ${session.email}`;
+        $("signed-in-as").innerHTML = `<span class="signed-in-name">${escapeHtml(session.name)}</span><span class="signed-in-email">${escapeHtml(session.email)}</span>`;
         showApp();
         await loadStreams();
     } catch {
@@ -177,7 +177,7 @@ $("login-form").addEventListener("submit", async (e) => {
             method: "POST",
             body: JSON.stringify({ email: $("login-email").value, password: $("login-password").value }),
         });
-        $("signed-in-as").textContent = `${session.name} · ${session.email}`;
+        $("signed-in-as").innerHTML = `<span class="signed-in-name">${escapeHtml(session.name)}</span><span class="signed-in-email">${escapeHtml(session.email)}</span>`;
         showApp();
         await loadStreams();
     } catch (err) {

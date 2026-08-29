@@ -454,8 +454,9 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 }
 
 .stream-btn:hover {
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
+    border-color: var(--bg-sidebar);
+    color: var(--text-dark);
+    background-color: rgba(10,10,10,0.04);
 }
 
 .stream-btn.active {
@@ -720,17 +721,6 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     .grid-layout {
         grid-template-columns: 1fr;
         gap: 0;
-    }
-    .welcome-row {
-        flex-direction: column;
-    }
-    .mentor-column {
-        flex-direction: row;
-        flex-wrap: wrap;
-        min-width: 0;
-    }
-    .mentor-card {
-        flex: 1 1 200px;
     }
 }
 
