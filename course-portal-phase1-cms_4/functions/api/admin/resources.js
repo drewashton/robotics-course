@@ -1,6 +1,6 @@
 import { requireAuth, json } from "../../_utils/auth.js";
 
-// A resource is one entry in a unit's Resources list — title + content,
+// A resource is one entry in a unit's Resources list - title + content,
 // same shape as a lesson.
 
 export async function onRequestPost({ request, env }) {

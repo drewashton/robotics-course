@@ -41,7 +41,7 @@ export async function onRequestPost({ request, env }) {
 }
 
 // Only the site owner can remove instructor accounts, and can't remove
-// their own — that would risk locking everyone out with no way back in.
+// their own - that would risk locking everyone out with no way back in.
 export async function onRequestDelete({ request, env }) {
   const auth = await requireAuth(request, env);
   if (!auth.authorized) return auth.response;

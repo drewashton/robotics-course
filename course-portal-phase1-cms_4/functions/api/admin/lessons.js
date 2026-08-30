@@ -1,6 +1,6 @@
 import { requireAuth, json } from "../../_utils/auth.js";
 
-// A lesson is one entry in a unit's Lessons list — just a title and its own
+// A lesson is one entry in a unit's Lessons list - just a title and its own
 // content. Assignments and Resources live on the unit instead.
 
 export async function onRequestPost({ request, env }) {

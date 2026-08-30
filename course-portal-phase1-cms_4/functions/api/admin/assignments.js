@@ -1,6 +1,6 @@
 import { requireAuth, json } from "../../_utils/auth.js";
 
-// An assignment is one entry in a unit's Assignments list — title + content,
+// An assignment is one entry in a unit's Assignments list - title + content,
 // same shape as a lesson.
 
 export async function onRequestPost({ request, env }) {

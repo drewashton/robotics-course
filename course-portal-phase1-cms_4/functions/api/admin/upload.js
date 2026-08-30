@@ -1,6 +1,6 @@
 import { requireAuth, json } from "../../_utils/auth.js";
 
-const MAX_BYTES = 25 * 1024 * 1024; // 25MB — plenty for lesson PDFs/images, well within R2 free tier
+const MAX_BYTES = 25 * 1024 * 1024; // 25MB - plenty for lesson PDFs/images, well within R2 free tier
 
 export async function onRequestPost({ request, env }) {
   const auth = await requireAuth(request, env);

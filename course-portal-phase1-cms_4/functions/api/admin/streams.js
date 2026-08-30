@@ -1,8 +1,8 @@
 import { requireAuth, json } from "../../_utils/auth.js";
 
-// Streams are fixed (business/build/programming) — no create or delete.
-// Returns the full tree (every unit, its lessons/assignments/resources —
-// including unpublished — and the stream's mentors) for the admin panel.
+// Streams are fixed (business/build/programming) - no create or delete.
+// Returns the full tree (every unit, its lessons/assignments/resources -
+// including unpublished - and the stream's mentors) for the admin panel.
 
 export async function onRequestGet({ request, env }) {
   const auth = await requireAuth(request, env);

@@ -15,7 +15,7 @@
 }
 
 /* Elements toggled via the `hidden` attribute (e.g. the mentor section
-   header) must actually disappear — several components here set their own
+   header) must actually disappear - several components here set their own
    unconditional `display`, which can otherwise silently beat `[hidden]`
    depending on the browser's default stylesheet. This guarantees it wins. */
 [hidden] {
@@ -669,7 +669,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     text-align: center;
 }
 
-/* Used instead of .placeholder-box once real content exists — solid border,
+/* Used instead of .placeholder-box once real content exists - solid border,
    left-aligned, normal weight, so actual lesson/assignment/resource content
    doesn't look like an empty placeholder. */
 .content-box {

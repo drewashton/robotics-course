@@ -1,4 +1,4 @@
-/* Admin panel — extends the site's black/gold identity (../style.css) with
+/* Admin panel - extends the site's black/gold identity (../style.css) with
    a more "engineering dashboard" treatment: status LEDs instead of pill
    badges, a left-accent nav instead of solid-fill, real elevation on cards,
    and a custom modal system replacing native browser prompt()/confirm(). */
@@ -11,8 +11,8 @@ html, body {
 
 /* The [hidden] attribute is how every show/hide toggle in admin.js works
    (login screen vs. dashboard, the modal, empty-states, etc). Several
-   classes below set their own unconditional `display`, which — depending
-   on browser default stylesheet specificity — can silently beat the
+   classes below set their own unconditional `display`, which - depending
+   on browser default stylesheet specificity - can silently beat the
    attribute and leave an element visibly rendered even while "hidden".
    This single rule guarantees [hidden] always wins, everywhere, for good. */
 [hidden] {
@@ -103,9 +103,9 @@ body { background-color: var(--admin-surface); }
     margin-bottom: 16px;
 }
 
-/* Simple, clean field labels — small uppercase caption text, no heavy
+/* Simple, clean field labels - small uppercase caption text, no heavy
    background treatment. Gold is reserved for dark surfaces only (sidebar,
-   section headers, dark cards) — never as a foreground color on white. */
+   section headers, dark cards) - never as a foreground color on white. */
 .admin-field span {
     display: block;
     font-family: 'Space Mono', monospace;
@@ -118,7 +118,7 @@ body { background-color: var(--admin-surface); }
 }
 
 /* Default: white/light fields, for forms that live in the white content
-   area (unit title, lesson title, syllabus name, mentor fields, etc.) —
+   area (unit title, lesson title, syllabus name, mentor fields, etc.) -
    matching the same white boxes used for the rich text editors. */
 .admin-field input,
 .admin-field textarea,
@@ -164,7 +164,7 @@ button:focus-visible {
 }
 
 /* Buttons in the main (light) content area: neutral by default, and on
-   hover they darken rather than turn gold — gold never sits on a white
+   hover they darken rather than turn gold - gold never sits on a white
    surface here, not even as a thin border. Primary keeps its solid gold
    fill (with black text on top), since that's a surface color, not a
    foreground accent on white. Every button shares one consistent
@@ -197,7 +197,7 @@ button:focus-visible {
 
 .admin-btn-block { width: 100%; }
 
-/* Primary — the one emphasized action per screen (Save). */
+/* Primary - the one emphasized action per screen (Save). */
 .admin-btn-primary {
     background-color: var(--accent-gold);
     border-color: var(--accent-gold);
@@ -212,14 +212,14 @@ button:focus-visible {
     box-shadow: 0 4px 14px rgba(243,179,24,0.35);
 }
 
-/* Secondary — a real but non-primary action (Edit Syllabus, Cancel). */
+/* Secondary - a real but non-primary action (Edit Syllabus, Cancel). */
 .admin-btn-secondary {
     background: transparent;
     border-color: var(--border-color);
     color: var(--text-dark);
 }
 
-/* Dashed — specifically "add a new item", used the same way everywhere
+/* Dashed - specifically "add a new item", used the same way everywhere
    (New Unit, New Lesson, New Assignment, New Resource, Add Mentor) so the
    action reads identically regardless of context. */
 .admin-btn-dashed {
@@ -261,7 +261,7 @@ button:focus-visible {
     min-height: 100dvh;
 }
 
-/* Fixed rather than sticky — sticky has real edge cases with flexbox and
+/* Fixed rather than sticky - sticky has real edge cases with flexbox and
    ancestor overflow/height settings that are hard to guarantee everywhere.
    Fixed is simpler and unconditionally reliable for "always visible":
    the sidebar is pulled out of the document flow entirely, so admin-main
@@ -469,7 +469,7 @@ button:focus-visible {
     line-height: 1.5;
 }
 
-/* Status message tones — errors and confirmations should never look the
+/* Status message tones - errors and confirmations should never look the
    same as a neutral hint. */
 .admin-muted.is-error {
     color: #c0392b;
@@ -567,7 +567,7 @@ button:focus-visible {
 }
 
 /* Same recipe as .admin-card-header (black bg, gold left border, gold
-   text) sized down as an inline tag, with no icon — used for the unit
+   text) sized down as an inline tag, with no icon - used for the unit
    number shown in each unit row. */
 .admin-tag {
     display: inline-block;
@@ -620,7 +620,7 @@ button:focus-visible {
     background: #f0f0f0;
 }
 
-/* Status LED — a small glowing dot reads as "engineering panel" rather
+/* Status LED - a small glowing dot reads as "engineering panel" rather
    than a generic pill badge, and fits the robotics-team subject matter. */
 .admin-status {
     display: inline-flex;
@@ -657,7 +657,7 @@ button:focus-visible {
     50% { box-shadow: 0 0 12px rgba(47,180,99,0.85), 0 0 0 4px rgba(47,180,99,0.16); }
 }
 
-/* Staggered entrance for list rows — admin.js sets --i on each row */
+/* Staggered entrance for list rows - admin.js sets --i on each row */
 .admin-unit-row {
     animation: admin-row-in 0.25s ease backwards;
     animation-delay: calc(var(--i, 0) * 0.03s);

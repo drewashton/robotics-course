@@ -1,7 +1,7 @@
 // Single entry point for the Worker. Cloudflare serves any request that
 // matches a real file in the site (index.html, style.css, admin/*, images)
 // automatically, without this code ever running. Only requests that don't
-// match a static file — every /api/* route — reach this fetch handler.
+// match a static file - every /api/* route - reach this fetch handler.
 
 import { onRequestGet as streamsGet } from "./functions/api/streams.js";
 import { onRequestGet as filesGet } from "./functions/api/files/[[path]].js";

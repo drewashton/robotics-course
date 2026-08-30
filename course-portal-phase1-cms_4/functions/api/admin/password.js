@@ -1,6 +1,6 @@
 import { requireAuth, verifyPassword, hashPassword, json } from "../../_utils/auth.js";
 
-// Any logged-in instructor can change their OWN password — this is what
+// Any logged-in instructor can change their OWN password - this is what
 // makes a newly-issued password genuinely "temporary" rather than
 // permanent, since there'd otherwise be no way to change it after logging in.
 export async function onRequestPut({ request, env }) {

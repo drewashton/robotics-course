@@ -1,4 +1,4 @@
-// Public endpoint — no auth. Streams are fixed and always returned, each
+// Public endpoint - no auth. Streams are fixed and always returned, each
 // with its mentor contacts. Each stream carries only its PUBLISHED units,
 // and each of those only its PUBLISHED lessons/assignments/resources.
 

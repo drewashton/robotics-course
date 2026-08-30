@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Switching between the landing page and the dashboard just toggles
-    // which div is displayed — it's not a real page navigation, so the
+    // which div is displayed - it's not a real page navigation, so the
     // browser doesn't reset scroll position on its own the way it would
     // for an actual page load. Reset it manually on every transition.
     function resetScroll() {
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Renders a container as a stack of titled entries (used for Lessons,
-    // Assignments, and Resources — all the same shape now).
+    // Assignments, and Resources - all the same shape now).
     function fillEntryList(container, entries, emptyMessage) {
         if (!entries || entries.length === 0) {
             container.classList.remove("content-box");

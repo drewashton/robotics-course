@@ -1,6 +1,6 @@
 const STREAM_ICONS = { business: "fa-briefcase", build: "fa-hammer", programming: "fa-code" };
 
-// Lessons, Assignments, and Resources are managed with one shared editor —
+// Lessons, Assignments, and Resources are managed with one shared editor -
 // this config drives which API endpoint, unit field, and labels apply.
 const ITEM_KINDS = {
     lesson: { api: "/api/admin/lessons", field: "lessons", label: "Lesson", newLabel: "New Lesson" },
@@ -10,7 +10,7 @@ const ITEM_KINDS = {
 
 // Register a custom Quill format so Google Slides / uploaded PowerPoint
 // files can be embedded as real inline iframes, not just links. Wrapped in
-// try/catch so a problem here can NEVER take down the rest of the panel —
+// try/catch so a problem here can NEVER take down the rest of the panel -
 // login, units, and lessons must keep working even if this fails. Worst
 // case, presentation embeds fall back to plain links (see iframeEmbedsSupported).
 let iframeEmbedsSupported = false;
@@ -237,7 +237,7 @@ $("change-password-form").addEventListener("submit", async (e) => {
     }
 });
 
-// ---------- STREAMS (fixed — no create/delete) ----------
+// ---------- STREAMS (fixed - no create/delete) ----------
 
 async function loadStreams() {
     streamsData = await api("/api/admin/streams");
@@ -535,7 +535,7 @@ $("btn-delete-unit").addEventListener("click", async () => {
     if (!unit) return;
     const ok = await openModal({
         title: "Delete unit?",
-        message: `Delete "${unit.unit_label}: ${unit.title}" and everything inside it — lessons, assignments, and resources? This can't be undone.`,
+        message: `Delete "${unit.unit_label}: ${unit.title}" and everything inside it - lessons, assignments, and resources? This can't be undone.`,
         confirmLabel: "Delete",
         danger: true,
     });
@@ -741,7 +741,7 @@ document.querySelectorAll(".syllabus-file-input").forEach((input) => {
 $("btn-embed-slides").addEventListener("click", async () => {
     const result = await openModal({
         title: "Embed Google Slides",
-        message: "Paste the share link from Google Slides — it'll be converted to an embeddable presentation automatically.",
+        message: "Paste the share link from Google Slides - it'll be converted to an embeddable presentation automatically.",
         fields: [{ label: "Slides link", placeholder: "https://docs.google.com/presentation/d/..." }],
         confirmLabel: "Embed",
     });
