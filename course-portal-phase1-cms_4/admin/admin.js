@@ -160,10 +160,12 @@ function currentUnit() {
 
 const OWNER_EMAIL = "drew@dashdigital.ca";
 let isOwner = false;
+let currentUserId = null;
 
 function applySessionUI(session) {
     $("signed-in-as").innerHTML = `<span class="signed-in-name">${escapeHtml(session.name)}</span><span class="signed-in-email">${escapeHtml(session.email)}</span>`;
     isOwner = session.email.toLowerCase().trim() === OWNER_EMAIL;
+    currentUserId = session.id;
     $("new-instructor-form").hidden = !isOwner;
 }
 
@@ -764,14 +766,35 @@ async function loadInstructors() {
         const li = document.createElement("li");
         li.className = "admin-unit-row";
         li.style.setProperty("--i", index);
+        const canDelete = isOwner && person.id !== currentUserId;
         li.innerHTML = `
             <div class="admin-unit-main" style="cursor:default;">
                 <div class="admin-unit-title">${escapeHtml(person.name)}</div>
                 <div class="admin-muted">${escapeHtml(person.email)}</div>
             </div>
+            ${canDelete ? `<button class="admin-btn admin-btn-danger admin-btn-icon-only" data-delete-instructor="${person.id}" type="button" aria-label="Remove ${escapeHtml(person.name)}"><i class="fa-solid fa-trash"></i></button>` : ""}
         `;
+        if (canDelete) {
+            li.querySelector("[data-delete-instructor]").addEventListener("click", () => deleteInstructor(person));
+        }
         list.appendChild(li);
     });
+}
+
+async function deleteInstructor(person) {
+    const ok = await openModal({
+        title: "Remove instructor?",
+        message: `Remove ${person.name} (${person.email})? They'll no longer be able to log in.`,
+        confirmLabel: "Remove",
+        danger: true,
+    });
+    if (!ok) return;
+    try {
+        await api("/api/admin/instructors", { method: "DELETE", body: JSON.stringify({ id: person.id }) });
+        await loadInstructors();
+    } catch (err) {
+        setStatus($("instructor-status"), err.message, "error");
+    }
 }
 
 $("new-instructor-form").addEventListener("submit", async (e) => {

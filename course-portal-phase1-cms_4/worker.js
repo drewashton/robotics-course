@@ -14,6 +14,7 @@ import { onRequestPost as setupPost } from "./functions/api/admin/setup.js";
 import {
   onRequestGet as instructorsGet,
   onRequestPost as instructorsPost,
+  onRequestDelete as instructorsDelete,
 } from "./functions/api/admin/instructors.js";
 
 import {
@@ -72,6 +73,7 @@ export default {
 
       if (path === "/api/admin/instructors" && method === "GET") return instructorsGet(context);
       if (path === "/api/admin/instructors" && method === "POST") return instructorsPost(context);
+      if (path === "/api/admin/instructors" && method === "DELETE") return instructorsDelete(context);
 
       if (path === "/api/admin/streams" && method === "GET") return adminStreamsGet(context);
       if (path === "/api/admin/streams" && method === "PUT") return adminStreamsPut(context);

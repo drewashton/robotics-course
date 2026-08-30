@@ -242,6 +242,12 @@ button:focus-visible {
 }
 .admin-btn-danger:hover { background: #c0392b; border-color: #c0392b; color: #fff; box-shadow: 0 4px 14px rgba(192,57,43,0.25); }
 
+/* Compact square variant for an inline delete action within a list row. */
+.admin-btn-icon-only {
+    padding: 8px 10px;
+    flex-shrink: 0;
+}
+
 .admin-upload-btn {
     background: transparent;
     border: 1px solid var(--border-color);

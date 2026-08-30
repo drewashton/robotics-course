@@ -39,3 +39,24 @@ export async function onRequestPost({ request, env }) {
   }
   return json({ ok: true });
 }
+
+// Only the site owner can remove instructor accounts, and can't remove
+// their own — that would risk locking everyone out with no way back in.
+export async function onRequestDelete({ request, env }) {
+  const auth = await requireAuth(request, env);
+  if (!auth.authorized) return auth.response;
+
+  if (auth.session.email.toLowerCase().trim() !== OWNER_EMAIL) {
+    return json({ error: "Only the site owner can remove instructor accounts" }, { status: 403 });
+  }
+
+  const { id } = await request.json().catch(() => ({}));
+  if (!id) return json({ error: "id is required" }, { status: 400 });
+
+  if (Number(id) === Number(auth.session.id)) {
+    return json({ error: "You can't remove your own account" }, { status: 400 });
+  }
+
+  await env.DB.prepare("DELETE FROM instructors WHERE id = ?").bind(id).run();
+  return json({ ok: true });
+}
