@@ -84,7 +84,7 @@ body { background-color: var(--admin-surface); }
 }
 
 .admin-login-card h1 {
-    color: #ffffff;
+    color: var(--accent-gold);
     font-size: 1.5rem;
     letter-spacing: -0.01em;
     margin-bottom: 6px;
