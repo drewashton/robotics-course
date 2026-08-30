@@ -36,6 +36,11 @@ body {
     font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
     height: 100vh;
     overflow: hidden; 
+    scroll-behavior: auto;
+}
+
+html {
+    scroll-behavior: auto;
 }
 
 h1, h2, h3, h4, .nav-item, .stream-btn {

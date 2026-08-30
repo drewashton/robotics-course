@@ -70,25 +70,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Switching between the landing page and the dashboard just toggles
     // which div is displayed - it's not a real page navigation, so the
     // browser doesn't reset scroll position on its own the way it would
-    // for an actual page load. The body itself never scrolls (it's
-    // overflow:hidden) - the actual scrolling happens inside .content-body
-    // and .portal-container, so those are what need resetting. Using
-    // scrollTo({behavior:"instant"}) rather than a bare .scrollTop
-    // assignment guarantees an immediate jump even though the site's CSS
-    // applies scroll-behavior:smooth globally. Run twice via
-    // requestAnimationFrame: setting it synchronously (before the browser
-    // has painted the display:none/flex change) can get silently ignored
-    // in some browsers, so a rAF pass after paint is the reliable one -
-    // the synchronous call stays too as a no-cost first attempt.
+    // for an actual page load. Which element actually does the scrolling
+    // differs between desktop and mobile (the mobile media queries relax
+    // several overflow/height rules), so rather than assume, this resets
+    // every plausible scrolling element: the window/document itself, html,
+    // body, and the specific internal containers used at various sizes.
+    // scrollTo({behavior:"instant"}) guarantees an immediate jump even
+    // though the site's CSS applies scroll-behavior:smooth globally.
     function resetScroll() {
         const doReset = () => {
-            document.querySelectorAll(".content-body, .nav-menu").forEach((el) => {
+            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            document.documentElement.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            document.body.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+            document.querySelectorAll(".content-body, .nav-menu, .portal-container, .app-container").forEach((el) => {
                 el.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                el.scrollTop = 0;
             });
-            if (portalScreen) portalScreen.scrollTo({ top: 0, left: 0, behavior: "instant" });
         };
         doReset();
         requestAnimationFrame(() => requestAnimationFrame(doReset));
+        setTimeout(doReset, 150);
     }
 
     function renderPortalCards() {
