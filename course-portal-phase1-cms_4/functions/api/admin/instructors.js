@@ -1,5 +1,8 @@
 import { requireAuth, hashPassword, json } from "../../_utils/auth.js";
 
+// Only the site owner can add new instructor accounts.
+const OWNER_EMAIL = "drew@dashdigital.ca";
+
 export async function onRequestGet({ request, env }) {
   const auth = await requireAuth(request, env);
   if (!auth.authorized) return auth.response;
@@ -13,6 +16,10 @@ export async function onRequestGet({ request, env }) {
 export async function onRequestPost({ request, env }) {
   const auth = await requireAuth(request, env);
   if (!auth.authorized) return auth.response;
+
+  if (auth.session.email.toLowerCase().trim() !== OWNER_EMAIL) {
+    return json({ error: "Only the site owner can add instructor accounts" }, { status: 403 });
+  }
 
   const { name, email, password } = await request.json().catch(() => ({}));
   if (!name || !email || !password) {

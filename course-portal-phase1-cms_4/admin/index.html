@@ -58,6 +58,9 @@
                 <button class="admin-nav-item" id="btn-manage-instructors" type="button">
                     <i class="fa-solid fa-user-group"></i> Instructors
                 </button>
+                <button class="admin-nav-item" id="btn-change-password" type="button">
+                    <i class="fa-solid fa-key"></i> Change Password
+                </button>
                 <a class="admin-nav-item" href="/" target="_blank" rel="noopener">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> View Site
                 </a>
@@ -308,7 +311,7 @@
                 </header>
                 <ul id="instructors-list" class="admin-units-list"></ul>
 
-                <form id="new-instructor-form" class="admin-inline-form">
+                <form id="new-instructor-form" class="admin-inline-form" hidden>
                     <input type="text" id="new-instructor-name" placeholder="Name" required>
                     <input type="email" id="new-instructor-email" placeholder="Email" required>
                     <input type="password" id="new-instructor-password" placeholder="Temporary password (min 8 chars)" required minlength="8">
@@ -317,6 +320,28 @@
                     </button>
                 </form>
                 <p id="instructor-status" class="admin-muted" role="status"></p>
+            </section>
+
+            <!-- CHANGE PASSWORD VIEW -->
+            <section id="password-view" class="admin-view">
+                <header class="admin-view-header">
+                    <h2>Change Password</h2>
+                </header>
+
+                <form id="change-password-form">
+                    <label class="admin-field">
+                        <span>Current password</span>
+                        <input type="password" id="current-password-input" required autocomplete="current-password">
+                    </label>
+                    <label class="admin-field">
+                        <span>New password</span>
+                        <input type="password" id="new-password-input" required minlength="8" autocomplete="new-password">
+                    </label>
+                    <button type="submit" class="admin-btn admin-btn-primary">
+                        <i class="fa-solid fa-check"></i> Update Password
+                    </button>
+                </form>
+                <p id="password-status" class="admin-muted" role="status"></p>
             </section>
 
         </main>

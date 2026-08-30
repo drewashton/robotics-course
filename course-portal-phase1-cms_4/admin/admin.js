@@ -158,10 +158,19 @@ function currentUnit() {
 
 // ---------- AUTH ----------
 
+const OWNER_EMAIL = "drew@dashdigital.ca";
+let isOwner = false;
+
+function applySessionUI(session) {
+    $("signed-in-as").innerHTML = `<span class="signed-in-name">${escapeHtml(session.name)}</span><span class="signed-in-email">${escapeHtml(session.email)}</span>`;
+    isOwner = session.email.toLowerCase().trim() === OWNER_EMAIL;
+    $("new-instructor-form").hidden = !isOwner;
+}
+
 async function checkSession() {
     try {
         const session = await api("/api/admin/session");
-        $("signed-in-as").innerHTML = `<span class="signed-in-name">${escapeHtml(session.name)}</span><span class="signed-in-email">${escapeHtml(session.email)}</span>`;
+        applySessionUI(session);
         showApp();
         await loadStreams();
     } catch {
@@ -177,7 +186,7 @@ $("login-form").addEventListener("submit", async (e) => {
             method: "POST",
             body: JSON.stringify({ email: $("login-email").value, password: $("login-password").value }),
         });
-        $("signed-in-as").innerHTML = `<span class="signed-in-name">${escapeHtml(session.name)}</span><span class="signed-in-email">${escapeHtml(session.email)}</span>`;
+        applySessionUI(session);
         showApp();
         await loadStreams();
     } catch (err) {
@@ -202,6 +211,28 @@ function showView(viewId) {
 $("btn-manage-instructors").addEventListener("click", () => {
     showView("instructors-view");
     loadInstructors();
+});
+
+$("btn-change-password").addEventListener("click", () => {
+    $("change-password-form").reset();
+    setStatus($("password-status"), "");
+    showView("password-view");
+});
+
+$("change-password-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const current_password = $("current-password-input").value;
+    const new_password = $("new-password-input").value;
+    try {
+        await api("/api/admin/password", {
+            method: "PUT",
+            body: JSON.stringify({ current_password, new_password }),
+        });
+        e.target.reset();
+        setStatus($("password-status"), "Password updated.", "success");
+    } catch (err) {
+        setStatus($("password-status"), err.message, "error");
+    }
 });
 
 // ---------- STREAMS (fixed — no create/delete) ----------

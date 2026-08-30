@@ -51,6 +51,7 @@ import {
   onRequestDelete as mentorsDelete,
 } from "./functions/api/admin/mentors.js";
 
+import { onRequestPut as passwordPut } from "./functions/api/admin/password.js";
 import { onRequestPost as reorderPost } from "./functions/api/admin/reorder.js";
 import { onRequestPost as uploadPost } from "./functions/api/admin/upload.js";
 
@@ -94,6 +95,8 @@ export default {
       if (path === "/api/admin/mentors" && method === "POST") return mentorsPost(context);
       if (path === "/api/admin/mentors" && method === "PUT") return mentorsPut(context);
       if (path === "/api/admin/mentors" && method === "DELETE") return mentorsDelete(context);
+
+      if (path === "/api/admin/password" && method === "PUT") return passwordPut(context);
 
       if (path === "/api/admin/reorder" && method === "POST") return reorderPost(context);
       if (path === "/api/admin/upload" && method === "POST") return uploadPost(context);
