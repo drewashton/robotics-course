@@ -70,12 +70,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Switching between the landing page and the dashboard just toggles
     // which div is displayed - it's not a real page navigation, so the
     // browser doesn't reset scroll position on its own the way it would
-    // for an actual page load. Reset it manually on every transition.
+    // for an actual page load. The body itself never scrolls (it's
+    // overflow:hidden) - the actual scrolling happens inside .content-body
+    // and .portal-container, so those are what need resetting. Using
+    // scrollTo({behavior:"instant"}) rather than a bare .scrollTop
+    // assignment guarantees an immediate jump even though the site's CSS
+    // applies scroll-behavior:smooth globally.
     function resetScroll() {
-        window.scrollTo(0, 0);
         const contentBody = document.querySelector(".content-body");
-        if (contentBody) contentBody.scrollTop = 0;
-        portalScreen.scrollTop = 0;
+        if (contentBody) contentBody.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        if (portalScreen) portalScreen.scrollTo({ top: 0, left: 0, behavior: "instant" });
     }
 
     function renderPortalCards() {

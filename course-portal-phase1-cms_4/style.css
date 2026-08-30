@@ -51,6 +51,11 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 .portal-container {
     height: 100vh;
     width: 100vw;
+    /* This is one of the two actual scrolling containers on the site (the
+       other being .content-body) - kept instant so JS-driven scroll resets
+       during view switches always land immediately, instead of inheriting
+       the smooth-scroll default set globally further up this file. */
+    scroll-behavior: auto;
     background-color: var(--bg-sidebar);
     color: #ffffff;
     display: flex;
@@ -468,6 +473,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 .content-body {
     flex: 1;
     overflow-y: auto;
+    scroll-behavior: auto;
     padding: 40px;
 }
 
