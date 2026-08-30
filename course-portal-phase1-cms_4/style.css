@@ -756,24 +756,26 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     }
 
     .portal-hero {
-        margin-bottom: 28px;
+        margin-bottom: 24px;
     }
 
     .portal-logo {
-        width: 80px;           
-        height: 80px;
-        margin-bottom: 16px;
+        width: 76px;           
+        height: 76px;
+        margin-bottom: 14px;
     }
 
     .portal-title {
-        font-size: 1.65rem;
-        line-height: 1.25;
+        font-size: 1.5rem;
+        line-height: 1.35;
+        padding: 0 10px;
+        margin-bottom: 12px;
     }
 
     .portal-tagline {
-        font-size: 0.9rem;
-        line-height: 1.55;
-        padding: 0 8px;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        padding: 0 14px;
     }
 
     .portal-info-hub {
