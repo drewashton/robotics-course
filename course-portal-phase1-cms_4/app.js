@@ -75,11 +75,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     // and .portal-container, so those are what need resetting. Using
     // scrollTo({behavior:"instant"}) rather than a bare .scrollTop
     // assignment guarantees an immediate jump even though the site's CSS
-    // applies scroll-behavior:smooth globally.
+    // applies scroll-behavior:smooth globally. Run twice via
+    // requestAnimationFrame: setting it synchronously (before the browser
+    // has painted the display:none/flex change) can get silently ignored
+    // in some browsers, so a rAF pass after paint is the reliable one -
+    // the synchronous call stays too as a no-cost first attempt.
     function resetScroll() {
-        const contentBody = document.querySelector(".content-body");
-        if (contentBody) contentBody.scrollTo({ top: 0, left: 0, behavior: "instant" });
-        if (portalScreen) portalScreen.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        const doReset = () => {
+            document.querySelectorAll(".content-body, .nav-menu").forEach((el) => {
+                el.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            });
+            if (portalScreen) portalScreen.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        };
+        doReset();
+        requestAnimationFrame(() => requestAnimationFrame(doReset));
     }
 
     function renderPortalCards() {

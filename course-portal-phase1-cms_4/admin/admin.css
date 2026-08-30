@@ -87,7 +87,7 @@ body { background-color: var(--admin-surface); }
     color: var(--accent-gold);
     font-size: 1.5rem;
     letter-spacing: -0.01em;
-    margin-bottom: 6px;
+    margin-bottom: 28px;
 }
 
 .admin-login-sub {
