@@ -130,7 +130,9 @@ body { background-color: var(--admin-surface); }
     border-radius: var(--radius);
     color: var(--text-dark);
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.9rem;
+    /* 16px minimum — anything smaller makes mobile Safari auto-zoom the
+       whole page when the field is focused. */
+    font-size: 16px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .admin-field input:hover, .admin-field textarea:hover { border-color: #999; }
