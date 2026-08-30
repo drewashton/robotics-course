@@ -64,6 +64,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         portalScreen.style.display = "none";
         appInterface.style.display = "flex";
         showDashboard();
+        resetScroll();
+    }
+
+    // Switching between the landing page and the dashboard just toggles
+    // which div is displayed — it's not a real page navigation, so the
+    // browser doesn't reset scroll position on its own the way it would
+    // for an actual page load. Reset it manually on every transition.
+    function resetScroll() {
+        window.scrollTo(0, 0);
+        const contentBody = document.querySelector(".content-body");
+        if (contentBody) contentBody.scrollTop = 0;
+        portalScreen.scrollTop = 0;
     }
 
     function renderPortalCards() {
@@ -111,6 +123,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const returnToPortal = () => {
         appInterface.style.display = "none";
         portalScreen.style.display = "flex";
+        resetScroll();
     };
     btnBackHome.addEventListener("click", returnToPortal);
     logoBackHome.addEventListener("click", returnToPortal);
@@ -209,6 +222,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         homeView.classList.add("active-view");
         chapterView.classList.remove("active-view");
+        resetScroll();
     }
 
     function showChapter(index) {
@@ -232,6 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         fillEntryList(viewChapterLessons, unit.lessons, "No lessons added yet.");
         fillEntryList(viewChapterAssignments, unit.assignments, "No assignments added yet.");
         fillEntryList(viewChapterResources, unit.resources, "No resources added yet.");
+        resetScroll();
     }
 
     function clearActiveSidebarItems() {
