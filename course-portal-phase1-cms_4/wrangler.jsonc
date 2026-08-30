@@ -9,7 +9,7 @@
     {
       "binding": "DB",
       "database_name": "pr-course-db",
-      "database_id": ddcd5075-2ddd-4946-aa91-0386b777130f"
+      "database_id": "ddcd5075-2ddd-4946-aa91-0386b777130f"
     }
   ],
   "r2_buckets": [
