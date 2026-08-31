@@ -49,7 +49,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 }
 
 .placeholder-box, .chapter-number, .chapter-desc-placeholder, .stream-action {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* --- PORTAL LANDING PAGE --- */
@@ -310,6 +310,17 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 }
 
 /* --- APP INTERFACE SIDEBAR --- */
+/* Explicit, guaranteed height for the dashboard shell - previously this
+   had no height of its own beyond the inline display:flex set by JS,
+   relying on the sidebar's min-height to indirectly stretch it via
+   flexbox align-items:stretch. That chain is fragile; an explicit height
+   here removes the ambiguity so .content-body's own scroll can never
+   lose its bounds. */
+.app-container {
+    height: 100vh;
+    height: 100dvh;
+}
+
 .sidebar {
     width: 270px;
     background-color: var(--bg-sidebar);
@@ -792,9 +803,9 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-dark);
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--bg-sidebar);
+    color: #ffffff;
     padding: 12px 22px;
     border-radius: var(--radius);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -804,19 +815,12 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     transition: all 0.15s ease;
 }
 .lesson-nav-btn:hover {
-    border-color: var(--bg-sidebar);
-    background-color: rgba(10,10,10,0.04);
-}
-.lesson-nav-btn-primary {
-    margin-left: auto;
-    background-color: var(--bg-sidebar);
-    border-color: var(--bg-sidebar);
-    color: #ffffff;
-}
-.lesson-nav-btn-primary:hover {
     background-color: var(--accent-gold);
     border-color: var(--accent-gold);
     color: var(--bg-sidebar);
+}
+.lesson-nav-btn-primary {
+    margin-left: auto;
 }
 
 .chapter-number {
@@ -1161,6 +1165,8 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     }
 
     .lesson-toc-row {
+        flex-direction: column;
+        align-items: flex-start;
         padding: 12px 14px;
     }
 

@@ -108,7 +108,7 @@ body { background-color: var(--admin-surface); }
    section headers, dark cards) - never as a foreground color on white. */
 .admin-field span {
     display: block;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -315,7 +315,7 @@ button:focus-visible {
 .signed-in-email {
     font-size: 0.65rem;
     color: var(--sidebar-label);
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .admin-nav {
@@ -561,7 +561,7 @@ button:focus-visible {
 }
 
 .admin-unit-label {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.68rem;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -578,7 +578,7 @@ button:focus-visible {
     border-left: 3px solid var(--accent-gold);
     padding: 3px 9px;
     border-radius: var(--radius);
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -628,7 +628,7 @@ button:focus-visible {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
