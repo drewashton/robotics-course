@@ -36,9 +36,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const viewChapterLessons = document.getElementById("view-chapter-lessons");
     const viewChapterLessonsEmpty = document.getElementById("view-chapter-lessons-empty");
     const viewChapterAssignments = document.getElementById("view-chapter-assignments");
+    const viewChapterAssignmentsEmpty = document.getElementById("view-chapter-assignments-empty");
     const viewChapterResources = document.getElementById("view-chapter-resources");
+    const viewChapterResourcesEmpty = document.getElementById("view-chapter-resources-empty");
 
-    // Lesson Page Elements
+    // Item Page Elements (shared by Lessons, Assignments, and Resources)
     const lessonView = document.getElementById("lesson-view");
     const lessonUnitCrumb = document.getElementById("lesson-unit-crumb");
     const lessonTitle = document.getElementById("lesson-title");
@@ -47,6 +49,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const lessonBackUnitLabel = document.getElementById("lesson-back-unit-label");
     const btnPrevLesson = document.getElementById("btn-prev-lesson");
     const btnNextLesson = document.getElementById("btn-next-lesson");
+    const prevLessonPrefix = document.getElementById("prev-lesson-prefix");
+    const nextLessonPrefix = document.getElementById("next-lesson-prefix");
     const prevLessonLabel = document.getElementById("prev-lesson-label");
     const nextLessonLabel = document.getElementById("next-lesson-label");
 
@@ -184,29 +188,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         container.innerHTML = hasContent ? html : `<p>${emptyMessage}</p>`;
     }
 
-    // Renders a container as a stack of titled entries (used for Lessons,
-    // Assignments, and Resources - all the same shape now).
-    function fillEntryList(container, entries, emptyMessage) {
-        if (!entries || entries.length === 0) {
-            container.classList.remove("content-box");
-            container.classList.add("placeholder-box");
-            container.innerHTML = `<p>${emptyMessage}</p>`;
-            return;
-        }
-        container.classList.remove("placeholder-box");
-        container.classList.add("content-box");
-        container.innerHTML = entries
-            .map(
-                (entry) => `
-                    <div class="lesson-block">
-                        <h4>${escapeHtml(entry.title)}</h4>
-                        ${hasRealContent(entry.content) ? entry.content : "<p><em>No content added yet.</em></p>"}
-                    </div>
-                `
-            )
-            .join("");
-    }
-
     function renderMentors(mentors) {
         mentorColumn.innerHTML = "";
         mentorSectionHeader.hidden = !mentors || mentors.length === 0;
@@ -287,38 +268,54 @@ document.addEventListener("DOMContentLoaded", async () => {
         viewChapterName.textContent = unit.title;
         viewChapterDesc.textContent = "";
 
-        renderLessonToc(unit);
-        fillEntryList(viewChapterAssignments, unit.assignments, "No assignments added yet.");
-        fillEntryList(viewChapterResources, unit.resources, "No resources added yet.");
+        renderItemToc(viewChapterLessons, viewChapterLessonsEmpty, unit, "lesson");
+        renderItemToc(viewChapterAssignments, viewChapterAssignmentsEmpty, unit, "assignment");
+        renderItemToc(viewChapterResources, viewChapterResourcesEmpty, unit, "resource");
         resetScroll();
     }
 
-    // Renders the Lessons list as a table of contents: title + a Start
-    // button per lesson, rather than showing full content inline - each
-    // lesson now lives on its own page.
-    function renderLessonToc(unit) {
-        viewChapterLessons.innerHTML = "";
-        viewChapterLessonsEmpty.hidden = unit.lessons.length > 0;
+    // Lessons and Assignments get a "Start" button and Previous/Next
+    // navigation between entries; Resources get a "View" button and no
+    // navigation, since a resource is a standalone reference rather than
+    // something read in sequence.
+    const ITEM_KIND_CONFIG = {
+        lesson: { field: "lessons", buttonLabel: "Start", showNav: true, kindLabel: "Lesson" },
+        assignment: { field: "assignments", buttonLabel: "Start", showNav: true, kindLabel: "Assignment" },
+        resource: { field: "resources", buttonLabel: "View", showNav: false, kindLabel: "Resource" },
+    };
 
-        unit.lessons.forEach((lesson, lessonIndex) => {
+    // Renders a Lessons/Assignments/Resources list as a table of contents -
+    // title plus a button - rather than showing full content inline, since
+    // each entry now lives on its own page.
+    function renderItemToc(container, emptyEl, unit, kind) {
+        const { field, buttonLabel } = ITEM_KIND_CONFIG[kind];
+        const items = unit[field];
+        container.innerHTML = "";
+        emptyEl.hidden = items.length > 0;
+
+        items.forEach((item, itemIndex) => {
             const li = document.createElement("li");
             li.className = "lesson-toc-row";
             li.innerHTML = `
-                <span class="lesson-toc-title">${escapeHtml(lesson.title)}</span>
-                <button class="lesson-start-btn" type="button">Start <i class="fa-solid fa-arrow-right"></i></button>
+                <span class="lesson-toc-title">${escapeHtml(item.title)}</span>
+                <button class="lesson-start-btn" type="button">${buttonLabel} <i class="fa-solid fa-arrow-right"></i></button>
             `;
-            li.querySelector(".lesson-start-btn").addEventListener("click", () => showLesson(currentUnitIndex, lessonIndex));
-            viewChapterLessons.appendChild(li);
+            li.querySelector(".lesson-start-btn").addEventListener("click", () => showItemPage(kind, currentUnitIndex, itemIndex));
+            container.appendChild(li);
         });
     }
 
-    // The dedicated page for one lesson, with Previous/Next navigation
-    // across the lessons in the same unit.
-    function showLesson(unitIndex, lessonIndex) {
+    // The dedicated page for one lesson/assignment/resource. Lessons and
+    // Assignments show Previous/Next navigation across entries in the same
+    // unit; Resources don't, since "View" is meant to go straight to that
+    // one resource rather than starting a sequence.
+    function showItemPage(kind, unitIndex, itemIndex) {
         const unit = courseStreamsByKey[currentStreamKey].units[unitIndex];
         if (!unit) return;
-        const lesson = unit.lessons[lessonIndex];
-        if (!lesson) return;
+        const { field, showNav, kindLabel } = ITEM_KIND_CONFIG[kind];
+        const items = unit[field];
+        const item = items[itemIndex];
+        if (!item) return;
 
         currentUnitIndex = unitIndex;
 
@@ -327,25 +324,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         lessonView.classList.add("active-view");
 
         lessonUnitCrumb.textContent = `${unit.unit}: ${unit.title}`;
-        lessonTitle.textContent = lesson.title;
+        lessonTitle.textContent = item.title;
         lessonBackUnitLabel.textContent = `Back to ${unit.unit}`;
 
-        const hasContent = hasRealContent(lesson.content);
-        lessonContentBody.innerHTML = hasContent ? lesson.content : "<p>No content added yet.</p>";
+        const hasContent = hasRealContent(item.content);
+        lessonContentBody.innerHTML = hasContent ? item.content : "<p>No content added yet.</p>";
 
-        const hasPrev = lessonIndex > 0;
-        const hasNext = lessonIndex < unit.lessons.length - 1;
+        const hasPrev = showNav && itemIndex > 0;
+        const hasNext = showNav && itemIndex < items.length - 1;
 
         btnPrevLesson.hidden = !hasPrev;
         if (hasPrev) {
-            prevLessonLabel.textContent = unit.lessons[lessonIndex - 1].title;
-            btnPrevLesson.onclick = () => showLesson(unitIndex, lessonIndex - 1);
+            prevLessonPrefix.textContent = `Previous ${kindLabel}:`;
+            prevLessonLabel.textContent = items[itemIndex - 1].title;
+            btnPrevLesson.onclick = () => showItemPage(kind, unitIndex, itemIndex - 1);
         }
 
         btnNextLesson.hidden = !hasNext;
         if (hasNext) {
-            nextLessonLabel.textContent = unit.lessons[lessonIndex + 1].title;
-            btnNextLesson.onclick = () => showLesson(unitIndex, lessonIndex + 1);
+            nextLessonPrefix.textContent = `Next ${kindLabel}:`;
+            nextLessonLabel.textContent = items[itemIndex + 1].title;
+            btnNextLesson.onclick = () => showItemPage(kind, unitIndex, itemIndex + 1);
         }
 
         resetScroll();

@@ -37,7 +37,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -221,7 +221,8 @@
                                     <i class="fa-solid fa-clipboard-list"></i>
                                     <span>Assignments</span>
                                 </div>
-                                <div class="placeholder-box" id="view-chapter-assignments"></div>
+                                <ul class="lesson-toc-list" id="view-chapter-assignments"></ul>
+                                <p class="chapter-desc-placeholder" id="view-chapter-assignments-empty" hidden>No assignments added yet.</p>
                             </div>
 
                             <div class="card">
@@ -229,13 +230,14 @@
                                     <i class="fa-solid fa-file-pdf"></i>
                                     <span>Resources</span>
                                 </div>
-                                <div class="placeholder-box" id="view-chapter-resources"></div>
+                                <ul class="lesson-toc-list" id="view-chapter-resources"></ul>
+                                <p class="chapter-desc-placeholder" id="view-chapter-resources-empty" hidden>No resources added yet.</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- LESSON PAGE -->
+                <!-- ITEM PAGE: shared by Lessons, Assignments, and Resources -->
                 <section id="lesson-view" class="view-section">
                     <button class="lesson-back-link" id="btn-lesson-back" type="button">
                         <i class="fa-solid fa-arrow-left"></i> <span id="lesson-back-unit-label">Back to unit</span>
@@ -250,10 +252,10 @@
 
                     <div class="lesson-nav-footer">
                         <button class="lesson-nav-btn" id="btn-prev-lesson" type="button" hidden>
-                            <i class="fa-solid fa-arrow-left"></i> <span id="prev-lesson-label">Previous Lesson</span>
+                            <i class="fa-solid fa-arrow-left"></i> <span id="prev-lesson-prefix">Previous Lesson:</span> <span id="prev-lesson-label"></span>
                         </button>
                         <button class="lesson-nav-btn lesson-nav-btn-primary" id="btn-next-lesson" type="button" hidden>
-                            <span id="next-lesson-label">Next Lesson</span> <i class="fa-solid fa-arrow-right"></i>
+                            <span id="next-lesson-prefix">Next Lesson:</span> <span id="next-lesson-label"></span> <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
                 </section>
@@ -261,6 +263,6 @@
         </main>
     </div>
 
-    <script src="app.js?v=4"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>
