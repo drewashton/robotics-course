@@ -33,7 +33,7 @@
 body {
     background-color: var(--bg-main);
     color: var(--text-dark);
-    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     height: 100vh;
     overflow: hidden; 
     scroll-behavior: auto;
@@ -44,7 +44,7 @@ html {
 }
 
 h1, h2, h3, h4, .nav-item, .stream-btn {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 700;
 }
 
@@ -117,7 +117,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 }
 
 .portal-tagline {
-    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: #e5e5e5 !important;
     font-size: 0.98rem;
     line-height: 1.65;
@@ -364,6 +364,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 
 .nav-menu {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: 24px 16px;
 }
@@ -424,6 +425,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 /* --- CONTAINER MAIN WORKSPACE --- */
 .main-content {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -477,6 +479,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
 
 .content-body {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     scroll-behavior: auto;
     padding: 40px;
@@ -687,7 +690,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     border: none;
     padding: 9px 18px;
     border-radius: var(--radius);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
@@ -708,7 +711,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     background: transparent;
     border: none;
     color: var(--text-muted);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
@@ -794,7 +797,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     color: var(--text-dark);
     padding: 12px 22px;
     border-radius: var(--radius);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
@@ -876,7 +879,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     border-bottom: none;
 }
 .lesson-block h4 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 1rem;
     font-weight: 700;
     margin-bottom: 8px;
@@ -1123,9 +1126,51 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
         padding: 20px 16px;
     }
 
-    .welcome-card, .chapter-header-card {
+    .welcome-card, .chapter-header-card, .lesson-header-card {
         padding: 24px 16px;
         margin-bottom: 20px;
+    }
+
+    .lesson-header-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .lesson-body {
+        margin-bottom: 24px;
+        font-size: 0.92rem;
+    }
+
+    .lesson-nav-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .lesson-nav-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .lesson-nav-btn-primary {
+        margin-left: 0;
+        order: -1;
+    }
+
+    .lesson-toc-row {
+        padding: 12px 14px;
+    }
+
+    .lesson-toc-title {
+        font-size: 0.88rem;
+    }
+
+    .lesson-start-btn {
+        padding: 8px 14px;
+        font-size: 0.75rem;
     }
 
     .card {

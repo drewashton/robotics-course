@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Item Page Elements (shared by Lessons, Assignments, and Resources)
     const lessonView = document.getElementById("lesson-view");
-    const lessonUnitCrumb = document.getElementById("lesson-unit-crumb");
     const lessonTitle = document.getElementById("lesson-title");
     const lessonContentBody = document.getElementById("lesson-content-body");
     const btnLessonBack = document.getElementById("btn-lesson-back");
@@ -51,8 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btnNextLesson = document.getElementById("btn-next-lesson");
     const prevLessonPrefix = document.getElementById("prev-lesson-prefix");
     const nextLessonPrefix = document.getElementById("next-lesson-prefix");
-    const prevLessonLabel = document.getElementById("prev-lesson-label");
-    const nextLessonLabel = document.getElementById("next-lesson-label");
 
     let currentUnitIndex = null; // which unit (within the current stream) is open
 
@@ -323,7 +320,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         chapterView.classList.remove("active-view");
         lessonView.classList.add("active-view");
 
-        lessonUnitCrumb.textContent = `${unit.unit}: ${unit.title}`;
         lessonTitle.textContent = item.title;
         lessonBackUnitLabel.textContent = `Back to ${unit.unit}`;
 
@@ -335,15 +331,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         btnPrevLesson.hidden = !hasPrev;
         if (hasPrev) {
-            prevLessonPrefix.textContent = `Previous ${kindLabel}:`;
-            prevLessonLabel.textContent = items[itemIndex - 1].title;
+            prevLessonPrefix.textContent = `Previous ${kindLabel}`;
             btnPrevLesson.onclick = () => showItemPage(kind, unitIndex, itemIndex - 1);
         }
 
         btnNextLesson.hidden = !hasNext;
         if (hasNext) {
-            nextLessonPrefix.textContent = `Next ${kindLabel}:`;
-            nextLessonLabel.textContent = items[itemIndex + 1].title;
+            nextLessonPrefix.textContent = `Next ${kindLabel}`;
             btnNextLesson.onclick = () => showItemPage(kind, unitIndex, itemIndex + 1);
         }
 
