@@ -34,8 +34,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const viewChapterName = document.getElementById("view-chapter-name");
     const viewChapterDesc = document.getElementById("view-chapter-desc");
     const viewChapterLessons = document.getElementById("view-chapter-lessons");
+    const viewChapterLessonsEmpty = document.getElementById("view-chapter-lessons-empty");
     const viewChapterAssignments = document.getElementById("view-chapter-assignments");
     const viewChapterResources = document.getElementById("view-chapter-resources");
+
+    // Lesson Page Elements
+    const lessonView = document.getElementById("lesson-view");
+    const lessonUnitCrumb = document.getElementById("lesson-unit-crumb");
+    const lessonTitle = document.getElementById("lesson-title");
+    const lessonContentBody = document.getElementById("lesson-content-body");
+    const btnLessonBack = document.getElementById("btn-lesson-back");
+    const lessonBackUnitLabel = document.getElementById("lesson-back-unit-label");
+    const btnPrevLesson = document.getElementById("btn-prev-lesson");
+    const btnNextLesson = document.getElementById("btn-next-lesson");
+    const prevLessonLabel = document.getElementById("prev-lesson-label");
+    const nextLessonLabel = document.getElementById("next-lesson-label");
+
+    let currentUnitIndex = null; // which unit (within the current stream) is open
 
     // Fetch every stream (with its published units, lessons, assignments,
     // resources, and mentors) from the CMS backend
@@ -149,11 +164,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         showDashboard();
     });
 
+    // A block is only "empty" if it has neither text nor an embedded image/
+    // video/slide - otherwise a lesson that's just a photo or a YouTube
+    // embed would wrongly get replaced by the "nothing added yet" message.
+    function hasRealContent(html) {
+        if (!html) return false;
+        const hasText = html.replace(/<[^>]*>/g, "").trim().length > 0;
+        const hasMedia = /<(img|iframe)\b/i.test(html);
+        return hasText || hasMedia;
+    }
+
     // Fills a container with either real content (solid content-box) or a
     // muted placeholder message (dashed placeholder-box), so real instructor
     // content never looks like an empty draft state.
     function fillBox(container, html, emptyMessage) {
-        const hasContent = html && html.replace(/<[^>]*>/g, "").trim().length > 0;
+        const hasContent = hasRealContent(html);
         container.classList.toggle("content-box", hasContent);
         container.classList.toggle("placeholder-box", !hasContent);
         container.innerHTML = hasContent ? html : `<p>${emptyMessage}</p>`;
@@ -175,7 +200,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 (entry) => `
                     <div class="lesson-block">
                         <h4>${escapeHtml(entry.title)}</h4>
-                        ${entry.content && entry.content.trim() ? entry.content : "<p><em>No content added yet.</em></p>"}
+                        ${hasRealContent(entry.content) ? entry.content : "<p><em>No content added yet.</em></p>"}
                     </div>
                 `
             )
@@ -238,6 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         homeView.classList.add("active-view");
         chapterView.classList.remove("active-view");
+        lessonView.classList.remove("active-view");
         resetScroll();
     }
 
@@ -251,19 +277,81 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const unit = courseStreamsByKey[currentStreamKey].units[index];
         if (!unit) return;
+        currentUnitIndex = index;
 
         homeView.classList.remove("active-view");
+        lessonView.classList.remove("active-view");
         chapterView.classList.add("active-view");
 
         viewChapterNum.textContent = unit.unit;
         viewChapterName.textContent = unit.title;
         viewChapterDesc.textContent = "";
 
-        fillEntryList(viewChapterLessons, unit.lessons, "No lessons added yet.");
+        renderLessonToc(unit);
         fillEntryList(viewChapterAssignments, unit.assignments, "No assignments added yet.");
         fillEntryList(viewChapterResources, unit.resources, "No resources added yet.");
         resetScroll();
     }
+
+    // Renders the Lessons list as a table of contents: title + a Start
+    // button per lesson, rather than showing full content inline - each
+    // lesson now lives on its own page.
+    function renderLessonToc(unit) {
+        viewChapterLessons.innerHTML = "";
+        viewChapterLessonsEmpty.hidden = unit.lessons.length > 0;
+
+        unit.lessons.forEach((lesson, lessonIndex) => {
+            const li = document.createElement("li");
+            li.className = "lesson-toc-row";
+            li.innerHTML = `
+                <span class="lesson-toc-title">${escapeHtml(lesson.title)}</span>
+                <button class="lesson-start-btn" type="button">Start <i class="fa-solid fa-arrow-right"></i></button>
+            `;
+            li.querySelector(".lesson-start-btn").addEventListener("click", () => showLesson(currentUnitIndex, lessonIndex));
+            viewChapterLessons.appendChild(li);
+        });
+    }
+
+    // The dedicated page for one lesson, with Previous/Next navigation
+    // across the lessons in the same unit.
+    function showLesson(unitIndex, lessonIndex) {
+        const unit = courseStreamsByKey[currentStreamKey].units[unitIndex];
+        if (!unit) return;
+        const lesson = unit.lessons[lessonIndex];
+        if (!lesson) return;
+
+        currentUnitIndex = unitIndex;
+
+        homeView.classList.remove("active-view");
+        chapterView.classList.remove("active-view");
+        lessonView.classList.add("active-view");
+
+        lessonUnitCrumb.textContent = `${unit.unit}: ${unit.title}`;
+        lessonTitle.textContent = lesson.title;
+        lessonBackUnitLabel.textContent = `Back to ${unit.unit}`;
+
+        const hasContent = hasRealContent(lesson.content);
+        lessonContentBody.innerHTML = hasContent ? lesson.content : "<p>No content added yet.</p>";
+
+        const hasPrev = lessonIndex > 0;
+        const hasNext = lessonIndex < unit.lessons.length - 1;
+
+        btnPrevLesson.hidden = !hasPrev;
+        if (hasPrev) {
+            prevLessonLabel.textContent = unit.lessons[lessonIndex - 1].title;
+            btnPrevLesson.onclick = () => showLesson(unitIndex, lessonIndex - 1);
+        }
+
+        btnNextLesson.hidden = !hasNext;
+        if (hasNext) {
+            nextLessonLabel.textContent = unit.lessons[lessonIndex + 1].title;
+            btnNextLesson.onclick = () => showLesson(unitIndex, lessonIndex + 1);
+        }
+
+        resetScroll();
+    }
+
+    btnLessonBack.addEventListener("click", () => showChapter(currentUnitIndex));
 
     function clearActiveSidebarItems() {
         btnDashboard.classList.remove("active");

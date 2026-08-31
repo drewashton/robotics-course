@@ -274,9 +274,28 @@ function selectStream(streamId) {
 
 // ---------- SYLLABUS EDITOR ----------
 
+// A full toolbar so mentors have real layout/formatting flexibility in
+// every rich text area - headings, colors, alignment, lists, quotes, code,
+// links, images, and native video embedding (paste a YouTube or Vimeo
+// link into the video button's prompt and Quill embeds it directly).
+const QUILL_TOOLBAR = [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }, { background: [] }],
+    [{ align: [] }],
+    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+    ["blockquote", "code-block"],
+    ["link", "image", "video"],
+    ["clean"],
+];
+
 function ensureQuill(containerId, placeholder) {
     if (!quillInstances[containerId]) {
-        quillInstances[containerId] = new Quill(`#${containerId}`, { theme: "snow", placeholder });
+        quillInstances[containerId] = new Quill(`#${containerId}`, {
+            theme: "snow",
+            placeholder,
+            modules: { toolbar: QUILL_TOOLBAR },
+        });
     }
     return quillInstances[containerId];
 }

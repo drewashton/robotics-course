@@ -720,10 +720,14 @@ button:focus-visible {
 .ql-toolbar.ql-snow { border-color: var(--border-color); }
 .ql-container.ql-snow { border-color: var(--border-color); }
 
-/* Presentation embeds rendered inside Quill's editing area */
-.ql-editor .ql-iframe {
+/* Presentation embeds (Slides/PowerPoint) and native Quill video embeds
+   (YouTube/Vimeo, via the toolbar's video button) rendered inside the
+   editing area. */
+.ql-editor .ql-iframe,
+.ql-editor .ql-video {
     width: 100%;
     aspect-ratio: 16 / 9;
+    height: auto;
     border: none;
     border-radius: var(--radius);
     display: block;

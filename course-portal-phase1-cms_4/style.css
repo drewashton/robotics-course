@@ -645,6 +645,176 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     border-left: 4px solid var(--accent-gold);
 }
 
+/* Lesson table-of-contents: title + a Start button, replacing what used
+   to be the full lesson content shown inline - each lesson now has its
+   own dedicated page. */
+.lesson-toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lesson-toc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.lesson-toc-row:hover {
+    box-shadow: 0 4px 12px rgba(10,10,10,0.06);
+    border-color: #d8d8d8;
+}
+
+.lesson-toc-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.lesson-start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: var(--radius);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+.lesson-start-btn:hover {
+    background-color: var(--accent-gold);
+    color: var(--bg-sidebar);
+    transform: translateY(-1px);
+}
+
+/* The dedicated lesson page itself */
+.lesson-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+.lesson-back-link:hover {
+    color: var(--text-dark);
+}
+
+.lesson-header-card {
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    padding: 32px;
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+    border-left: 4px solid var(--accent-gold);
+}
+.lesson-header-card h3 {
+    font-size: 1.5rem;
+    color: var(--accent-gold);
+}
+
+.lesson-body {
+    margin-bottom: 32px;
+    line-height: 1.7;
+}
+/* Give mentors' rich formatting room to breathe: headings, lists, and
+   embeds inside a lesson body all get sensible default spacing. */
+.lesson-body h1, .lesson-body h2, .lesson-body h3 {
+    margin: 24px 0 12px 0;
+    color: var(--text-dark);
+}
+.lesson-body p { margin-bottom: 14px; }
+.lesson-body ul, .lesson-body ol { margin: 0 0 14px 24px; }
+.lesson-body img { max-width: 100%; border-radius: var(--radius); }
+.lesson-body blockquote {
+    border-left: 3px solid var(--accent-gold);
+    padding-left: 16px;
+    margin: 16px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+.lesson-body pre {
+    background: var(--bg-sidebar);
+    color: #e5e5e5;
+    padding: 16px;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    margin-bottom: 14px;
+}
+
+/* Quill's own native video embed (used for YouTube/Vimeo via the toolbar's
+   video button) needs explicit sizing here since the public site doesn't
+   load Quill's own stylesheet the way the admin editor does. */
+.lesson-body iframe.ql-video,
+.content-box iframe.ql-video,
+.lesson-block iframe.ql-video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: none;
+    border-radius: var(--radius);
+    display: block;
+    margin: 16px 0;
+}
+
+.lesson-nav-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.lesson-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 12px 22px;
+    border-radius: var(--radius);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.lesson-nav-btn:hover {
+    border-color: var(--bg-sidebar);
+    background-color: rgba(10,10,10,0.04);
+}
+.lesson-nav-btn-primary {
+    margin-left: auto;
+    background-color: var(--bg-sidebar);
+    border-color: var(--bg-sidebar);
+    color: #ffffff;
+}
+.lesson-nav-btn-primary:hover {
+    background-color: var(--accent-gold);
+    border-color: var(--accent-gold);
+    color: var(--bg-sidebar);
+}
+
 .chapter-number {
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -870,19 +1040,35 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
         height: auto;
     }
 
+    /* The three horizontal bars (logo/menu, stream tabs, syllabus/units)
+       need to interleave in a specific order on mobile even though the
+       logo/menu bar and the syllabus/units bar are both normally inside
+       .sidebar while the stream-tabs bar is inside .main-content.
+       display:contents "unwraps" both wrapper elements so all four bars
+       become siblings that can be freely reordered - each bar then needs
+       its own background/border explicitly, since the wrapper that used
+       to supply that is no longer rendering a box at all. */
     .sidebar {
-        width: 100%;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--sidebar-border);
-        min-height: auto; 
+        display: contents;
+    }
+    .main-content {
+        display: contents;
     }
 
     .sidebar-header {
+        order: 1;
+        background-color: var(--bg-sidebar);
         padding: 16px;
     }
 
+    .content-header {
+        order: 2;
+    }
+
     .nav-menu {
+        order: 3;
+        background-color: var(--bg-sidebar);
+        border-bottom: 1px solid var(--sidebar-border);
         padding: 12px 16px;
         display: flex;
         flex-direction: row;
@@ -890,6 +1076,10 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
         gap: 8px;
         align-items: center;
         scrollbar-width: none;
+    }
+
+    .content-body {
+        order: 4;
     }
 
     .nav-menu::-webkit-scrollbar {
