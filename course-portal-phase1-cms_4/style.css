@@ -39,6 +39,14 @@ body {
     scroll-behavior: auto;
 }
 
+/* Buttons, inputs, and textareas don't automatically inherit the page's
+   font in browsers - they default to the OS's UI font unless told
+   otherwise. This is a common source of "one thing still looks like the
+   old font" bugs even after every other rule is correct. */
+button, input, select, textarea {
+    font-family: inherit;
+}
+
 html {
     scroll-behavior: auto;
 }
@@ -709,8 +717,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
 }
 .lesson-start-btn:hover {
-    background-color: var(--accent-gold);
-    color: var(--bg-sidebar);
+    filter: brightness(1.4);
     transform: translateY(-1px);
 }
 
@@ -815,9 +822,7 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     transition: all 0.15s ease;
 }
 .lesson-nav-btn:hover {
-    background-color: var(--accent-gold);
-    border-color: var(--accent-gold);
-    color: var(--bg-sidebar);
+    filter: brightness(1.4);
 }
 .lesson-nav-btn-primary {
     margin-left: auto;

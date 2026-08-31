@@ -29,6 +29,14 @@ html, body {
 
 body { background-color: var(--admin-surface); }
 
+/* Buttons, inputs, and textareas don't automatically inherit the page's
+   font in browsers - they default to the OS's UI font unless told
+   otherwise. This is a common source of "one thing still looks like the
+   old font" bugs even after every other rule is correct. */
+button, input, select, textarea {
+    font-family: inherit;
+}
+
 /* ---------- LOGIN SCREEN ---------- */
 /* Matches the student portal's landing background exactly: dark gradient
    overlay on top of the team photo. */
