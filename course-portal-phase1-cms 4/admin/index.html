@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Mentor Panel - Penticton Robotics Prep Course</title>
+    <link rel="icon" type="image/png" href="../pr_logo2x.PNG">
+    <link rel="apple-touch-icon" href="../pr_logo2x.PNG">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css">
+
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="admin.css?v=6">
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="admin-login-screen">
+        <form id="login-form" class="admin-login-card">
+            <div class="admin-login-logo"><img src="../pr_logo2x.PNG" alt="Penticton Robotics"></div>
+            <h1>Mentor Login</h1>
+
+            <label class="admin-field">
+                <span>Email</span>
+                <input type="email" id="login-email" required autocomplete="email">
+            </label>
+            <label class="admin-field">
+                <span>Password</span>
+                <input type="password" id="login-password" required autocomplete="current-password">
+            </label>
+
+            <p id="login-error" class="admin-error" hidden></p>
+
+            <button type="submit" class="admin-btn admin-btn-primary admin-btn-block">Log In</button>
+        </form>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="admin-app" class="admin-shell" hidden>
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <img src="../pr_logo2x.PNG" alt="" class="admin-logo-img">
+                <div>
+                    <div class="admin-brand">Mentor Panel</div>
+                    <div class="admin-signed-in-as" id="signed-in-as"></div>
+                </div>
+            </div>
+
+            <nav class="admin-nav" id="stream-nav"></nav>
+
+            <div class="admin-sidebar-footer">
+                <button class="admin-nav-item" id="btn-manage-instructors" type="button">
+                    <i class="fa-solid fa-user-group"></i> Instructors
+                </button>
+                <button class="admin-nav-item" id="btn-change-password" type="button">
+                    <i class="fa-solid fa-key"></i> Change Password
+                </button>
+                <a class="admin-nav-item" href="/" target="_blank" rel="noopener">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> View Site
+                </a>
+                <button class="admin-nav-item" id="btn-logout" type="button">
+                    <i class="fa-solid fa-right-from-bracket"></i> Log Out
+                </button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+
+            <!-- UNIT FOLDER LIST (per stream) -->
+            <section id="units-view" class="admin-view active-view">
+                <div class="admin-welcome-card">
+                    <h2 id="units-stream-name">Stream</h2>
+                    <p id="units-stream-desc"></p>
+                </div>
+                <header class="admin-view-header admin-view-header-actions-only">
+                    <div class="admin-view-header-actions">
+                        <button class="admin-btn admin-btn-secondary" id="btn-edit-syllabus" type="button">
+                            <i class="fa-solid fa-pen"></i> Edit Syllabus
+                        </button>
+                        <button class="admin-btn admin-btn-dashed" id="btn-new-unit" type="button">
+                            <i class="fa-solid fa-folder-plus"></i> New Unit
+                        </button>
+                    </div>
+                </header>
+                <ul id="units-list" class="admin-units-list"></ul>
+                <p id="units-empty" class="admin-muted" hidden>No units yet in this stream. Click "New Unit" to add the first folder.</p>
+            </section>
+
+            <!-- SYLLABUS EDITOR VIEW -->
+            <section id="syllabus-view" class="admin-view">
+                <header class="admin-view-header">
+                    <button class="admin-btn-back" id="btn-syllabus-back" type="button">
+                        <i class="fa-solid fa-arrow-left"></i> Back to units
+                    </button>
+                </header>
+
+                <label class="admin-field">
+                    <span>Stream name</span>
+                    <input type="text" id="syllabus-name">
+                </label>
+
+                <label class="admin-field">
+                    <span>Intro description</span>
+                    <textarea id="syllabus-description" rows="3"></textarea>
+                </label>
+
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-graduation-cap"></i> Learning Objectives</h3>
+                    <div id="syllabus-quill-objectives"></div>
+                    <div class="admin-editor-upload">
+                        <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
+                            <i class="fa-solid fa-paperclip"></i> Attach file
+                            <input type="file" class="syllabus-file-input" data-target="objectives" hidden accept=".pdf,.pptx,.ppt,image/*">
+                        </label>
+                        <span class="syllabus-upload-status admin-muted" data-target="objectives"></span>
+                    </div>
+                    <div class="admin-resize-row" data-resize-for="syllabus-quill-objectives">
+                        <span class="admin-resize-label"><i class="fa-solid fa-image"></i> Click a photo/video/slideshow above, then set its size:</span>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="25%" type="button">S</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="50%" type="button">M</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="75%" type="button">L</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="100%" type="button">Full</button>
+                    </div>
+                </div>
+
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-calendar-days"></i> Recommended Schedule</h3>
+                    <div id="syllabus-quill-schedule"></div>
+                    <div class="admin-editor-upload">
+                        <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
+                            <i class="fa-solid fa-paperclip"></i> Attach file
+                            <input type="file" class="syllabus-file-input" data-target="schedule" hidden accept=".pdf,.pptx,.ppt,image/*">
+                        </label>
+                        <span class="syllabus-upload-status admin-muted" data-target="schedule"></span>
+                    </div>
+                    <div class="admin-resize-row" data-resize-for="syllabus-quill-schedule">
+                        <span class="admin-resize-label"><i class="fa-solid fa-image"></i> Click a photo/video/slideshow above, then set its size:</span>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="25%" type="button">S</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="50%" type="button">M</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="75%" type="button">L</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="100%" type="button">Full</button>
+                    </div>
+                </div>
+
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-user-graduate"></i> Mentors</h3>
+                    <p class="admin-muted admin-hint">
+                        Shown to students as help contacts for this stream - up to 3 mentors,
+                        each with a photo, name, role, and an emailable contact button.
+                    </p>
+                    <ul id="mentors-list" class="admin-units-list"></ul>
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-mentor" type="button">
+                        <i class="fa-solid fa-user-plus"></i> Add Mentor
+                    </button>
+                </div>
+
+                <footer class="admin-editor-actions admin-editor-actions-end">
+                    <button class="admin-btn admin-btn-primary" id="btn-save-syllabus" type="button">
+                        <i class="fa-solid fa-check"></i> Save
+                    </button>
+                </footer>
+                <p id="syllabus-status" class="admin-muted" role="status"></p>
+            </section>
+
+            <!-- MENTOR EDITOR (add/edit a single mentor card) -->
+            <section id="mentor-view" class="admin-view">
+                <header class="admin-view-header">
+                    <button class="admin-btn-back" id="btn-mentor-back" type="button">
+                        <i class="fa-solid fa-arrow-left"></i> Back to syllabus
+                    </button>
+                </header>
+
+                <div class="admin-mentor-photo-row">
+                    <img id="mentor-photo-preview" class="admin-mentor-photo-preview" alt="">
+                    <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
+                        <i class="fa-solid fa-camera"></i> Upload photo
+                        <input type="file" id="mentor-photo-input" hidden accept="image/*">
+                    </label>
+                </div>
+
+                <label class="admin-field">
+                    <span>Name</span>
+                    <input type="text" id="mentor-name-input">
+                </label>
+                <label class="admin-field">
+                    <span>Title</span>
+                    <input type="text" id="mentor-title-input">
+                </label>
+                <label class="admin-field">
+                    <span>Email</span>
+                    <input type="email" id="mentor-email-input">
+                </label>
+
+                <footer class="admin-editor-actions">
+                    <div></div>
+                    <div class="admin-editor-actions-right">
+                        <button class="admin-btn admin-btn-danger" id="btn-delete-mentor" type="button">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                        <button class="admin-btn admin-btn-primary" id="btn-save-mentor" type="button">
+                            <i class="fa-solid fa-check"></i> Save
+                        </button>
+                    </div>
+                </footer>
+                <p id="mentor-status" class="admin-muted" role="status"></p>
+            </section>
+
+            <!-- UNIT DETAIL: rename the folder, and manage its Lessons / Assignments / Resources -->
+            <section id="unit-view" class="admin-view">
+                <header class="admin-view-header">
+                    <button class="admin-btn-back" id="btn-unit-back" type="button">
+                        <i class="fa-solid fa-arrow-left"></i> Back to units
+                    </button>
+                </header>
+
+                <div class="admin-editor-fields">
+                    <label class="admin-field admin-field-narrow">
+                        <span>Unit number</span>
+                        <input type="text" id="unit-label-input">
+                    </label>
+                    <label class="admin-field">
+                        <span>Unit title</span>
+                        <input type="text" id="unit-title-input">
+                    </label>
+                </div>
+
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-list-check"></i> Lessons</h3>
+                    <ul id="lessons-list" class="admin-units-list"></ul>
+                    <p id="lessons-empty" class="admin-muted" hidden>No lessons yet.</p>
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-lesson" type="button">
+                        <i class="fa-solid fa-plus"></i> New Lesson
+                    </button>
+                </div>
+
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-clipboard-list"></i> Assignments</h3>
+                    <ul id="assignments-list" class="admin-units-list"></ul>
+                    <p id="assignments-empty" class="admin-muted" hidden>No assignments yet.</p>
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-assignment" type="button">
+                        <i class="fa-solid fa-plus"></i> New Assignment
+                    </button>
+                </div>
+
+                <div class="admin-editor-section">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-file-pdf"></i> Resources</h3>
+                    <ul id="resources-list" class="admin-units-list"></ul>
+                    <p id="resources-empty" class="admin-muted" hidden>No resources yet.</p>
+                    <button class="admin-btn admin-btn-dashed" id="btn-new-resource" type="button">
+                        <i class="fa-solid fa-plus"></i> New Resource
+                    </button>
+                </div>
+
+                <footer class="admin-editor-actions">
+                    <label class="admin-toggle">
+                        <input type="checkbox" id="unit-published">
+                        <span>Published - visible to students</span>
+                    </label>
+                    <div class="admin-editor-actions-right">
+                        <button class="admin-btn admin-btn-danger" id="btn-delete-unit" type="button">
+                            <i class="fa-solid fa-trash"></i> Delete Unit
+                        </button>
+                        <button class="admin-btn admin-btn-primary" id="btn-save-unit" type="button">
+                            <i class="fa-solid fa-check"></i> Save
+                        </button>
+                    </div>
+                </footer>
+                <p id="unit-status" class="admin-muted" role="status"></p>
+            </section>
+
+            <!-- ITEM EDITOR: shared by Lessons, Assignments, and Resources -->
+            <section id="editor-view" class="admin-view">
+                <header class="admin-view-header">
+                    <button class="admin-btn-back" id="btn-editor-back" type="button">
+                        <i class="fa-solid fa-arrow-left"></i> Back to unit
+                    </button>
+                </header>
+
+                <label class="admin-field">
+                    <span id="editor-title-label">Lesson title</span>
+                    <input type="text" id="editor-title">
+                </label>
+
+                <div class="admin-editor-section">
+                    <div id="editor-quill-content"></div>
+                    <div class="admin-editor-upload">
+                        <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
+                            <i class="fa-solid fa-paperclip"></i> Attach file
+                            <input type="file" id="editor-file-input" hidden accept=".pdf,.pptx,.ppt,image/*">
+                        </label>
+                        <button class="admin-btn admin-upload-btn admin-upload-btn-sm" id="btn-embed-slides" type="button">
+                            <i class="fa-solid fa-display"></i> Embed Google Slides
+                        </button>
+                        <span id="editor-upload-status" class="admin-muted"></span>
+                    </div>
+                    <div class="admin-resize-row" data-resize-for="editor-quill-content">
+                        <span class="admin-resize-label"><i class="fa-solid fa-image"></i> Click a photo/video/slideshow above, then set its size:</span>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="25%" type="button">S</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="50%" type="button">M</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="75%" type="button">L</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="100%" type="button">Full</button>
+                    </div>
+                </div>
+
+                <footer class="admin-editor-actions">
+                    <label class="admin-toggle">
+                        <input type="checkbox" id="editor-published">
+                        <span>Published - visible to students</span>
+                    </label>
+                    <div class="admin-editor-actions-right">
+                        <button class="admin-btn admin-btn-danger" id="btn-delete-lesson" type="button">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                        <button class="admin-btn admin-btn-primary" id="btn-save-lesson" type="button">
+                            <i class="fa-solid fa-check"></i> Save
+                        </button>
+                    </div>
+                </footer>
+                <p id="editor-status" class="admin-muted" role="status"></p>
+            </section>
+
+            <!-- INSTRUCTORS VIEW -->
+            <section id="instructors-view" class="admin-view">
+                <header class="admin-view-header">
+                    <h2>Instructors</h2>
+                </header>
+                <ul id="instructors-list" class="admin-units-list"></ul>
+
+                <form id="new-instructor-form" class="admin-inline-form" hidden>
+                    <input type="text" id="new-instructor-name" placeholder="Name" required>
+                    <input type="email" id="new-instructor-email" placeholder="Email" required>
+                    <input type="password" id="new-instructor-password" placeholder="Temporary password (min 8 chars)" required minlength="8">
+                    <button type="submit" class="admin-btn admin-btn-primary">
+                        <i class="fa-solid fa-user-plus"></i> Add Instructor
+                    </button>
+                </form>
+                <p id="instructor-status" class="admin-muted" role="status"></p>
+            </section>
+
+            <!-- CHANGE PASSWORD VIEW -->
+            <section id="password-view" class="admin-view">
+                <header class="admin-view-header">
+                    <h2>Change Password</h2>
+                </header>
+
+                <form id="change-password-form">
+                    <label class="admin-field">
+                        <span>Current password</span>
+                        <input type="password" id="current-password-input" required autocomplete="current-password">
+                    </label>
+                    <label class="admin-field">
+                        <span>New password</span>
+                        <input type="password" id="new-password-input" required minlength="8" autocomplete="new-password">
+                    </label>
+                    <button type="submit" class="admin-btn admin-btn-primary">
+                        <i class="fa-solid fa-check"></i> Update Password
+                    </button>
+                </form>
+                <p id="password-status" class="admin-muted" role="status"></p>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Generic modal - replaces native prompt()/confirm() for a consistent look -->
+    <div id="modal-overlay" class="modal-overlay" hidden>
+        <div class="modal-card">
+            <h3 id="modal-title"></h3>
+            <p id="modal-message" class="admin-muted" hidden></p>
+            <div id="modal-fields"></div>
+            <div class="modal-actions">
+                <button id="modal-cancel" class="admin-btn-back" type="button">Cancel</button>
+                <button id="modal-confirm" class="admin-btn admin-btn-primary" type="button">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+    <script src="admin.js?v=4"></script>
+</body>
+</html>

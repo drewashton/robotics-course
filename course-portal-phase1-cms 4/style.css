@@ -1,0 +1,1223 @@
+/* Tight, Consolidated Color Palette */
+:root {
+    --bg-main: #f9f9f9;                
+    --bg-sidebar: #0a0a0a;             
+    --sidebar-text-inactive: #e5e5e5;  
+    --sidebar-label: #777777;          
+    --sidebar-hover: #141414;          
+    --text-dark: #0a0a0a;              
+    --text-muted: #555555;             
+    --accent-gold: #f3b318;            
+    --border-color: #e5e5e5;           
+    --sidebar-border: #1a1a1a;         
+    --card-bg: #ffffff;                
+    --radius: 4px;                     
+}
+
+/* Elements toggled via the `hidden` attribute (e.g. the mentor section
+   header) must actually disappear - several components here set their own
+   unconditional `display`, which can otherwise silently beat `[hidden]`
+   depending on the browser's default stylesheet. This guarantees it wins. */
+[hidden] {
+    display: none !important;
+}
+
+/* Base Typographic Overrides */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    overflow: hidden; 
+    scroll-behavior: auto;
+}
+
+/* Buttons, inputs, and textareas don't automatically inherit the page's
+   font in browsers - they default to the OS's UI font unless told
+   otherwise. This is a common source of "one thing still looks like the
+   old font" bugs even after every other rule is correct. */
+button, input, select, textarea {
+    font-family: inherit;
+}
+
+html {
+    scroll-behavior: auto;
+}
+
+h1, h2, h3, h4, .nav-item, .stream-btn {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 700;
+}
+
+.placeholder-box, .chapter-number, .chapter-desc-placeholder, .stream-action {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* --- PORTAL LANDING PAGE --- */
+.portal-container {
+    height: 100vh;
+    width: 100vw;
+    /* This is one of the two actual scrolling containers on the site (the
+       other being .content-body) - kept instant so JS-driven scroll resets
+       during view switches always land immediately, instead of inheriting
+       the smooth-scroll default set globally further up this file. */
+    scroll-behavior: auto;
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 60px 24px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    overflow-y: auto; 
+
+    /* Background Setup */
+    background-image: linear-gradient(rgba(10, 10, 10, 0.85), rgba(10, 10, 10, 0.85)), url('robotphoto.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+.portal-card {
+    max-width: 850px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.portal-hero {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.portal-logo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 28px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-logo-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.portal-title {
+    font-size: 2.5rem;
+    letter-spacing: -0.5px;
+    color: var(--accent-gold) !important;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.portal-tagline {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #e5e5e5 !important;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    font-weight: 400;
+    max-width: 650px;
+    margin: 0 auto;
+    text-shadow: none;
+}
+
+/* --- INFO HUB CONTAINER STYLES --- */
+.portal-info-hub {
+    max-width: 850px;
+    margin: 0 auto 40px auto;
+    text-align: left;
+}
+
+.info-block {
+    background: rgba(15, 15, 15, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 32px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.info-block h2, .portal-cta-header h2 {
+    font-size: 1.4rem;
+    color: var(--accent-gold);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.info-block h2 i {
+    font-size: 1.2rem;
+}
+
+.info-block p {
+    color: #e5e5e5;
+    line-height: 1.65;
+    font-size: 0.98rem;
+    margin-bottom: 16px;
+}
+.info-block p:last-child {
+    margin-bottom: 0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* --- FAQ ACCORDION DISPLAY SYSTEM --- */
+.faq-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 16px 0;
+}
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item details {
+    width: 100%;
+}
+
+.faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-arrow-btn {
+    background: transparent;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.faq-arrow-btn i {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.faq-item details[open] .faq-arrow-btn {
+    background: var(--accent-gold);
+    color: var(--bg-sidebar);
+}
+.faq-item details[open] .faq-arrow-btn i {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding-top: 14px;
+    font-size: 0.95rem;
+    color: #cccccc;
+    line-height: 1.6;
+}
+
+.portal-cta-header {
+    text-align: center;
+    margin: 56px auto 32px auto;
+}
+.portal-cta-header h2 {
+    justify-content: center;
+}
+.portal-cta-header p {
+    color: #cccccc;
+    font-size: 1.05rem;
+}
+
+/* --- GRID TRIGGER PLATFORMS --- */
+.stream-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 850px;
+    margin: 0 auto 60px auto;
+}
+
+.portal-stream-card {
+    background: rgba(15, 15, 15, 0.75); 
+    backdrop-filter: blur(8px);          
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 36px 24px;
+    border-radius: var(--radius);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: card-rise-in 0.4s ease backwards;
+    animation-delay: calc(var(--i, 0) * 0.1s);
+}
+
+@keyframes card-rise-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.portal-stream-card:hover {
+    border-color: var(--accent-gold);
+    transform: translateY(-2px);
+    background: rgba(20, 20, 20, 0.9);
+}
+
+.stream-icon {
+    font-size: 2.75rem;
+    color: var(--accent-gold);
+    margin-bottom: 20px;
+}
+
+.stream-icon i {
+    font-size: 2.75rem;
+}
+
+.portal-stream-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 24px;
+}
+
+.stream-action {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+/* --- APP INTERFACE SIDEBAR --- */
+/* Explicit, guaranteed height for the dashboard shell - previously this
+   had no height of its own beyond the inline display:flex set by JS,
+   relying on the sidebar's min-height to indirectly stretch it via
+   flexbox align-items:stretch. That chain is fragile; an explicit height
+   here removes the ambiguity so .content-body's own scroll can never
+   lose its bounds. */
+.app-container {
+    height: 100vh;
+    height: 100dvh;
+}
+
+.sidebar {
+    width: 270px;
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--sidebar-border);
+    flex-shrink: 0;
+    height: 100%;
+    min-height: 100vh;
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--sidebar-border);
+}
+
+.logo-container {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.logo-container:hover {
+    transform: scale(1.08) rotate(-4deg);
+}
+
+.home-icon-btn {
+    background: transparent;
+    border: 1px solid var(--accent-gold); 
+    color: var(--accent-gold);           
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.home-icon-btn:hover {
+    background-color: var(--accent-gold);
+    color: var(--bg-sidebar);
+}
+
+.nav-menu {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 24px 16px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: var(--sidebar-border);
+    margin: 16px 12px 20px 12px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--sidebar-text-inactive); 
+    text-align: left;
+    font-size: 0.85rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-bottom: 8px;
+    font-weight: 500;
+    transition: background-color 0.1s ease, color 0.1s ease, transform 0.15s ease;
+}
+.nav-item:hover {
+    transform: translateX(2px);
+}
+
+.nav-item i {
+    width: 16px;
+    color: var(--accent-gold); 
+    transition: color 0.1s ease;
+}
+
+.nav-item:hover {
+    background-color: var(--sidebar-hover);
+    color: #ffffff;
+}
+
+.nav-item:hover i {
+    color: #ffffff; 
+}
+
+.nav-item.active {
+    background-color: var(--accent-gold); 
+    border: 1px solid var(--accent-gold);
+    color: var(--bg-sidebar);            
+    font-weight: 700;
+}
+
+.nav-item.active i {
+    color: var(--bg-sidebar);             
+}
+
+/* --- CONTAINER MAIN WORKSPACE --- */
+.main-content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content-header {
+    height: 70px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    flex-shrink: 0;
+}
+
+.stream-selector {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none; 
+}
+
+.stream-selector::-webkit-scrollbar {
+    display: none;
+}
+
+.stream-btn {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.stream-btn:hover {
+    border-color: var(--bg-sidebar);
+    color: var(--text-dark);
+    background-color: rgba(10,10,10,0.04);
+}
+
+.stream-btn.active {
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    border-color: var(--bg-sidebar);
+}
+
+.content-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scroll-behavior: auto;
+    padding: 40px;
+}
+
+.view-section {
+    display: none;
+}
+
+.view-section.active-view {
+    display: block;
+    animation: view-fade-in 0.25s ease;
+}
+
+@keyframes view-fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- CONTENT PANEL COPY STYLES --- */
+.welcome-card {
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    padding: 32px;
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+    border-left: 4px solid var(--accent-gold);
+    animation: card-rise-in 0.35s ease;
+}
+
+/* Mentor cards sit in their own full-width row below the title/description
+   box, so they never stretch or squeeze that box's height. */
+.mentor-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+.mentor-row:empty {
+    display: none;
+    margin-bottom: 0;
+}
+
+.mentor-card {
+    background-color: var(--bg-sidebar);
+    border-left: 3px solid var(--accent-gold);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 10px;
+    flex: 0 1 auto;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: view-fade-in 0.3s ease backwards;
+    animation-delay: calc(var(--i, 0) * 0.08s);
+}
+.mentor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.16);
+}
+
+.mentor-photo {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-gold);
+    flex-shrink: 0;
+}
+
+.mentor-name {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--accent-gold);
+    line-height: 1.3;
+}
+
+.mentor-title {
+    font-weight: 400;
+    font-size: 0.68rem;
+    color: var(--accent-gold);
+    opacity: 0.85;
+    line-height: 1.3;
+}
+
+.mentor-email-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    border: 1px solid var(--accent-gold);
+    padding: 4px 9px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    margin-left: 6px;
+}
+.mentor-email-btn:hover {
+    background-color: var(--accent-gold);
+    color: var(--bg-sidebar);
+    transform: translateY(-1px);
+}
+
+.welcome-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.welcome-card p {
+    color: #cccccc;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 900px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(10,10,10,0.04), 0 4px 12px rgba(10,10,10,0.05);
+    animation: view-fade-in 0.3s ease backwards;
+}
+.card:nth-of-type(2) { animation-delay: 0.06s; }
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    background-color: var(--bg-sidebar); 
+    color: var(--accent-gold);          
+    padding: 10px 14px;
+    border-left: 3px solid var(--accent-gold); 
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-header i {
+    color: var(--accent-gold); 
+}
+
+.chapter-header-card {
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    padding: 32px;
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+    border-left: 4px solid var(--accent-gold);
+}
+
+/* Lesson table-of-contents: title + a Start button, replacing what used
+   to be the full lesson content shown inline - each lesson now has its
+   own dedicated page. */
+.lesson-toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lesson-toc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.lesson-toc-row:hover {
+    box-shadow: 0 4px 12px rgba(10,10,10,0.06);
+    border-color: #d8d8d8;
+}
+
+.lesson-toc-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.lesson-start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: var(--radius);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+.lesson-start-btn:hover {
+    filter: brightness(1.4);
+    transform: translateY(-1px);
+}
+
+/* The dedicated lesson page itself */
+.lesson-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+.lesson-back-link:hover {
+    color: var(--text-dark);
+}
+
+.lesson-header-card {
+    background-color: var(--bg-sidebar);
+    color: #ffffff;
+    padding: 32px;
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+    border-left: 4px solid var(--accent-gold);
+}
+.lesson-header-card h3 {
+    font-size: 1.5rem;
+    color: var(--accent-gold);
+}
+
+.lesson-body {
+    margin-bottom: 32px;
+    line-height: 1.7;
+}
+/* Give mentors' rich formatting room to breathe: headings, lists, and
+   embeds get sensible default spacing wherever their content is rendered -
+   both on a dedicated lesson/assignment/resource page (.lesson-body) and
+   inside a plain content box like Learning Objectives or Recommended
+   Schedule (.content-box). Without this, the browser's default list/
+   heading spacing is gone entirely (stripped by the site-wide CSS reset),
+   which is exactly what made bullets sit flush against the box edge. */
+.lesson-body h1, .lesson-body h2, .lesson-body h3,
+.content-box h1, .content-box h2, .content-box h3 {
+    margin: 24px 0 12px 0;
+    line-height: 1.35;
+    color: var(--text-dark);
+}
+.lesson-body h1:first-child, .lesson-body h2:first-child, .lesson-body h3:first-child,
+.content-box h1:first-child, .content-box h2:first-child, .content-box h3:first-child {
+    margin-top: 0;
+}
+/* No forced margin here on purpose - Quill's editor doesn't add one either,
+   so a blank line the mentor pressed Enter for is what actually creates a
+   paragraph gap. Adding our own margin on top of that made every paragraph
+   render with more space than what was actually typed. */
+.lesson-body p, .content-box p { margin: 0; }
+.lesson-body p:last-child, .content-box p:last-child { margin-bottom: 0; }
+.lesson-body ul, .lesson-body ol,
+.content-box ul, .content-box ol {
+    margin: 0 0 14px 24px;
+}
+.lesson-body li, .content-box li {
+    margin-bottom: 6px;
+}
+.lesson-body img, .content-box img {
+    max-width: 100%;
+    border-radius: var(--radius);
+    margin: 8px 0;
+}
+.lesson-body blockquote, .content-box blockquote {
+    border-left: 3px solid var(--accent-gold);
+    padding-left: 16px;
+    margin: 16px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+.lesson-body pre, .content-box pre {
+    background: var(--bg-sidebar);
+    color: #e5e5e5;
+    padding: 16px;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    margin-bottom: 14px;
+}
+.lesson-body a, .content-box a {
+    color: var(--text-dark);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-gold);
+    text-underline-offset: 2px;
+}
+
+/* Quill's own native video embed (used for YouTube/Vimeo via the toolbar's
+   video button) needs explicit sizing here since the public site doesn't
+   load Quill's own stylesheet the way the admin editor does. */
+.lesson-body iframe.ql-video,
+.content-box iframe.ql-video,
+.lesson-block iframe.ql-video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: none;
+    border-radius: var(--radius);
+    display: block;
+    margin: 16px 0;
+}
+
+.lesson-nav-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.lesson-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--bg-sidebar);
+    color: #ffffff;
+    padding: 12px 22px;
+    border-radius: var(--radius);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.lesson-nav-btn:hover {
+    filter: brightness(1.4);
+}
+.lesson-nav-btn-primary {
+    margin-left: auto;
+}
+
+.chapter-number {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent-gold);
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.chapter-header-card h3 {
+    font-size: 1.4rem;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.chapter-desc-placeholder {
+    font-size: 0.85rem;
+    color: #8e8e8e;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.placeholder-box {
+    background-color: #ffffff;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius);
+    padding: 24px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Used instead of .placeholder-box once real content exists - solid border,
+   left-aligned, normal weight, so actual lesson/assignment/resource content
+   doesn't look like an empty placeholder. */
+.content-box {
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 24px;
+    color: var(--text-dark);
+    font-style: normal;
+    text-align: left;
+    line-height: 1.6;
+}
+
+.lesson-block {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.lesson-block:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+.lesson-block h4 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+/* Embedded Google Slides / PowerPoint presentations inside lesson content */
+.content-box iframe.ql-iframe,
+.lesson-block iframe.ql-iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: var(--radius);
+    display: block;
+    margin: 12px 0;
+    background: #f2f2f2;
+}
+
+/* ==========================================================================
+   ⚡ MOBILE OPTIMIZATION & UNFREEZERS
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        overflow: auto; 
+    }
+
+    .portal-container {
+        position: relative;    
+        height: auto;          
+        min-height: 100vh;     
+        width: 100vw;
+        padding: 32px 14px;    
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start; 
+        overflow-y: visible;   
+        
+        /* Fixed background zoom on mobile viewports */
+        background-image: linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.92)), url('robotphoto.jpg');
+        background-size: contain;
+        background-position: center top;
+        background-repeat: repeat-y;
+        background-attachment: scroll; 
+    }
+
+    .portal-card {
+        padding: 0;
+        margin: 0 auto;
+    }
+
+    .portal-hero {
+        margin-bottom: 24px;
+    }
+
+    .portal-logo {
+        width: 76px;           
+        height: 76px;
+        margin-bottom: 14px;
+    }
+
+    .portal-title {
+        font-size: 1.5rem;
+        line-height: 1.35;
+        padding: 0 10px;
+        margin-bottom: 12px;
+    }
+
+    .portal-title-break {
+        display: block;
+    }
+
+    .portal-tagline {
+        font-size: 0.88rem;
+        line-height: 1.6;
+        padding: 0 14px;
+    }
+
+    .portal-info-hub {
+        margin-bottom: 24px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .info-block {
+        padding: 20px 16px;
+        margin-bottom: 16px;
+        background: rgba(12, 12, 12, 0.85);
+    }
+
+    .info-block h2 {
+        font-size: 1.15rem;
+    }
+
+    .info-block p {
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+
+    .faq-item summary {
+        font-size: 0.95rem;
+    }
+
+    .faq-answer p {
+        font-size: 0.88rem;
+    }
+
+    .portal-cta-header {
+        margin: 36px auto 20px auto;
+    }
+
+    .portal-cta-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .portal-cta-header p {
+        font-size: 0.9rem;
+    }
+
+    .stream-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        width: 100%;
+        margin-bottom: 32px;
+    }
+
+    .portal-stream-card {
+        padding: 22px 16px;
+        width: 100%;
+    }
+
+    .stream-icon {
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+    }
+
+    .stream-icon i {
+        font-size: 2.2rem;
+    }
+
+    .portal-stream-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 14px;
+    }
+
+    /* --- DASHBOARD MOBILE REFITTING --- */
+    .app-container {
+        flex-direction: column;
+        overflow-y: visible;
+        height: auto;
+    }
+
+    /* The three horizontal bars (logo/menu, stream tabs, syllabus/units)
+       need to interleave in a specific order on mobile even though the
+       logo/menu bar and the syllabus/units bar are both normally inside
+       .sidebar while the stream-tabs bar is inside .main-content.
+       display:contents "unwraps" both wrapper elements so all four bars
+       become siblings that can be freely reordered - each bar then needs
+       its own background/border explicitly, since the wrapper that used
+       to supply that is no longer rendering a box at all. */
+    .sidebar {
+        display: contents;
+    }
+    .main-content {
+        display: contents;
+    }
+
+    .sidebar-header {
+        order: 1;
+        background-color: var(--bg-sidebar);
+        padding: 16px;
+    }
+
+    .content-header {
+        order: 2;
+    }
+
+    .nav-menu {
+        order: 3;
+        background-color: var(--bg-sidebar);
+        border-bottom: 1px solid var(--sidebar-border);
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+        align-items: center;
+        scrollbar-width: none;
+    }
+
+    .content-body {
+        order: 4;
+    }
+
+    .nav-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sidebar-divider {
+        display: none; 
+    }
+
+    .chapters-list {
+        display: flex;
+        gap: 8px;
+    }
+
+    .nav-item {
+        margin-bottom: 0;
+        white-space: nowrap;
+        width: auto;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+
+    .nav-item.active {
+        border-left: 1px solid var(--accent-gold); 
+        border-top: 2px solid var(--accent-gold);
+    }
+
+    .main-content {
+        height: auto;
+        overflow: visible;
+    }
+
+    .content-header {
+        padding: 0 16px;
+        height: 60px;
+    }
+
+    .content-body {
+        padding: 20px 16px;
+    }
+
+    .welcome-card, .chapter-header-card, .lesson-header-card {
+        padding: 24px 16px;
+        margin-bottom: 20px;
+    }
+
+    .lesson-header-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .lesson-body {
+        margin-bottom: 24px;
+        font-size: 0.92rem;
+    }
+
+    .lesson-nav-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .lesson-nav-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .lesson-nav-btn-primary {
+        margin-left: 0;
+        order: -1;
+    }
+
+    .lesson-toc-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 14px;
+    }
+
+    .lesson-toc-title {
+        font-size: 0.88rem;
+    }
+
+    .lesson-start-btn {
+        padding: 8px 14px;
+        font-size: 0.75rem;
+    }
+
+    .card {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+}
