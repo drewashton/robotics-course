@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css">
 
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="admin.css?v=5">
+    <link rel="stylesheet" href="admin.css?v=6">
 </head>
 <body>
 
@@ -119,6 +119,13 @@
                         </label>
                         <span class="syllabus-upload-status admin-muted" data-target="objectives"></span>
                     </div>
+                    <div class="admin-resize-row" data-resize-for="syllabus-quill-objectives">
+                        <span class="admin-resize-label"><i class="fa-solid fa-image"></i> Click a photo/video/slideshow above, then set its size:</span>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="25%" type="button">S</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="50%" type="button">M</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="75%" type="button">L</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="100%" type="button">Full</button>
+                    </div>
                 </div>
 
                 <div class="admin-editor-section">
@@ -130,6 +137,13 @@
                             <input type="file" class="syllabus-file-input" data-target="schedule" hidden accept=".pdf,.pptx,.ppt,image/*">
                         </label>
                         <span class="syllabus-upload-status admin-muted" data-target="schedule"></span>
+                    </div>
+                    <div class="admin-resize-row" data-resize-for="syllabus-quill-schedule">
+                        <span class="admin-resize-label"><i class="fa-solid fa-image"></i> Click a photo/video/slideshow above, then set its size:</span>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="25%" type="button">S</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="50%" type="button">M</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="75%" type="button">L</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="100%" type="button">Full</button>
                     </div>
                 </div>
 
@@ -284,6 +298,13 @@
                         </button>
                         <span id="editor-upload-status" class="admin-muted"></span>
                     </div>
+                    <div class="admin-resize-row" data-resize-for="editor-quill-content">
+                        <span class="admin-resize-label"><i class="fa-solid fa-image"></i> Click a photo/video/slideshow above, then set its size:</span>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="25%" type="button">S</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="50%" type="button">M</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="75%" type="button">L</button>
+                        <button class="admin-btn admin-btn-secondary admin-btn-icon-only admin-resize-btn" data-width="100%" type="button">Full</button>
+                    </div>
                 </div>
 
                 <footer class="admin-editor-actions">
@@ -360,6 +381,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-    <script src="admin.js?v=3"></script>
+    <script src="admin.js?v=4"></script>
 </body>
 </html>

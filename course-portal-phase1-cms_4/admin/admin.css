@@ -750,6 +750,25 @@ button:focus-visible {
     flex-wrap: wrap;
 }
 
+/* Lets a mentor resize whichever embed they just clicked on, rather than
+   everything always rendering full width. */
+.admin-resize-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-color);
+}
+.admin-resize-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+.admin-resize-btn {
+    min-width: 34px;
+}
+
 .admin-upload-btn-sm {
     font-size: 0.75rem;
     padding: 7px 12px;

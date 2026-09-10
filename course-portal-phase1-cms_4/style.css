@@ -759,28 +759,60 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     line-height: 1.7;
 }
 /* Give mentors' rich formatting room to breathe: headings, lists, and
-   embeds inside a lesson body all get sensible default spacing. */
-.lesson-body h1, .lesson-body h2, .lesson-body h3 {
+   embeds get sensible default spacing wherever their content is rendered -
+   both on a dedicated lesson/assignment/resource page (.lesson-body) and
+   inside a plain content box like Learning Objectives or Recommended
+   Schedule (.content-box). Without this, the browser's default list/
+   heading spacing is gone entirely (stripped by the site-wide CSS reset),
+   which is exactly what made bullets sit flush against the box edge. */
+.lesson-body h1, .lesson-body h2, .lesson-body h3,
+.content-box h1, .content-box h2, .content-box h3 {
     margin: 24px 0 12px 0;
+    line-height: 1.35;
     color: var(--text-dark);
 }
-.lesson-body p { margin-bottom: 14px; }
-.lesson-body ul, .lesson-body ol { margin: 0 0 14px 24px; }
-.lesson-body img { max-width: 100%; border-radius: var(--radius); }
-.lesson-body blockquote {
+.lesson-body h1:first-child, .lesson-body h2:first-child, .lesson-body h3:first-child,
+.content-box h1:first-child, .content-box h2:first-child, .content-box h3:first-child {
+    margin-top: 0;
+}
+/* No forced margin here on purpose - Quill's editor doesn't add one either,
+   so a blank line the mentor pressed Enter for is what actually creates a
+   paragraph gap. Adding our own margin on top of that made every paragraph
+   render with more space than what was actually typed. */
+.lesson-body p, .content-box p { margin: 0; }
+.lesson-body p:last-child, .content-box p:last-child { margin-bottom: 0; }
+.lesson-body ul, .lesson-body ol,
+.content-box ul, .content-box ol {
+    margin: 0 0 14px 24px;
+}
+.lesson-body li, .content-box li {
+    margin-bottom: 6px;
+}
+.lesson-body img, .content-box img {
+    max-width: 100%;
+    border-radius: var(--radius);
+    margin: 8px 0;
+}
+.lesson-body blockquote, .content-box blockquote {
     border-left: 3px solid var(--accent-gold);
     padding-left: 16px;
     margin: 16px 0;
     color: var(--text-muted);
     font-style: italic;
 }
-.lesson-body pre {
+.lesson-body pre, .content-box pre {
     background: var(--bg-sidebar);
     color: #e5e5e5;
     padding: 16px;
     border-radius: var(--radius);
     overflow-x: auto;
     margin-bottom: 14px;
+}
+.lesson-body a, .content-box a {
+    color: var(--text-dark);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-gold);
+    text-underline-offset: 2px;
 }
 
 /* Quill's own native video embed (used for YouTube/Vimeo via the toolbar's

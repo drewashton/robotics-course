@@ -45,6 +45,35 @@ function insertPresentationEmbed(editor, index, url, label) {
     }
 }
 
+// Lets mentors resize an embedded image, video, or slideshow after
+// inserting it, rather than everything always rendering full-width.
+// Registered as a real Quill format (not just a one-off DOM tweak) so it
+// survives normally through save/reload like any other formatting choice.
+let embedResizeSupported = false;
+try {
+    const Parchment = Quill.import("parchment");
+    const EmbedWidth = new Parchment.Attributor.Style("embedwidth", "width", {
+        scope: Parchment.Scope.ANY,
+        whitelist: ["25%", "50%", "75%", "100%"],
+    });
+    Quill.register(EmbedWidth, true);
+    embedResizeSupported = true;
+} catch (err) {
+    console.warn("Embed resizing unavailable:", err);
+}
+
+// Applies a width to whatever image/video/slideshow the cursor is
+// currently on or just past (covers both "select the embed" and "click
+// right after inserting it" cases).
+function setEmbedWidth(editor, width) {
+    if (!embedResizeSupported) return false;
+    const range = editor.getSelection();
+    if (!range) return false;
+    const index = range.length > 0 ? range.index : Math.max(0, range.index - 1);
+    editor.formatText(index, 1, "embedwidth", width);
+    return true;
+}
+
 function toSlidesEmbedUrl(rawUrl) {
     const url = rawUrl.trim();
     const match = url.match(/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
@@ -856,3 +885,20 @@ function setStatus(el, message, tone) {
 }
 
 checkSession();
+
+// Resize controls: each row is tagged with which Quill instance it
+// controls, so one handler covers the lesson editor and both syllabus
+// editors without duplicating this logic three times.
+document.querySelectorAll(".admin-resize-row").forEach((row) => {
+    const containerId = row.dataset.resizeFor;
+    row.querySelectorAll(".admin-resize-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const editor = quillInstances[containerId];
+            if (!editor) return;
+            const applied = setEmbedWidth(editor, btn.dataset.width);
+            if (!applied) {
+                alert("Click directly on the photo, video, or slideshow first, then choose a size.");
+            }
+        });
+    });
+});
