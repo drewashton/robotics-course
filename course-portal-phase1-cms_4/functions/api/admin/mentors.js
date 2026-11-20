@@ -1,6 +1,7 @@
 import { requireAuth, json } from "../../_utils/auth.js";
 
-const MAX_MENTORS_PER_STREAM = 3;
+const MAX_MENTORS_PER_STREAM = 3;      // learning platform streams
+const MAX_CONTACTS_PER_SECTION = 8;    // internal portal sections
 
 export async function onRequestPost({ request, env }) {
   const auth = await requireAuth(request, env);
@@ -11,11 +12,15 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "stream_id and name are required" }, { status: 400 });
   }
 
+  const stream = await env.DB.prepare("SELECT site FROM streams WHERE id = ?").bind(stream_id).first();
+  if (!stream) return json({ error: "Section not found" }, { status: 404 });
+  const limit = stream.site === "internal" ? MAX_CONTACTS_PER_SECTION : MAX_MENTORS_PER_STREAM;
+
   const count = await env.DB.prepare("SELECT COUNT(*) as count FROM mentors WHERE stream_id = ?")
     .bind(stream_id)
     .first();
-  if (count.count >= MAX_MENTORS_PER_STREAM) {
-    return json({ error: `Each stream can only have up to ${MAX_MENTORS_PER_STREAM} mentors` }, { status: 400 });
+  if (count.count >= limit) {
+    return json({ error: `This ${stream.site === "internal" ? "section" : "stream"} can only have up to ${limit} contacts` }, { status: 400 });
   }
 
   const row = await env.DB.prepare("SELECT COALESCE(MAX(sort_order), 0) as max FROM mentors WHERE stream_id = ?")

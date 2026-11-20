@@ -32,16 +32,20 @@ export async function onRequestPut({ request, env }) {
   const { id, title, content_html, published } = await request.json().catch(() => ({}));
   if (!id) return json({ error: "id is required" }, { status: 400 });
 
-  await env.DB.prepare(
-    `UPDATE lessons SET
-       title = COALESCE(?, title),
-       content_html = COALESCE(?, content_html),
-       published = COALESCE(?, published),
-       updated_at = datetime('now')
-     WHERE id = ?`
-  )
-    .bind(title ?? null, content_html ?? null, published === undefined ? null : published ? 1 : 0, id)
-    .run();
+  try {
+    await env.DB.prepare(
+      `UPDATE lessons SET
+         title = COALESCE(?, title),
+         content_html = COALESCE(?, content_html),
+         published = COALESCE(?, published),
+         updated_at = datetime('now')
+       WHERE id = ?`
+    )
+      .bind(title ?? null, content_html ?? null, published === undefined ? null : published ? 1 : 0, id)
+      .run();
+  } catch (e) {
+    return json({ error: "Couldn't save - the content may be too large (this usually means a pasted-in image rather than one added via Attach file)." }, { status: 400 });
+  }
 
   return json({ ok: true });
 }

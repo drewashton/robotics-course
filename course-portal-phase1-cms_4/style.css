@@ -939,6 +939,35 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     background: #f2f2f2;
 }
 
+/* An uploaded PDF (a designed handbook) embedded in a page shows as a tall
+   reading pane instead of a 16:9 video frame. */
+.lesson-body iframe.ql-iframe[src*=".pdf"],
+.content-box iframe.ql-iframe[src*=".pdf"] {
+    aspect-ratio: auto;
+    height: 78vh;
+    min-height: 480px;
+}
+.pdf-open-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    background: #ffffff;
+}
+.lesson-body a.pdf-open-link, .content-box a.pdf-open-link {
+    text-decoration: none;
+}
+.pdf-open-link:hover {
+    border-color: var(--bg-sidebar);
+}
+
 /* ==========================================================================
    ⚡ MOBILE OPTIMIZATION & UNFREEZERS
    ========================================================================== */

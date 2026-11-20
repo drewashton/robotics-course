@@ -1,4 +1,41 @@
-const STREAM_ICONS = { business: "fa-briefcase", build: "fa-hammer", programming: "fa-code" };
+const STREAM_ICONS = {
+    business: "fa-briefcase", build: "fa-hammer", programming: "fa-code",
+    roles: "fa-id-badge", parents: "fa-hand-holding-heart", mentors: "fa-chalkboard-user",
+    "how-it-runs": "fa-diagram-project", "prep-team": "fa-seedling", "comp-team": "fa-trophy", career: "fa-graduation-cap",
+};
+
+// The same Admin Panel edits two sites: the Prep Team learning platform
+// ("course") and the internal program portal ("internal"). Everything that
+// reads differently between them lives in this table, applied to any
+// element tagged data-lbl="key" by applySiteLabels().
+const SITE_LABELS = {
+    course: {
+        editSyllabus: "Edit Syllabus", newUnit: "New Unit", backToUnits: "Back to units",
+        streamName: "Stream name", objectives: "Learning Objectives",
+        mentorsHeader: "Mentors", addMentor: "Add Mentor",
+        mentorsHint: "Shown to students as help contacts for this stream - up to 3 mentors, each with a photo, name, role, and an emailable contact button.",
+        unitTitle: "Unit title", lessonsHeader: "Lessons", lessonsEmpty: "No lessons yet.", newLesson: "New Lesson",
+        visible: "Published - visible to students",
+        unitsEmpty: 'No units yet in this stream. Click "New Unit" to add the first folder.',
+    },
+    internal: {
+        editSyllabus: "Edit Section", newUnit: "New Group", backToUnits: "Back to section",
+        streamName: "Section name", objectives: "Overview",
+        mentorsHeader: "Help Contacts", addMentor: "Add Contact",
+        mentorsHint: "Shown at the bottom of this section's home page - up to 8 people, each with a photo, name, role, and an emailable contact button.",
+        unitTitle: "Group title", lessonsHeader: "Pages", lessonsEmpty: "No pages yet.", newLesson: "New Page",
+        visible: "Published - visible on the portal",
+        unitsEmpty: 'Nothing in this section yet. Click "New Group" to add the first one.',
+    },
+};
+// Roles are the one section where each group is a role with its own handbook,
+// so the wording and the starting pages differ.
+const ROLE_OVERRIDES = {
+    newUnit: "New Role", unitTitle: "Role name", lessonsHeader: "Handbook Pages", lessonsEmpty: "No handbook pages yet.", newLesson: "New Handbook Page",
+    unitsEmpty: 'No roles yet. Click "New Role" to add the first one.',
+};
+const ROLE_STARTER_PAGES = ["Training", "Reports", "Job Description", "Job Duties - Off Season", "Job Duties - Build Season", "Help Contacts"];
+const MAX_CONTACTS = { course: 3, internal: 8 };
 
 // Lessons, Assignments, and Resources are managed with one shared editor -
 // this config drives which API endpoint, unit field, and labels apply.
@@ -47,31 +84,56 @@ function insertPresentationEmbed(editor, index, url, label) {
 
 // Lets mentors resize an embedded image, video, or slideshow after
 // inserting it, rather than everything always rendering full-width.
-// Registered as a real Quill format (not just a one-off DOM tweak) so it
-// survives normally through save/reload like any other formatting choice.
-let embedResizeSupported = false;
-try {
-    const Parchment = Quill.import("parchment");
-    const EmbedWidth = new Parchment.Attributor.Style("embedwidth", "width", {
-        scope: Parchment.Scope.ANY,
-        whitelist: ["25%", "50%", "75%", "100%"],
-    });
-    Quill.register(EmbedWidth, true);
-    embedResizeSupported = true;
-} catch (err) {
-    console.warn("Embed resizing unavailable:", err);
-}
-
-// Applies a width to whatever image/video/slideshow the cursor is
-// currently on or just past (covers both "select the embed" and "click
-// right after inserting it" cases).
+// Lets mentors resize an embedded image, video, or slideshow after
+// inserting it, rather than everything always rendering full-width.
+// This works directly against the actual DOM node Quill renders for that
+// embed (via the documented, stable getLeaf() API) rather than registering
+// a custom Quill "format" - that first approach depended on an internal
+// Parchment API whose exact shape isn't reliable across Quill versions,
+// and it was failing silently. Setting the DOM node's own style directly
+// is simpler and shows up correctly whenever the content is saved, since
+// saving just reads the live DOM (quill.root.innerHTML).
 function setEmbedWidth(editor, width) {
-    if (!embedResizeSupported) return false;
     const range = editor.getSelection();
     if (!range) return false;
-    const index = range.length > 0 ? range.index : Math.max(0, range.index - 1);
-    editor.formatText(index, 1, "embedwidth", width);
-    return true;
+    // Clicking an embed in Quill can leave the cursor either on it or just
+    // past it, so check both spots.
+    for (const idx of [range.index, range.index - 1]) {
+        if (idx < 0) continue;
+        let leaf;
+        try {
+            [leaf] = editor.getLeaf(idx);
+        } catch {
+            continue;
+        }
+        const node = leaf && leaf.domNode;
+        if (node && (node.tagName === "IMG" || node.tagName === "IFRAME")) {
+            node.style.width = width;
+            node.style.height = node.tagName === "IFRAME" ? "" : "auto";
+            return true;
+        }
+    }
+    return false;
+}
+
+// What happens to a file attached through "Attach file": images are placed in
+// the content, PowerPoint files become an inline slideshow, and PDFs (the
+// designed handbooks) become an inline PDF viewer. The viewer also gets an
+// "Open PDF" link on the public site, since phones often show only the first
+// page of an embedded PDF. Anything else becomes a download link.
+function insertUploadedFile(editor, index, file, data) {
+    const isPresentation = /\.(pptx|ppt|key)$/i.test(file.name);
+    const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+    if (file.type.startsWith("image/")) {
+        editor.insertEmbed(index, "image", data.url);
+    } else if (isPresentation) {
+        const absoluteUrl = new URL(data.url, location.origin).href;
+        insertPresentationEmbed(editor, index, officeEmbedUrl(absoluteUrl), file.name);
+    } else if (isPdf) {
+        insertPresentationEmbed(editor, index, `${data.url}#view=FitH`, data.filename);
+    } else {
+        editor.insertText(index, data.filename, "link", data.url);
+    }
 }
 
 function toSlidesEmbedUrl(rawUrl) {
@@ -93,6 +155,7 @@ let currentUnitId = null;
 let currentItemKind = "lesson"; // "lesson" | "assignment" | "resource"
 let currentItemId = null;       // null while creating a brand-new item
 let currentMentorId = null;     // null while creating a brand-new mentor
+let cameFromLayout = false;     // true when a group was opened from the Portal layout screen
 const quillInstances = {};
 
 const $ = (id) => document.getElementById(id);
@@ -111,10 +174,22 @@ function openModal({ title, message, fields = [], confirmLabel = "OK", danger = 
             const label = document.createElement("label");
             label.className = "admin-field";
             label.innerHTML = `<span>${f.label}</span>`;
-            const input = document.createElement("input");
-            input.type = f.type || "text";
-            input.value = f.value || "";
-            input.placeholder = f.placeholder || "";
+            let input;
+            if (f.options) {
+                input = document.createElement("select");
+                f.options.forEach((o) => {
+                    const opt = document.createElement("option");
+                    opt.value = o.value;
+                    opt.textContent = o.label;
+                    input.appendChild(opt);
+                });
+                if (f.value) input.value = f.value;
+            } else {
+                input = document.createElement("input");
+                input.type = f.type || "text";
+                input.value = f.value || "";
+                input.placeholder = f.placeholder || "";
+            }
             label.appendChild(input);
             fieldsEl.appendChild(label);
             return input;
@@ -168,6 +243,19 @@ async function api(path, options = {}) {
     return data;
 }
 
+// Pasting an image directly into the editor (e.g. Ctrl+V on a screenshot)
+// embeds it as raw image data right in the content, rather than uploading
+// it - this can get large enough to silently break the save request, which
+// otherwise just looks like an unexplained "Something went wrong". Catching
+// it here means the mentor gets a clear, actionable message pointing at the
+// actual cause and fix instead.
+function findPastedImageError(html) {
+    if (/<img[^>]+src=["']data:/i.test(html)) {
+        return "This content has a pasted-in image (not uploaded through \"Attach file\"), which is too large to save. Remove it, then re-add it using the \"Attach file\" button instead.";
+    }
+    return null;
+}
+
 function showLogin() {
     $("login-screen").hidden = false;
     $("admin-app").hidden = true;
@@ -183,6 +271,36 @@ function currentStream() {
 function currentUnit() {
     const stream = currentStream();
     return stream ? stream.units.find((u) => u.id === currentUnitId) || null : null;
+}
+function currentSite() {
+    const stream = currentStream();
+    return stream && stream.site === "internal" ? "internal" : "course";
+}
+function isRolesSection() {
+    const stream = currentStream();
+    return Boolean(stream && stream.stream_key === "roles");
+}
+function siteLabel(key) {
+    if (currentSite() === "internal" && isRolesSection() && ROLE_OVERRIDES[key]) return ROLE_OVERRIDES[key];
+    return SITE_LABELS[currentSite()][key];
+}
+// "Lesson" on the course site is a "Page" on the internal portal.
+function itemLabel(kind) {
+    if (kind === "lesson" && currentSite() === "internal") return "Page";
+    return ITEM_KINDS[kind].label;
+}
+function applySiteLabels() {
+    document.querySelectorAll("[data-lbl]").forEach((el) => {
+        const text = siteLabel(el.dataset.lbl);
+        if (text !== undefined) el.textContent = text;
+    });
+    const internal = currentSite() === "internal";
+    // Internal sections have no recommended schedule, no assignments, and
+    // their groups have no "Unit 1" style number.
+    $("schedule-section").hidden = internal;
+    $("assignments-section").hidden = internal;
+    $("unit-label-field").hidden = internal;
+    $("link-view-site").href = internal ? "https://internal.pentictonrobotics.ca/" : "https://course.pentictonrobotics.ca/";
 }
 
 // ---------- AUTH ----------
@@ -277,17 +395,32 @@ async function loadStreams() {
     if (currentStreamId) selectStream(currentStreamId);
 }
 
+// Reload the sections without changing which screen is showing.
+async function refreshStreams() {
+    streamsData = await api("/api/admin/streams");
+    renderStreamNav();
+}
+
 function renderStreamNav() {
     const nav = $("stream-nav");
     nav.innerHTML = "";
+    let lastSite = null;
     streamsData.forEach((stream) => {
+        if (stream.site !== lastSite) {
+            lastSite = stream.site;
+            const heading = document.createElement("div");
+            heading.className = "stream-nav-heading";
+            heading.textContent = stream.site === "internal" ? "Internal Portal" : "Learning Platform";
+            nav.appendChild(heading);
+            if (stream.site === "internal") nav.appendChild(layoutNavButton());
+        }
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "stream-nav-item";
         btn.dataset.streamId = stream.id;
         const icon = STREAM_ICONS[stream.stream_key] || "fa-folder";
         btn.innerHTML = `<i class="fa-solid ${icon}"></i> ${escapeHtml(stream.name)}`;
-        btn.addEventListener("click", () => selectStream(stream.id));
+        btn.addEventListener("click", () => { cameFromLayout = false; selectStream(stream.id); });
         nav.appendChild(btn);
     });
 }
@@ -298,6 +431,7 @@ function selectStream(streamId) {
     document.querySelectorAll(".stream-nav-item").forEach((el) => {
         el.classList.toggle("active", Number(el.dataset.streamId) === streamId);
     });
+    applySiteLabels();
     renderUnitsList();
 }
 
@@ -344,6 +478,7 @@ $("btn-edit-syllabus").addEventListener("click", () => {
 
     ensureQuill("syllabus-quill-objectives", "What will students learn in this stream?");
     ensureQuill("syllabus-quill-schedule", "How should students pace themselves through this stream?");
+    applySiteLabels();
     setQuillHtml("syllabus-quill-objectives", stream.objectives_html);
     setQuillHtml("syllabus-quill-schedule", stream.schedule_html);
 
@@ -356,9 +491,18 @@ $("btn-syllabus-back").addEventListener("click", () => selectStream(currentStrea
 $("btn-save-syllabus").addEventListener("click", async () => {
     const name = $("syllabus-name").value.trim();
     if (!name) {
-        setStatus($("syllabus-status"), "Stream name can't be empty.", "error");
+        setStatus($("syllabus-status"), `${siteLabel("streamName")} can't be empty.`, "error");
         return;
     }
+    const objectives_html = quillInstances["syllabus-quill-objectives"].root.innerHTML;
+    const schedule_html = quillInstances["syllabus-quill-schedule"].root.innerHTML;
+
+    const pasteError = findPastedImageError(objectives_html) || findPastedImageError(schedule_html);
+    if (pasteError) {
+        setStatus($("syllabus-status"), pasteError, "error");
+        return;
+    }
+
     try {
         await api("/api/admin/streams", {
             method: "PUT",
@@ -366,8 +510,8 @@ $("btn-save-syllabus").addEventListener("click", async () => {
                 id: currentStreamId,
                 name,
                 description: $("syllabus-description").value,
-                objectives_html: quillInstances["syllabus-quill-objectives"].root.innerHTML,
-                schedule_html: quillInstances["syllabus-quill-schedule"].root.innerHTML,
+                objectives_html,
+                schedule_html,
             }),
         });
         await loadStreams();
@@ -401,7 +545,7 @@ function renderMentorsList() {
         list.appendChild(li);
     });
 
-    $("btn-new-mentor").hidden = mentors.length >= 3;
+    $("btn-new-mentor").hidden = mentors.length >= MAX_CONTACTS[currentSite()];
 }
 
 $("btn-new-mentor").addEventListener("click", () => openMentor(null));
@@ -502,7 +646,7 @@ function renderUnitsList() {
                 <button type="button" data-dir="down" ${index === units.length - 1 ? "disabled" : ""} aria-label="Move down"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
             <div class="admin-unit-main">
-                <span class="admin-tag">${escapeHtml(unit.unit_label)}</span>
+                ${unit.unit_label ? `<span class="admin-tag">${escapeHtml(unit.unit_label)}</span>` : ""}
                 <div class="admin-unit-title">${escapeHtml(unit.title)}</div>
             </div>
             <span class="admin-status ${unit.published ? "is-published" : "is-draft"}">
@@ -521,6 +665,28 @@ function renderUnitsList() {
 }
 
 $("btn-new-unit").addEventListener("click", async () => {
+    if (currentSite() === "internal") {
+        const roles = isRolesSection();
+        const named = await openModal({
+            title: siteLabel("newUnit"),
+            message: roles ? "A starter set of draft handbook pages (Training, Reports, Job Description, Job Duties, Help Contacts) is added automatically." : "",
+            fields: [{ label: siteLabel("unitTitle"), placeholder: "" }],
+            confirmLabel: "Create",
+        });
+        if (!named || !named[0]) return;
+        const created = await api("/api/admin/units", {
+            method: "POST",
+            body: JSON.stringify({ stream_id: currentStreamId, unit_label: "", title: named[0] }),
+        });
+        if (roles) {
+            for (const title of ROLE_STARTER_PAGES) {
+                await api("/api/admin/lessons", { method: "POST", body: JSON.stringify({ unit_id: created.id, title }) });
+            }
+        }
+        await loadStreams();
+        openUnit(created.id);
+        return;
+    }
     const result = await openModal({
         title: "New Unit",
         fields: [
@@ -546,6 +712,7 @@ function openUnit(unitId) {
     const unit = currentUnit();
     if (!unit) return;
 
+    applySiteLabels();
     $("unit-label-input").value = unit.unit_label;
     $("unit-title-input").value = unit.title;
     $("unit-published").checked = Boolean(unit.published);
@@ -557,13 +724,21 @@ function openUnit(unitId) {
     showView("unit-view");
 }
 
-$("btn-unit-back").addEventListener("click", () => selectStream(currentStreamId));
+$("btn-unit-back").addEventListener("click", () => {
+    if (cameFromLayout) {
+        cameFromLayout = false;
+        showLayout();
+    } else {
+        selectStream(currentStreamId);
+    }
+});
 
 $("btn-save-unit").addEventListener("click", async () => {
     const unit_label = $("unit-label-input").value.trim();
     const title = $("unit-title-input").value.trim();
-    if (!unit_label || !title) {
-        setStatus($("unit-status"), "Unit number and title are both required.", "error");
+    const needsLabel = currentSite() === "course";
+    if ((needsLabel && !unit_label) || !title) {
+        setStatus($("unit-status"), needsLabel ? "Unit number and title are both required." : "A title is required.", "error");
         return;
     }
     try {
@@ -583,7 +758,9 @@ $("btn-delete-unit").addEventListener("click", async () => {
     if (!unit) return;
     const ok = await openModal({
         title: "Delete unit?",
-        message: `Delete "${unit.unit_label}: ${unit.title}" and everything inside it - lessons, assignments, and resources? This can't be undone.`,
+        message: currentSite() === "internal"
+            ? `Delete "${unit.title}" and everything inside it - pages and resources? This can't be undone.`
+            : `Delete "${unit.unit_label}: ${unit.title}" and everything inside it - lessons, assignments, and resources? This can't be undone.`,
         confirmLabel: "Delete",
         danger: true,
     });
@@ -664,7 +841,7 @@ $("btn-editor-back").addEventListener("click", () => {
 function openItemEditor(kind, item) {
     currentItemKind = kind;
     currentItemId = item ? item.id : null;
-    const { label } = ITEM_KINDS[kind];
+    const label = itemLabel(kind);
 
     $("editor-title-label").textContent = `${label} title`;
     $("editor-title").value = item ? item.title : "";
@@ -689,6 +866,12 @@ $("btn-save-lesson").addEventListener("click", async () => {
     const published = $("editor-published").checked;
     const content_html = quillInstances["editor-quill-content"].root.innerHTML;
 
+    const pasteError = findPastedImageError(content_html);
+    if (pasteError) {
+        setStatus($("editor-status"), pasteError, "error");
+        return;
+    }
+
     try {
         if (currentItemId) {
             await api(apiPath, { method: "PUT", body: JSON.stringify({ id: currentItemId, title, published, content_html }) });
@@ -706,7 +889,8 @@ $("btn-save-lesson").addEventListener("click", async () => {
 
 $("btn-delete-lesson").addEventListener("click", async () => {
     if (!currentItemId) return;
-    const { api: apiPath, label } = ITEM_KINDS[currentItemKind];
+    const { api: apiPath } = ITEM_KINDS[currentItemKind];
+    const label = itemLabel(currentItemKind);
     const ok = await openModal({ title: `Delete ${label.toLowerCase()}?`, message: "This can't be undone.", confirmLabel: "Delete", danger: true });
     if (!ok) return;
     await api(apiPath, { method: "DELETE", body: JSON.stringify({ id: currentItemId }) });
@@ -729,16 +913,8 @@ $("editor-file-input").addEventListener("change", async (e) => {
 
         const editor = quillInstances["editor-quill-content"];
         const range = editor.getSelection(true) || { index: editor.getLength() };
-        const isPresentation = /\.(pptx|ppt|key)$/i.test(file.name);
 
-        if (file.type.startsWith("image/")) {
-            editor.insertEmbed(range.index, "image", data.url);
-        } else if (isPresentation) {
-            const absoluteUrl = new URL(data.url, location.origin).href;
-            insertPresentationEmbed(editor, range.index, officeEmbedUrl(absoluteUrl), file.name);
-        } else {
-            editor.insertText(range.index, data.filename, "link", data.url);
-        }
+        insertUploadedFile(editor, range.index, file, data);
         editor.setSelection(range.index + 1);
         setStatus($("editor-upload-status"), `Attached ${data.filename}`, "success");
     } catch (err) {
@@ -766,16 +942,8 @@ document.querySelectorAll(".syllabus-file-input").forEach((input) => {
 
             const editor = quillInstances[`syllabus-quill-${target}`];
             const range = editor.getSelection(true) || { index: editor.getLength() };
-            const isPresentation = /\.(pptx|ppt|key)$/i.test(file.name);
-
-            if (file.type.startsWith("image/")) {
-                editor.insertEmbed(range.index, "image", data.url);
-            } else if (isPresentation) {
-                const absoluteUrl = new URL(data.url, location.origin).href;
-                insertPresentationEmbed(editor, range.index, officeEmbedUrl(absoluteUrl), file.name);
-            } else {
-                editor.insertText(range.index, data.filename, "link", data.url);
-            }
+    
+            insertUploadedFile(editor, range.index, file, data);
             editor.setSelection(range.index + 1);
             setStatus(statusEl, `Attached ${data.filename}`, "success");
         } catch (err) {
@@ -892,6 +1060,13 @@ checkSession();
 document.querySelectorAll(".admin-resize-row").forEach((row) => {
     const containerId = row.dataset.resizeFor;
     row.querySelectorAll(".admin-resize-btn").forEach((btn) => {
+        // Clicking any button outside the editor normally steals focus
+        // away from it first, which clears whatever was selected inside -
+        // so by the time a plain "click" handler ran, the photo/video the
+        // mentor had just clicked on was no longer selected at all. Blocking
+        // the default behavior on mousedown (before that focus shift
+        // happens) keeps the editor's selection intact.
+        btn.addEventListener("mousedown", (e) => e.preventDefault());
         btn.addEventListener("click", () => {
             const editor = quillInstances[containerId];
             if (!editor) return;

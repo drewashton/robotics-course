@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Mentor Panel - Penticton Robotics Prep Course</title>
+    <title>Admin Panel - Penticton Robotics Prep Course</title>
     <link rel="icon" type="image/png" href="../pr_logo2x.PNG">
     <link rel="apple-touch-icon" href="../pr_logo2x.PNG">
 
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css">
 
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="admin.css?v=6">
+    <link rel="stylesheet" href="admin.css?v=8">
 </head>
 <body>
 
@@ -23,7 +23,7 @@
     <div id="login-screen" class="admin-login-screen">
         <form id="login-form" class="admin-login-card">
             <div class="admin-login-logo"><img src="../pr_logo2x.PNG" alt="Penticton Robotics"></div>
-            <h1>Mentor Login</h1>
+            <h1>Admin Login</h1>
 
             <label class="admin-field">
                 <span>Email</span>
@@ -46,7 +46,7 @@
             <div class="admin-sidebar-header">
                 <img src="../pr_logo2x.PNG" alt="" class="admin-logo-img">
                 <div>
-                    <div class="admin-brand">Mentor Panel</div>
+                    <div class="admin-brand">Admin Panel</div>
                     <div class="admin-signed-in-as" id="signed-in-as"></div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                 <button class="admin-nav-item" id="btn-change-password" type="button">
                     <i class="fa-solid fa-key"></i> Change Password
                 </button>
-                <a class="admin-nav-item" href="/" target="_blank" rel="noopener">
+                <a class="admin-nav-item" id="link-view-site" href="/" target="_blank" rel="noopener">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> View Site
                 </a>
                 <button class="admin-nav-item" id="btn-logout" type="button">
@@ -80,27 +80,57 @@
                 <header class="admin-view-header admin-view-header-actions-only">
                     <div class="admin-view-header-actions">
                         <button class="admin-btn admin-btn-secondary" id="btn-edit-syllabus" type="button">
-                            <i class="fa-solid fa-pen"></i> Edit Syllabus
+                            <i class="fa-solid fa-pen"></i> <span data-lbl="editSyllabus">Edit Syllabus</span>
                         </button>
                         <button class="admin-btn admin-btn-dashed" id="btn-new-unit" type="button">
-                            <i class="fa-solid fa-folder-plus"></i> New Unit
+                            <i class="fa-solid fa-folder-plus"></i> <span data-lbl="newUnit">New Unit</span>
                         </button>
                     </div>
                 </header>
                 <ul id="units-list" class="admin-units-list"></ul>
-                <p id="units-empty" class="admin-muted" hidden>No units yet in this stream. Click "New Unit" to add the first folder.</p>
+                <p id="units-empty" class="admin-muted" hidden data-lbl="unitsEmpty">No units yet in this stream. Click "New Unit" to add the first folder.</p>
+            </section>
+
+            <!-- PORTAL LAYOUT (internal portal home page) -->
+            <section id="layout-view" class="admin-view">
+                <div class="admin-welcome-card">
+                    <h2>Portal layout</h2>
+                    <p>This is the internal portal's home page. Each box below is a box on the page. Add sections, rename them, change their order, move them to another box, or hide them until they are ready. Click a section's name to edit the pages inside it.</p>
+                </div>
+
+                <p id="layout-status" class="admin-muted layout-status" role="status"></p>
+                <div id="layout-boxes"></div>
+                <button class="admin-btn admin-btn-dashed" id="btn-add-box" type="button">
+                    <i class="fa-solid fa-plus"></i> Add a box
+                </button>
+
+                <div class="admin-editor-section layout-heading-card">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-heading"></i> Heading and buttons</h3>
+                    <div class="layout-heading-grid">
+                        <label class="admin-field"><span>Heading, first line</span><input type="text" id="layout-line1" maxlength="80"></label>
+                        <label class="admin-field"><span>Heading, second line</span><input type="text" id="layout-line2" maxlength="80"></label>
+                    </div>
+                    <label class="admin-field"><span>Text under the heading</span><textarea id="layout-tagline" rows="2" maxlength="400"></textarea></label>
+                    <div class="layout-links-head">Buttons under the heading</div>
+                    <ul id="layout-links" class="layout-links"></ul>
+                    <div class="layout-links-actions">
+                        <button class="admin-btn admin-btn-dashed" id="btn-add-link" type="button"><i class="fa-solid fa-plus"></i> Add a button</button>
+                        <button class="admin-btn admin-btn-primary" id="btn-save-heading" type="button"><i class="fa-solid fa-check"></i> Save heading and buttons</button>
+                    </div>
+                    <p id="layout-heading-status" class="admin-muted" role="status"></p>
+                </div>
             </section>
 
             <!-- SYLLABUS EDITOR VIEW -->
             <section id="syllabus-view" class="admin-view">
                 <header class="admin-view-header">
                     <button class="admin-btn-back" id="btn-syllabus-back" type="button">
-                        <i class="fa-solid fa-arrow-left"></i> Back to units
+                        <i class="fa-solid fa-arrow-left"></i> <span data-lbl="backToUnits">Back to units</span>
                     </button>
                 </header>
 
                 <label class="admin-field">
-                    <span>Stream name</span>
+                    <span data-lbl="streamName">Stream name</span>
                     <input type="text" id="syllabus-name">
                 </label>
 
@@ -110,7 +140,7 @@
                 </label>
 
                 <div class="admin-editor-section">
-                    <h3 class="admin-card-header"><i class="fa-solid fa-graduation-cap"></i> Learning Objectives</h3>
+                    <h3 class="admin-card-header"><i class="fa-solid fa-graduation-cap"></i> <span data-lbl="objectives">Learning Objectives</span></h3>
                     <div id="syllabus-quill-objectives"></div>
                     <div class="admin-editor-upload">
                         <label class="admin-btn admin-upload-btn admin-upload-btn-sm">
@@ -128,7 +158,7 @@
                     </div>
                 </div>
 
-                <div class="admin-editor-section">
+                <div class="admin-editor-section" id="schedule-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-calendar-days"></i> Recommended Schedule</h3>
                     <div id="syllabus-quill-schedule"></div>
                     <div class="admin-editor-upload">
@@ -148,14 +178,14 @@
                 </div>
 
                 <div class="admin-editor-section">
-                    <h3 class="admin-card-header"><i class="fa-solid fa-user-graduate"></i> Mentors</h3>
-                    <p class="admin-muted admin-hint">
+                    <h3 class="admin-card-header"><i class="fa-solid fa-user-graduate"></i> <span data-lbl="mentorsHeader">Mentors</span></h3>
+                    <p class="admin-muted admin-hint" data-lbl="mentorsHint">
                         Shown to students as help contacts for this stream - up to 3 mentors,
                         each with a photo, name, role, and an emailable contact button.
                     </p>
                     <ul id="mentors-list" class="admin-units-list"></ul>
                     <button class="admin-btn admin-btn-dashed" id="btn-new-mentor" type="button">
-                        <i class="fa-solid fa-user-plus"></i> Add Mentor
+                        <i class="fa-solid fa-user-plus"></i> <span data-lbl="addMentor">Add Mentor</span>
                     </button>
                 </div>
 
@@ -214,31 +244,31 @@
             <section id="unit-view" class="admin-view">
                 <header class="admin-view-header">
                     <button class="admin-btn-back" id="btn-unit-back" type="button">
-                        <i class="fa-solid fa-arrow-left"></i> Back to units
+                        <i class="fa-solid fa-arrow-left"></i> <span data-lbl="backToUnits">Back to units</span>
                     </button>
                 </header>
 
                 <div class="admin-editor-fields">
-                    <label class="admin-field admin-field-narrow">
+                    <label class="admin-field admin-field-narrow" id="unit-label-field">
                         <span>Unit number</span>
                         <input type="text" id="unit-label-input">
                     </label>
                     <label class="admin-field">
-                        <span>Unit title</span>
+                        <span data-lbl="unitTitle">Unit title</span>
                         <input type="text" id="unit-title-input">
                     </label>
                 </div>
 
                 <div class="admin-editor-section">
-                    <h3 class="admin-card-header"><i class="fa-solid fa-list-check"></i> Lessons</h3>
+                    <h3 class="admin-card-header"><i class="fa-solid fa-list-check"></i> <span data-lbl="lessonsHeader">Lessons</span></h3>
                     <ul id="lessons-list" class="admin-units-list"></ul>
-                    <p id="lessons-empty" class="admin-muted" hidden>No lessons yet.</p>
+                    <p id="lessons-empty" class="admin-muted" hidden data-lbl="lessonsEmpty">No lessons yet.</p>
                     <button class="admin-btn admin-btn-dashed" id="btn-new-lesson" type="button">
-                        <i class="fa-solid fa-plus"></i> New Lesson
+                        <i class="fa-solid fa-plus"></i> <span data-lbl="newLesson">New Lesson</span>
                     </button>
                 </div>
 
-                <div class="admin-editor-section">
+                <div class="admin-editor-section" id="assignments-section">
                     <h3 class="admin-card-header"><i class="fa-solid fa-clipboard-list"></i> Assignments</h3>
                     <ul id="assignments-list" class="admin-units-list"></ul>
                     <p id="assignments-empty" class="admin-muted" hidden>No assignments yet.</p>
@@ -259,7 +289,7 @@
                 <footer class="admin-editor-actions">
                     <label class="admin-toggle">
                         <input type="checkbox" id="unit-published">
-                        <span>Published - visible to students</span>
+                        <span data-lbl="visible">Published - visible to students</span>
                     </label>
                     <div class="admin-editor-actions-right">
                         <button class="admin-btn admin-btn-danger" id="btn-delete-unit" type="button">
@@ -310,7 +340,7 @@
                 <footer class="admin-editor-actions">
                     <label class="admin-toggle">
                         <input type="checkbox" id="editor-published">
-                        <span>Published - visible to students</span>
+                        <span data-lbl="visible">Published - visible to students</span>
                     </label>
                     <div class="admin-editor-actions-right">
                         <button class="admin-btn admin-btn-danger" id="btn-delete-lesson" type="button">
@@ -381,6 +411,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-    <script src="admin.js?v=4"></script>
+    <script src="admin.js?v=9"></script>
+    <script src="layout.js?v=1"></script>
 </body>
 </html>

@@ -129,6 +129,7 @@ button, input, select, textarea {
    area (unit title, lesson title, syllabus name, mentor fields, etc.) -
    matching the same white boxes used for the rich text editors. */
 .admin-field input,
+.admin-field select,
 .admin-field textarea,
 .admin-inline-form input {
     width: 100%;
@@ -143,9 +144,10 @@ button, input, select, textarea {
     font-size: 16px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.admin-field input:hover, .admin-field textarea:hover { border-color: #999; }
+.admin-field input:hover, .admin-field select:hover, .admin-field textarea:hover { border-color: #999; }
 
 .admin-field input:focus,
+.admin-field select:focus,
 .admin-field textarea:focus,
 .admin-inline-form input:focus,
 button:focus-visible {
@@ -891,4 +893,101 @@ button:focus-visible {
     .modal-card { padding: 22px 18px; }
     .admin-unit-row { flex-wrap: wrap; }
     .admin-mentor-photo-row { flex-direction: column; align-items: flex-start; }
+}
+
+/* Small group labels in the sidebar ("Learning Platform" / "Internal Portal"). */
+.stream-nav-heading {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sidebar-label);
+    padding: 14px 14px 6px 14px;
+}
+.stream-nav-heading:first-child { padding-top: 4px; }
+
+/* An uploaded PDF embedded in the editor is a page, not a video. */
+.ql-editor iframe[src*=".pdf"] {
+    aspect-ratio: auto;
+    height: 480px;
+}
+
+
+/* ---------- PORTAL LAYOUT ---------- */
+.layout-status { min-height: 1.4em; margin-bottom: 14px; }
+
+.layout-box {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--admin-shadow);
+    padding: 20px 20px 18px 20px;
+    margin-bottom: 20px;
+}
+.layout-box-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+.layout-box-titles h3 {
+    font-size: 1.15rem;
+    color: var(--text-dark);
+}
+.layout-box-titles p { font-size: 0.85rem; margin-top: 2px; }
+.layout-box-actions,
+.layout-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.layout-row-actions { justify-content: flex-end; }
+
+.layout-act {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-dark);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 10px;
+}
+.layout-act:hover:not(:disabled) { border-color: var(--text-dark); }
+.layout-act:disabled { opacity: 0.35; cursor: default; }
+.layout-act.is-danger { color: #b3261e; }
+.layout-act.is-danger:hover:not(:disabled) { border-color: #b3261e; background: #fdf3f2; }
+
+.layout-rows { margin-bottom: 14px; }
+.layout-row { box-shadow: none; padding: 10px 12px; }
+.layout-row:hover { box-shadow: none; }
+.layout-row .admin-tag { margin-bottom: 4px; }
+.layout-empty { padding: 6px 0 14px 0; }
+.layout-box-foot { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.layout-heading-card { margin-top: 36px; border-bottom: none; }
+.layout-heading-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.layout-links-head { font-weight: 700; font-size: 0.9rem; margin: 18px 0 10px 0; color: var(--text-dark); }
+.layout-links { list-style: none; display: grid; gap: 10px; margin-bottom: 14px; }
+.layout-link-row {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr auto auto;
+    gap: 12px;
+    align-items: end;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: #fff;
+}
+.layout-link-row .admin-field { margin-bottom: 0; }
+.layout-check { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; padding-bottom: 10px; white-space: nowrap; }
+.layout-links-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+@media (max-width: 700px) {
+    .layout-heading-grid { grid-template-columns: 1fr; }
+    .layout-link-row { grid-template-columns: 1fr; align-items: stretch; }
+    .layout-check { padding-bottom: 0; }
+    .layout-row .layout-row-actions { width: 100%; justify-content: flex-start; }
 }

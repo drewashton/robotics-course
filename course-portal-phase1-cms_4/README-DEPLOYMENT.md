@@ -113,3 +113,80 @@ bindings and secrets (Phase 3, last step) - they only take effect on the
 - Assignments and submissions (Phase 3)
 - Quizzes (Phase 4)
 - Analytics (Phase 5)
+
+
+---
+
+# Adding the Internal Portal (internal.pentictonrobotics.ca)
+
+The internal portal runs from this same project: same Cloudflare Worker,
+same database, same Admin Panel at /admin. Nothing is duplicated. The
+Admin Panel now has two groups in its sidebar, "Learning Platform" and
+"Internal Portal".
+
+**Do these in order. Running step 1 first matters.** If the new code goes
+live before the database is updated, the course site will briefly show "No
+streams available".
+
+## 1. Update the database (once)
+
+1. Cloudflare dashboard -> Workers & Pages -> D1 SQL Database -> `pr-course-db` -> **Console**.
+2. **If you have never run `migration_v6.sql`:** open it in a text editor, copy everything, paste into the console, and run it. Then do step 3.
+   Nothing in the course portal changes. It adds the internal sections with their starting groups and a few pages.
+3. **Then, whether or not you ran v6 before:** open `migration_v7.sql`, copy everything, paste into the console, and run it.
+   This separates the Prep Team and the Competition Team. Course Credit and Grading goes into the Competition Team (and the Prep Team gets its own), and each team gets its own Org Chart.
+   Anything you already wrote is kept. It is safe to run twice.
+   Pages marked as drafts stay hidden until you publish them.
+
+## 2. Upload the new code
+
+Upload everything in this zip to GitHub like before (replace existing
+files). New or changed: the whole `internal/` folder, `worker.js`,
+`wrangler.jsonc`, `style.css`, `index.html`, `admin/`, `functions/`,
+`.assetsignore`, and the SQL files. Cloudflare deploys it automatically.
+
+## 3. Look at it before connecting the domain
+
+Open `https://course.pentictonrobotics.ca/internal/` - that is the internal
+portal, available on any address of the project.
+
+## 4. Connect internal.pentictonrobotics.ca
+
+Workers & Pages -> your `robotics-course` project -> **Settings** -> **Domains & Routes**
+-> **Add** -> **Custom domain** -> `internal.pentictonrobotics.ca`.
+(The domain needs to be in the same Cloudflare account as the project.)
+
+## Turning on the Daily Reflection form
+
+The form lives in the portal at `#/reflection` (Competition Team, top of the sidebar). To switch it on:
+
+1. Go to web3forms.com, enter your email, and they send you an **access key**. Submissions are emailed to that address.
+2. Open `internal/config.js` on GitHub (click the pencil icon) and paste the key between the quotation marks after `web3formsKey`. Save ("Commit changes").
+3. To also send each reflection into the marks sheet, follow `MARKS-SETUP.md` (separate download), then put the two values it gives you into `sheetUrl` and `sheetToken` in the same file.
+
+Until the key is added, the form shows "This form is not connected yet" when someone presses Submit.
+
+## Editing the home page (Portal layout)
+
+In the Admin Panel, under **Internal Portal**, click **Portal layout**. It shows the home page's boxes (Prep Team, Competition Team, Whole Program) exactly as they appear on the site.
+
+- **Add a section** in any box. Choose "A section with pages" (one row that opens its pages) or "A handbook with groups" (one row that opens a page of groups, like Role Handbooks). New sections stay hidden until you click **Show**.
+- **Edit pages** (or **Open**) takes you to the usual editor for that section. **Back** returns to Portal layout.
+- **Rename**, **Hide/Show**, **Move** (to another box), **Delete**, and the up/down arrows work on every row.
+- **Rename box** changes a box's name and the short line under it. **Add a box** and **Delete box** (when empty) change how many boxes there are.
+- **Heading and buttons** at the bottom changes the page heading, the text under it, and the buttons (add, remove, highlight).
+
+No database step is needed for this. The Admin Panel creates what it needs the first time you save. (`migration_v8.sql` does the same thing by hand if you ever want it. It is optional.)
+
+## Putting handbooks on the portal
+
+In the Admin Panel, open a page, click **Attach file**, and choose the
+designed PDF. It is embedded right in the page. Phones get an "Open PDF in a
+new tab" link above it, since many phones only show the first page of an
+embedded PDF.
+
+For **Role Handbooks**: click **New Role**. It creates the role with draft
+pages for Training, Reports, Job Description, Job Duties (Off Season and Build
+Season), and Help Contacts. Fill in or delete what you need, add resources
+under the Resources heading, then tick **Published** on the role and on each
+page you want visible.

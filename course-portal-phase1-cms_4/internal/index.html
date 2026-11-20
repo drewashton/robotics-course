@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Penticton Robotics - Internal Portal</title>
+    <meta name="description" content="Handbooks, resources, and program information for Penticton Robotics students, parents, and mentors.">
+
+    <meta property="og:title" content="Penticton Robotics - Internal Portal">
+    <meta property="og:description" content="Handbooks, resources, and program information for Penticton Robotics students, parents, and mentors.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://internal.pentictonrobotics.ca/">
+    <meta property="og:site_name" content="Penticton Robotics">
+    <meta property="og:image" content="https://internal.pentictonrobotics.ca/pr_logo2x.PNG">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="2000">
+    <meta property="og:image:height" content="2000">
+    <meta property="og:image:alt" content="Penticton Robotics logo">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Penticton Robotics - Internal Portal">
+    <meta name="twitter:description" content="Handbooks, resources, and program information for Penticton Robotics students, parents, and mentors.">
+    <meta name="twitter:image" content="https://internal.pentictonrobotics.ca/pr_logo2x.PNG">
+
+    <link rel="icon" type="image/png" href="/pr_logo2x.PNG">
+    <link rel="apple-touch-icon" href="/pr_logo2x.PNG">
+    <meta name="apple-mobile-web-app-title" content="Penticton Robotics - Internal Portal">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/style.css?v=15">
+    <link rel="stylesheet" href="/internal/internal.css?v=3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="internal-portal">
+
+    <!-- 1. LANDING SCREEN -->
+    <div id="portal-screen" class="portal-container">
+        <div class="portal-card">
+
+            <header class="portal-hero">
+                <div class="portal-logo">
+                    <img src="/pr_logo2x.PNG" alt="Penticton Robotics Logo" class="brand-logo-img">
+                </div>
+                <h1 class="portal-title" id="portal-title">Penticton Robotics <span class="portal-title-break">Internal Portal</span></h1>
+                <p class="portal-tagline" id="portal-tagline">Handbooks, team resources, and how the program runs. Everyone on the team, including parents and mentors, can see everything.</p>
+            </header>
+
+            <nav class="quick-links" id="quick-links" aria-label="Quick links"></nav>
+
+            <div id="portal-groups"></div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP INTERFACE -->
+    <div id="app-interface" class="app-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container" id="back-to-portal" title="Back to the portal home">
+                    <img src="/pr_logo2x.PNG" alt="Penticton Robotics Logo" class="brand-logo-img">
+                </div>
+                <button class="home-icon-btn" id="btn-back-home" title="Back to the portal home" type="button">
+                    <i class="fa-solid fa-rotate-left"></i> Menu
+                </button>
+            </div>
+
+            <nav class="nav-menu" aria-label="This team">
+                <div class="chapters-list" id="chapters-nav"></div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <div class="stream-selector" id="stream-selector" role="tablist" aria-label="Portal areas"></div>
+            </header>
+
+            <div class="content-body">
+
+                <!-- A SECTION (list of its groups) -->
+                <section id="home-view" class="view-section active-view">
+                    <div class="page-head">
+                        <h2 id="home-stream-title"></h2>
+                        <div class="page-lede" id="home-description-container"></div>
+                    </div>
+
+                    <div class="card" id="home-overview-card" hidden>
+                        <div id="home-overview-box" class="content-box"></div>
+                    </div>
+
+                    <ul class="index-list" id="home-tiles"></ul>
+                    <p class="empty-note" id="home-tiles-empty" hidden></p>
+
+                    <h3 class="sub-head" id="mentor-section-header" hidden>Help contacts</h3>
+                    <div class="mentor-row" id="mentor-column"></div>
+                </section>
+
+                <!-- A GROUP (a role, a handbook chapter, ...) -->
+                <section id="chapter-view" class="view-section">
+                    <div class="page-head">
+                        <p class="crumb" id="chapter-crumb"></p>
+                        <h2 id="view-chapter-name"></h2>
+                    </div>
+
+                    <h3 class="sub-head" id="pages-card"><span id="pages-label">Pages</span></h3>
+                    <ul class="index-list" id="view-chapter-lessons"></ul>
+
+                    <h3 class="sub-head" id="resources-card">Resources</h3>
+                    <ul class="index-list" id="view-chapter-resources"></ul>
+
+                    <p class="empty-note" id="chapter-empty" hidden>Nothing has been added here yet.</p>
+                </section>
+
+                <!-- ONE PAGE OR RESOURCE -->
+                <section id="lesson-view" class="view-section">
+                    <div class="page-head">
+                        <p class="crumb" id="lesson-crumb"></p>
+                        <h2 id="lesson-title"></h2>
+                    </div>
+
+                    <div class="content-box lesson-body" id="lesson-content-body"></div>
+
+                    <div class="lesson-nav-footer">
+                        <button class="lesson-nav-btn" id="btn-prev-lesson" type="button" hidden>
+                            <i class="fa-solid fa-arrow-left"></i> <span>Previous Page</span>
+                        </button>
+                        <button class="lesson-nav-btn lesson-nav-btn-primary" id="btn-next-lesson" type="button" hidden>
+                            <span>Next Page</span> <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- DAILY REFLECTION FORM -->
+                <section id="reflection-view" class="view-section">
+                    <div class="page-head">
+                        <p class="crumb" id="reflection-crumb"></p>
+                        <h2>Daily Robotics Team Reflection</h2>
+                        <div class="page-lede"><p>Fill this in at the end of each meeting. A mentor reads your answers and gives you the day's mark after class.</p></div>
+                    </div>
+
+                    <form id="reflection-form" class="reflection-form" novalidate>
+                        <input type="checkbox" name="botcheck" id="rf-botcheck" class="rf-trap" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+                        <div class="rf-row">
+                            <div class="rf-field">
+                                <label class="rf-label" for="rf-name">Name</label>
+                                <input class="rf-input" type="text" id="rf-name" name="name" autocomplete="name">
+                                <p class="rf-error" id="rf-name-err" hidden></p>
+                            </div>
+                            <div class="rf-field rf-field-date">
+                                <label class="rf-label" for="rf-date">Date</label>
+                                <input class="rf-input" type="date" id="rf-date" name="date">
+                                <p class="rf-error" id="rf-date-err" hidden></p>
+                            </div>
+                        </div>
+
+                        <div class="rf-field">
+                            <label class="rf-label" for="rf-q1"><span class="rf-num">1.</span> What did you work on today?</label>
+                            <p class="rf-help" id="rf-q1-help">Briefly describe what you accomplished or contributed to the team today.</p>
+                            <textarea class="rf-input" id="rf-q1" name="q1" rows="4" aria-describedby="rf-q1-help"></textarea>
+                            <p class="rf-error" id="rf-q1-err" hidden></p>
+                        </div>
+
+                        <div class="rf-field">
+                            <label class="rf-label" for="rf-q2"><span class="rf-num">2.</span> How productive were you today?</label>
+                            <p class="rf-help" id="rf-q2-help">Did you stay focused and use your time effectively?</p>
+                            <textarea class="rf-input" id="rf-q2" name="q2" rows="3" aria-describedby="rf-q2-help"></textarea>
+                            <p class="rf-error" id="rf-q2-err" hidden></p>
+                        </div>
+
+                        <div class="rf-field">
+                            <label class="rf-label" for="rf-q3"><span class="rf-num">3.</span> What mark out of 100 do you believe you deserve for today's work?</label>
+                            <div class="rf-mark">
+                                <span class="rf-mark-label" aria-hidden="true">My mark:</span>
+                                <input class="rf-input rf-mark-input" type="number" inputmode="numeric" min="0" max="100" step="1" id="rf-q3" name="q3" aria-label="My mark out of 100">
+                                <span class="rf-mark-label" aria-hidden="true">/ 100</span>
+                            </div>
+                            <p class="rf-error" id="rf-q3-err" hidden></p>
+                        </div>
+
+                        <div class="rf-field">
+                            <label class="rf-label" for="rf-q4"><span class="rf-num">4.</span> Why do you believe you deserve this mark?</label>
+                            <p class="rf-help" id="rf-q4-help">Explain your mark. Consider your effort, productivity, teamwork, and contribution to the team's progress.</p>
+                            <textarea class="rf-input" id="rf-q4" name="q4" rows="4" aria-describedby="rf-q4-help"></textarea>
+                            <p class="rf-error" id="rf-q4-err" hidden></p>
+                        </div>
+
+                        <div class="rf-field">
+                            <label class="rf-label" for="rf-q5"><span class="rf-num">5.</span> What is one thing you want to accomplish next time?</label>
+                            <p class="rf-help" id="rf-q5-help">Identify a goal or task for next robotics meeting.</p>
+                            <textarea class="rf-input" id="rf-q5" name="q5" rows="3" aria-describedby="rf-q5-help"></textarea>
+                            <p class="rf-error" id="rf-q5-err" hidden></p>
+                        </div>
+
+                        <div class="rf-actions">
+                            <button class="rf-submit" id="rf-submit" type="submit">Submit reflection</button>
+                            <p class="rf-status" id="rf-status" role="status" aria-live="polite"></p>
+                        </div>
+                    </form>
+
+                    <div class="rf-done" id="rf-done" hidden tabindex="-1">
+                        <h3 id="rf-done-title">Reflection sent</h3>
+                        <p id="rf-done-text"></p>
+                        <div class="rf-done-actions">
+                            <button class="lesson-nav-btn" id="rf-again" type="button">Fill in another</button>
+                            <a class="rf-link" id="rf-back" href="#/comp-team">Back to the Competition Team</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/internal/config.js?v=1"></script>
+    <script src="/internal/app.js?v=4"></script>
+</body>
+</html>

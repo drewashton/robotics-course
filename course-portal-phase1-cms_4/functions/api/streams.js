@@ -2,10 +2,14 @@
 // with its mentor contacts. Each stream carries only its PUBLISHED units,
 // and each of those only its PUBLISHED lessons/assignments/resources.
 
-export async function onRequestGet({ env }) {
+// ?site=internal returns the internal portal's sections instead of the
+// learning platform's streams. Anything else (or nothing) means the course.
+export async function onRequestGet({ request, env }) {
+  const site = new URL(request.url).searchParams.get("site") === "internal" ? "internal" : "course";
+
   const { results: streams } = await env.DB.prepare(
-    "SELECT id, stream_key, name, description, objectives_html, schedule_html FROM streams ORDER BY sort_order"
-  ).all();
+    "SELECT id, stream_key, name, description, objectives_html, schedule_html FROM streams WHERE site = ? ORDER BY sort_order"
+  ).bind(site).all();
 
   const { results: units } = await env.DB.prepare(
     "SELECT id, stream_id, unit_label, title FROM units WHERE published = 1 ORDER BY sort_order"

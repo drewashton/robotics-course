@@ -9,8 +9,9 @@ export async function onRequestPost({ request, env }) {
   if (!auth.authorized) return auth.response;
 
   const { stream_id, unit_label, title } = await request.json().catch(() => ({}));
-  if (!stream_id || !unit_label || !title) {
-    return json({ error: "stream_id, unit_label, and title are required" }, { status: 400 });
+  // unit_label is optional: the internal portal's groups have no "Unit 1" style label.
+  if (!stream_id || !title) {
+    return json({ error: "stream_id and title are required" }, { status: 400 });
   }
 
   const row = await env.DB.prepare("SELECT COALESCE(MAX(sort_order), 0) as max FROM units WHERE stream_id = ?")
@@ -20,7 +21,7 @@ export async function onRequestPost({ request, env }) {
   const inserted = await env.DB.prepare(
     "INSERT INTO units (stream_id, unit_label, title, sort_order) VALUES (?, ?, ?, ?) RETURNING id"
   )
-    .bind(stream_id, unit_label, title, row.max + 1)
+    .bind(stream_id, unit_label || "", title, row.max + 1)
     .first();
 
   return json({ id: inserted.id });
@@ -30,8 +31,16 @@ export async function onRequestPut({ request, env }) {
   const auth = await requireAuth(request, env);
   if (!auth.authorized) return auth.response;
 
-  const { id, unit_label, title, published } = await request.json().catch(() => ({}));
+  const { id, unit_label, title, published, stream_id } = await request.json().catch(() => ({}));
   if (!id) return json({ error: "id is required" }, { status: 400 });
+
+  // Moving a group to another section puts it last in the new one.
+  if (stream_id) {
+    const target = await env.DB.prepare("SELECT id FROM streams WHERE id = ?").bind(stream_id).first();
+    if (!target) return json({ error: "That section doesn't exist" }, { status: 400 });
+    const row = await env.DB.prepare("SELECT COALESCE(MAX(sort_order), 0) as max FROM units WHERE stream_id = ?").bind(stream_id).first();
+    await env.DB.prepare("UPDATE units SET stream_id = ?, sort_order = ? WHERE id = ?").bind(stream_id, row.max + 1, id).run();
+  }
 
   await env.DB.prepare(
     `UPDATE units SET
