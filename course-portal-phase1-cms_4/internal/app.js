@@ -18,8 +18,44 @@ const FALLBACK_LAYOUT = {
 };
 
 const TOOLS = {
-    reflection: { label: "Daily Reflection", hash: "#/reflection", icon: "fa-pen-to-square" },
+    reflection: { label: "Daily Reflection", path: "/reflection", icon: "fa-pen-to-square" },
 };
+
+// Every section lives at its own address: /competitionteam, /roles, and so
+// on. These two keep the older section keys but get friendlier addresses.
+// /prepteam is also the learning platform's home, so the Prep Team's own
+// pages sit under it (for example /prepteam/onboarding).
+const SECTION_PATHS = { "prep-team": "prepteam", "comp-team": "competitionteam" };
+
+// "Org Chart & Roles" becomes "org-chart-and-roles". Used for every group and
+// page so the address bar reads like the title. `used` keeps neighbours unique.
+function slugify(text, used) {
+    const base = String(text || "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "page";
+    let slug = base;
+    let n = 2;
+    while (used.has(slug)) slug = `${base}-${n++}`;
+    used.add(slug);
+    return slug;
+}
+
+function addAddresses(list) {
+    list.forEach((section) => {
+        section.path = SECTION_PATHS[section.key] || section.key;
+        const units = new Set();
+        section.units.forEach((unit) => {
+            unit.slug = slugify(unit.title, units);
+            const lessons = new Set();
+            unit.lessons.forEach((l) => { l.slug = slugify(l.title, lessons); });
+            const resources = new Set();
+            unit.resources.forEach((r) => { r.slug = slugify(r.title, resources); });
+        });
+    });
+}
+
+const sectionUrl = (section) => "/" + section.path;
+const unitUrl = (section, unit) => `/${section.path}/${unit.slug}`;
+const itemUrl = (section, unit, kind, item) =>
+    `/${section.path}/${unit.slug}/${kind === "resource" ? "resource/" : ""}${item.slug}`;
 
 const SITE_TITLE = "Penticton Robotics - Internal Portal";
 const CONFIG = window.PR_CONFIG || {};
@@ -117,33 +153,62 @@ document.addEventListener("DOMContentLoaded", async () => {
     function spaceOfTool(toolKey) {
         return activeSpaces().find((sp) => sp.tools.includes(toolKey)) || null;
     }
-    const spaceHome = (sp) => (sp.secs.length ? "#/" + sp.secs[0].key : TOOLS[sp.tools[0]].hash);
+    const spaceHome = (sp) => (sp.secs.length ? sectionUrl(sp.secs[0]) : TOOLS[sp.tools[0]].path);
 
     // ---------- routing ----------
-    // The address bar carries where you are, so the browser's Back button
-    // works and any page can be shared as a link:
-    //   #/reflection            the Daily Reflection form
-    //   #/comp-team             a section
-    //   #/comp-team/12          a group in it (by id)
-    //   #/comp-team/12/lesson/45    a page   (kind: lesson | resource)
+    // The address bar carries where you are, so the Back button works and any
+    // page can be shared as a link:
+    //   /reflection                         the Daily Reflection form
+    //   /competitionteam                    a section
+    //   /roles/programming-lead             a group in it
+    //   /roles/programming-lead/handbook    a page
+    //   /roles/programming-lead/resource/x  a resource
 
-    function parseHash() {
-        const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
-        return { section: parts[0] || null, unit: parts[1] ? Number(parts[1]) : null, kind: parts[2] || null, item: parts[3] ? Number(parts[3]) : null };
+    function parsePath() {
+        const segs = location.pathname.split("/").filter(Boolean).map((p) => { try { return decodeURIComponent(p); } catch (e) { return p; } });
+        if (!segs.length) return { home: true };
+        if (segs[0] === "reflection") return { reflection: true };
+        const section = sections.find((s) => s.path === segs[0]);
+        if (!section) return { missing: true };
+        const unit = segs[1] ? section.units.find((u) => u.slug === segs[1]) : null;
+        if (segs[1] && !unit) return { missing: true };
+        const kind = segs[2] === "resource" ? "resource" : "lesson";
+        const slug = kind === "resource" ? segs[3] : segs[2];
+        const item = unit && slug ? unit[kind === "resource" ? "resources" : "lessons"].find((i) => i.slug === slug) : null;
+        if (slug && !item) return { missing: true };
+        return { section, unit, kind, item };
     }
 
-    function navigate(section, unitId, kind, itemId) {
-        const parts = [section];
-        if (unitId != null) parts.push(unitId);
-        if (kind && itemId != null) parts.push(kind, itemId);
-        const next = "#/" + parts.join("/");
-        if (location.hash === next) render();
-        else location.hash = next; // triggers render() through hashchange
+    // Addresses this page can show itself. /prepteam on its own is the
+    // learning platform, a different page, so it loads normally.
+    function isAppPath(path) {
+        const segs = path.split("/").filter(Boolean);
+        if (!segs.length || segs[0] === "reflection") return true;
+        if (segs[0] === "prepteam" && segs.length === 1) return false;
+        return sections.some((s) => s.path === segs[0]);
+    }
+
+    function go(path) {
+        if (location.pathname !== path) history.pushState({}, "", path);
+        render();
+    }
+
+    // Older links used #/comp-team/12/lesson/45 (ids). Turn one into the new address.
+    function legacyHashToPath(hash) {
+        const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+        if (!parts.length) return "/";
+        if (parts[0] === "reflection") return TOOLS.reflection.path;
+        const section = sectionByKey(parts[0]);
+        if (!section) return "/";
+        const unit = parts[1] ? section.units.find((u) => u.id === Number(parts[1])) : null;
+        if (!unit) return sectionUrl(section);
+        const field = parts[2] === "resource" ? "resources" : parts[2] === "lesson" ? "lessons" : null;
+        const item = field && parts[3] ? unit[field].find((i) => i.id === Number(parts[3])) : null;
+        return item ? itemUrl(section, unit, parts[2], item) : unitUrl(section, unit);
     }
 
     function goLanding() {
-        if (location.hash) history.pushState("", document.title, location.pathname + location.search);
-        render();
+        go("/");
     }
 
     function showShell() {
@@ -152,18 +217,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function render() {
-        const state = parseHash();
+        let state = parsePath();
 
-        if (state.section === "reflection") {
+        if (state.missing) {
+            history.replaceState({}, "", "/");
+            state = { home: true };
+        }
+
+        if (state.reflection) {
             const sp = spaceOfTool("reflection");
             if (sp) {
                 showShell();
                 buildShell(sp, { tool: "reflection" });
                 return showReflection(sp);
             }
+            history.replaceState({}, "", "/");
+            state = { home: true };
         }
 
-        const section = state.section ? sectionByKey(state.section) : null;
+        const { section, unit, kind, item } = state;
         if (!section) {
             appInterface.style.display = "none";
             portalScreen.style.display = "flex";
@@ -173,15 +245,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const space = spaceOfSection(section.key);
-        const unit = state.unit != null ? section.units.find((u) => u.id === state.unit) : null;
         showShell();
         buildShell(space, { section: section.key, unit: unit ? unit.id : null });
         if (!unit) return showHome(section, space);
-
-        const kindField = state.kind === "resource" ? "resources" : state.kind === "lesson" ? "lessons" : null;
-        const item = kindField && state.item != null ? unit[kindField].find((i) => i.id === state.item) : null;
         if (!item) return showUnit(section, unit, space);
-        showItem(section, unit, space, state.kind, kindField, item);
+        showItem(section, unit, space, kind, kind === "resource" ? "resources" : "lessons", item);
     }
 
     // ---------- landing ----------
@@ -208,7 +276,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const a = document.createElement("a");
             a.className = "quick-link" + (l.primary ? " primary" : "");
             a.href = l.url;
-            if (!l.url.startsWith("#")) {
+            if (!l.url.startsWith("#") && !l.url.startsWith("/")) {
                 a.target = "_blank";
                 a.rel = "noopener";
             }
@@ -219,14 +287,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function panelRows(sp) {
         const rows = [];
-        sp.tools.forEach((t) => rows.push({ label: TOOLS[t].label, href: TOOLS[t].hash, tool: true }));
+        sp.tools.forEach((t) => rows.push({ label: TOOLS[t].label, href: TOOLS[t].path, tool: true }));
         sp.entries.forEach(({ section, inline, noun }) => {
             if (inline) {
-                section.units.forEach((u) => rows.push({ label: u.title, href: `#/${section.key}/${u.id}` }));
+                section.units.forEach((u) => rows.push({ label: u.title, href: unitUrl(section, u) }));
             } else {
                 const n = section.units.length;
                 const meta = noun && n ? `${n} ${noun}${n === 1 ? "" : "s"}` : "";
-                rows.push({ label: section.name, href: "#/" + section.key, meta });
+                rows.push({ label: section.name, href: sectionUrl(section), meta });
             }
         });
         return rows;
@@ -292,7 +360,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         space.tools.forEach((t) => {
             const a = document.createElement("a");
             a.className = "nav-item nav-tool" + (active.tool === t ? " active" : "");
-            a.href = TOOLS[t].hash;
+            a.href = TOOLS[t].path;
             a.innerHTML = `<i class="fa-solid ${TOOLS[t].icon}"></i> ${escapeHtml(TOOLS[t].label)}`;
             chaptersNav.appendChild(a);
         });
@@ -300,14 +368,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         space.secs.forEach((s) => {
             const heading = document.createElement("a");
             heading.className = "nav-heading" + (active.section === s.key && active.unit == null ? " active" : "");
-            heading.href = "#/" + s.key;
+            heading.href = sectionUrl(s);
             heading.textContent = s.name;
             chaptersNav.appendChild(heading);
 
             s.units.forEach((u) => {
                 const a = document.createElement("a");
                 a.className = "nav-item" + (active.section === s.key && active.unit === u.id ? " active" : "");
-                a.href = `#/${s.key}/${u.id}`;
+                a.href = unitUrl(s, u);
                 a.textContent = u.title;
                 chaptersNav.appendChild(a);
             });
@@ -327,9 +395,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const bits = [];
         if (space) bits.push(`<a href="${spaceHome(space)}">${escapeHtml(space.title)}</a>`);
         if (section && (!space || section.name !== space.title)) {
-            bits.push(unit ? `<a href="#/${section.key}">${escapeHtml(section.name)}</a>` : escapeHtml(section.name));
+            bits.push(unit ? `<a href="${sectionUrl(section)}">${escapeHtml(section.name)}</a>` : escapeHtml(section.name));
         }
-        if (unit) bits.push(`<a href="#/${section.key}/${unit.id}">${escapeHtml(unit.title)}</a>`);
+        if (unit) bits.push(`<a href="${unitUrl(section, unit)}">${escapeHtml(unit.title)}</a>`);
         return bits.join('<span aria-hidden="true"> / </span>');
     }
 
@@ -356,7 +424,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const tiles = document.getElementById("home-tiles");
         const rows = [];
         if (space && space.secs[0] && space.secs[0].key === section.key) {
-            space.tools.forEach((t) => rows.push(rowHtml(TOOLS[t].hash, TOOLS[t].label, "", TOOLS[t].icon)));
+            space.tools.forEach((t) => rows.push(rowHtml(TOOLS[t].path, TOOLS[t].label, "", TOOLS[t].icon)));
         }
         section.units.forEach((unit) => {
             const pages = unit.lessons.length;
@@ -364,7 +432,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const bits = [];
             if (pages) bits.push(`${pages} ${pages === 1 ? "page" : "pages"}`);
             if (res) bits.push(`${res} ${res === 1 ? "resource" : "resources"}`);
-            rows.push(rowHtml(`#/${section.key}/${unit.id}`, unit.title, bits.join(", ")));
+            rows.push(rowHtml(unitUrl(section, unit), unit.title, bits.join(", ")));
         });
         tiles.innerHTML = rows.map((r) => `<li>${r}</li>`).join("");
         tiles.hidden = rows.length === 0;
@@ -417,9 +485,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("chapter-empty").hidden = hasPages || hasResources;
 
         document.getElementById("view-chapter-lessons").innerHTML = unit.lessons
-            .map((l) => `<li>${rowHtml(`#/${section.key}/${unit.id}/lesson/${l.id}`, l.title)}</li>`).join("");
+            .map((l) => `<li>${rowHtml(itemUrl(section, unit, "lesson", l), l.title)}</li>`).join("");
         document.getElementById("view-chapter-resources").innerHTML = unit.resources
-            .map((r) => `<li>${rowHtml(`#/${section.key}/${unit.id}/resource/${r.id}`, r.title, "", "fa-file-lines")}</li>`).join("");
+            .map((r) => `<li>${rowHtml(itemUrl(section, unit, "resource", r), r.title, "", "fa-file-lines")}</li>`).join("");
         resetScroll();
     }
 
@@ -442,9 +510,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const hasNext = showNav && index < items.length - 1;
 
         btnPrevLesson.hidden = !hasPrev;
-        if (hasPrev) btnPrevLesson.onclick = () => navigate(section.key, unit.id, kind, items[index - 1].id);
+        if (hasPrev) btnPrevLesson.onclick = () => go(itemUrl(section, unit, kind, items[index - 1]));
         btnNextLesson.hidden = !hasNext;
-        if (hasNext) btnNextLesson.onclick = () => navigate(section.key, unit.id, kind, items[index + 1].id);
+        if (hasNext) btnNextLesson.onclick = () => go(itemUrl(section, unit, kind, items[index + 1]));
         resetScroll();
     }
 
@@ -634,7 +702,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("btn-back-home").addEventListener("click", goLanding);
     document.getElementById("back-to-portal").addEventListener("click", goLanding);
-    window.addEventListener("hashchange", render);
+    // An old #/... link (bookmarks, earlier buttons) is moved to its new address.
+    // Returns true when it sent the browser to a different page.
+    function adoptLegacyHash() {
+        if (!location.hash.startsWith("#/")) return false;
+        const target = legacyHashToPath(location.hash);
+        if (!isAppPath(target)) {
+            location.replace(target);
+            return true;
+        }
+        history.replaceState({}, "", target);
+        return false;
+    }
+
+    window.addEventListener("popstate", () => { if (!adoptLegacyHash()) render(); });
+
+    // Links between pages of the portal change the address without reloading.
+    document.addEventListener("click", (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const a = e.target.closest("a[href]");
+        if (!a || a.target === "_blank") return;
+        const href = a.getAttribute("href");
+        const legacy = href.startsWith("#/");
+        const path = legacy ? legacyHashToPath(href) : href.startsWith("/") && !href.startsWith("//") ? href.split(/[?#]/)[0] : null;
+        if (!path) return;
+        if (isAppPath(path)) {
+            e.preventDefault();
+            go(path);
+        } else if (legacy) {
+            e.preventDefault();
+            location.assign(path);
+        }
+    });
 
     try {
         const [streamsRes, layoutRes] = await Promise.all([
@@ -656,11 +755,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const hiddenKeys = new Set();
     layout.boxes.forEach((b) => b.items.forEach((it) => { if (it.hidden) hiddenKeys.add(it.stream); }));
     sections = sections.filter((s) => !hiddenKeys.has(s.key));
+    addAddresses(sections);
 
     fieldEl("date").value = todayLocal();
     fieldEl("name").value = recall("pr-reflection-name");
     renderHero();
     renderQuickLinks();
     renderLanding();
-    render();
+
+    if (!adoptLegacyHash()) render();
 });
