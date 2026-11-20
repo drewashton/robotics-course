@@ -273,16 +273,23 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     font-size: 1.05rem;
 }
 
+/* With the overview text gone, the picker sits right under the hero. */
+.portal-info-hub > .portal-cta-header:first-child {
+    margin-top: 8px;
+}
+
 /* --- GRID TRIGGER PLATFORMS --- */
 .stream-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 24px;
     max-width: 850px;
     margin: 0 auto 60px auto;
 }
 
 .portal-stream-card {
+    width: calc((100% - 48px) / 3);
     background: rgba(15, 15, 15, 0.75); 
     backdrop-filter: blur(8px);          
     -webkit-backdrop-filter: blur(8px);
@@ -1097,7 +1104,6 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     }
 
     .stream-grid {
-        grid-template-columns: 1fr;
         gap: 12px;
         width: 100%;
         margin-bottom: 32px;
