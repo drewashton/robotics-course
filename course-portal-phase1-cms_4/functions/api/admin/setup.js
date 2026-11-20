@@ -3,7 +3,7 @@
 // set yourself, and refuses to run again once any instructor exists.
 //
 // Usage (see README-DEPLOYMENT.md):
-//   curl -X POST https://course.pentictonrobotics.ca/api/admin/setup \
+//   curl -X POST https://portal.pentictonrobotics.ca/api/admin/setup \
 //     -H "X-Setup-Token: <your SETUP_TOKEN>" \
 //     -H "Content-Type: application/json" \
 //     -d '{"name":"Jane Mentor","email":"jane@example.com","password":"choose-a-strong-password"}'
