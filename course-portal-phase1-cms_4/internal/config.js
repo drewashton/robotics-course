@@ -3,7 +3,7 @@
 window.PR_CONFIG = {
     // The access key Web3Forms emailed you (web3forms.com). It is safe to put
     // here: it only lets the form send submissions to your email.
-    web3formsKey: "",
+    web3formsKey: "c77680da-73f4-4845-8d8d-eccee33f8f54",
 
     // The "Web app" address from the marks sheet script (Deploy > Web app).
     // Leave empty if you are not using the marks sheet yet.
