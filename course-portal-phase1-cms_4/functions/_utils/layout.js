@@ -11,7 +11,7 @@ export const DEFAULT_LAYOUT = {
     tagline: "Handbooks, team resources, and how the program runs. Everyone on the team, including parents and mentors, can see everything.",
   },
   quickLinks: [
-    { label: "Daily Reflection", url: "#/reflection", primary: true },
+    { label: "Daily Reflection", url: "/reflection", primary: true },
     { label: "Task Board", url: "https://board.pentictonrobotics.ca", primary: false },
   ],
   boxes: [
