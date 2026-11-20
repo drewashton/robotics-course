@@ -89,8 +89,11 @@ export async function onRequestPost({ request, env }) {
   const target = layout.boxes.find((b) => b.key === box);
   if (!target) return json({ error: "That box doesn't exist" }, { status: 400 });
 
+  // Every section is an address on the site, so a few names are taken by the
+  // site itself and can't be used for a section.
+  const RESERVED = ["api", "admin", "internal", "index", "reflection", "prepteam", "competitionteam"];
   const { results: existing } = await env.DB.prepare("SELECT stream_key FROM streams").all();
-  const key = slugify(title, new Set(existing.map((r) => r.stream_key)));
+  const key = slugify(title, new Set([...existing.map((r) => r.stream_key), ...RESERVED]));
   const order = await env.DB.prepare("SELECT COALESCE(MAX(sort_order), 0) AS max FROM streams WHERE site = 'internal'").first();
 
   const created = await env.DB.prepare(
