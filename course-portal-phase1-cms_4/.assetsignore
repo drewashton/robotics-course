@@ -1,0 +1,13 @@
+worker.js
+wrangler.jsonc
+functions/
+schema.sql
+migration_v4.sql
+migration_v5.sql
+migration_v6.sql
+migration_v7.sql
+migration_v8.sql
+reset_content.sql
+README-DEPLOYMENT.md
+.assetsignore
+CNAME
