@@ -124,6 +124,21 @@ h1, h2, h3, h4, .nav-item, .stream-btn {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.portal-home-link {
+    display: inline-block;
+    margin-bottom: 22px;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0.85;
+}
+
+.portal-home-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
 .portal-tagline {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: #e5e5e5 !important;
