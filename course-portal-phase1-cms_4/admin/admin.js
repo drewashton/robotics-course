@@ -300,7 +300,7 @@ function applySiteLabels() {
     $("schedule-section").hidden = internal;
     $("assignments-section").hidden = internal;
     $("unit-label-field").hidden = internal;
-    $("link-view-site").href = internal ? "https://internal.pentictonrobotics.ca/" : "https://course.pentictonrobotics.ca/";
+    $("link-view-site").href = internal ? "/" : "/prepteam";
 }
 
 // ---------- AUTH ----------
