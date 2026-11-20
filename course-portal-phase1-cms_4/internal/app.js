@@ -361,20 +361,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             chaptersNav.appendChild(a);
         });
 
-        space.secs.forEach((s) => {
-            const heading = document.createElement("a");
-            heading.className = "nav-heading" + (active.section === s.key && active.unit == null ? " active" : "");
-            heading.href = sectionUrl(s);
-            heading.textContent = s.name;
-            chaptersNav.appendChild(heading);
+        space.secs.forEach((s, i) => {
+            // The section's own page first (like "Syllabus" in the learning platform), then its groups.
+            const home = document.createElement("a");
+            home.className = "nav-item" + (active.section === s.key && active.unit == null ? " active" : "");
+            home.href = sectionUrl(s);
+            home.innerHTML = `<i class="fa-solid fa-house"></i> ${escapeHtml(s.name)}`;
+            chaptersNav.appendChild(home);
+
+            if (s.units.length) {
+                const rule = document.createElement("div");
+                rule.className = "sidebar-divider";
+                chaptersNav.appendChild(rule);
+            }
 
             s.units.forEach((u) => {
                 const a = document.createElement("a");
                 a.className = "nav-item" + (active.section === s.key && active.unit === u.id ? " active" : "");
                 a.href = unitUrl(s, u);
-                a.textContent = u.title;
+                a.innerHTML = `<i class="fa-solid fa-folder"></i> ${escapeHtml(u.title)}`;
                 chaptersNav.appendChild(a);
             });
+
+            if (i < space.secs.length - 1) {
+                const rule = document.createElement("div");
+                rule.className = "sidebar-divider";
+                chaptersNav.appendChild(rule);
+            }
         });
 
         const current = chaptersNav.querySelector(".nav-item.active");
@@ -397,10 +410,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         return bits.join('<span aria-hidden="true"> / </span>');
     }
 
-    function rowHtml(href, title, meta, icon) {
-        return `<a href="${href}">
-            <span class="row-title">${icon ? `<i class="fa-solid ${icon}"></i>` : ""}${escapeHtml(title)}</span>
-            <span class="row-meta">${meta ? escapeHtml(meta) : ""}<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></span>
+    // One row in a card: the title, then a black button saying what it opens.
+    function rowHtml(href, title, meta, icon, label) {
+        return `<a class="lesson-toc-row" href="${href}">
+            <span class="lesson-toc-title">${icon ? `<i class="fa-solid ${icon}"></i>` : ""}${escapeHtml(title)}</span>
+            <span class="row-right">
+                ${meta ? `<span class="row-meta">${escapeHtml(meta)}</span>` : ""}
+                <span class="lesson-start-btn">${label || "Open"} <i class="fa-solid fa-arrow-right"></i></span>
+            </span>
         </a>`;
     }
 
@@ -409,7 +426,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.title = `${section.name} - ${SITE_TITLE}`;
 
         document.getElementById("home-stream-title").textContent = section.name;
-        document.getElementById("home-description-container").innerHTML = `<p>${escapeHtml(section.description)}</p>`;
+        document.getElementById("home-description-container").innerHTML = section.description ? `<p>${escapeHtml(section.description)}</p>` : "";
 
         const overviewCard = document.getElementById("home-overview-card");
         const showOverview = hasRealContent(section.objectives);
@@ -481,9 +498,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("chapter-empty").hidden = hasPages || hasResources;
 
         document.getElementById("view-chapter-lessons").innerHTML = unit.lessons
-            .map((l) => `<li>${rowHtml(itemUrl(section, unit, "lesson", l), l.title)}</li>`).join("");
+            .map((l) => `<li>${rowHtml(itemUrl(section, unit, "lesson", l), l.title, "", "", "Read")}</li>`).join("");
         document.getElementById("view-chapter-resources").innerHTML = unit.resources
-            .map((r) => `<li>${rowHtml(itemUrl(section, unit, "resource", r), r.title, "", "fa-file-lines")}</li>`).join("");
+            .map((r) => `<li>${rowHtml(itemUrl(section, unit, "resource", r), r.title, "", "fa-file-lines", "View")}</li>`).join("");
         resetScroll();
     }
 
@@ -495,6 +512,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.getElementById("lesson-crumb").innerHTML = crumbHtml(space, section, unit);
         lessonTitle.textContent = item.title;
+        document.getElementById("lesson-back").href = unitUrl(section, unit);
+        document.getElementById("lesson-back-label").textContent = `Back to ${unit.title}`;
 
         lessonContentBody.innerHTML = hasRealContent(item.content) ? item.content : "<p>No content added yet.</p>";
         addPdfLinks(lessonContentBody);
