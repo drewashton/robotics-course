@@ -60,79 +60,28 @@
     filter: brightness(1.08);
 }
 
-/* The boxes: two side by side, each its own index */
-.team-panels {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: start;
-}
-.team-panel {
-    background: rgba(10, 10, 10, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 6px;
-    padding: 28px 28px 14px 28px;
-}
-.team-panel h2 {
-    font-size: 1.65rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-}
-.team-panel h2 a {
+/* The boxes: the same cards as the Prep Team stream picker (shared style.css).
+   These are links, not buttons. */
+.internal-portal .portal-stream-card {
+    text-decoration: none;
+    font: inherit;
     color: #ffffff;
-    text-decoration: none;
 }
-.team-panel h2 a:hover {
-    color: var(--accent-gold);
+.internal-portal .portal-stream-card h3 {
+    margin-bottom: 10px;
 }
-.team-blurb {
+.internal-portal .portal-cta-header {
+    margin-top: 12px;
+}
+.stream-blurb {
     color: #b9b9b9;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     line-height: 1.5;
-    margin: 6px 0 20px 0;
+    margin: 0 0 22px 0;
 }
-.panel-index {
-    list-style: none;
-}
-.panel-index li {
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-.panel-index a {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 13px 2px;
-    color: #ececec;
-    font-size: 0.97rem;
-    text-decoration: none;
-}
-.panel-index a:hover {
-    color: var(--accent-gold);
-}
-.panel-index a.is-tool {
-    color: var(--accent-gold);
-    font-weight: 700;
-}
-.panel-index small {
-    color: #9a9a9a;
-    font-size: 0.82rem;
-    align-self: center;
-}
-
-/* With an odd number of boxes the last spans the full width, its rows in two columns */
-.team-panel.is-wide {
-    grid-column: 1 / -1;
-}
-.team-panel.is-wide .panel-index {
-    columns: 2;
-    column-gap: 40px;
-}
-.team-panel.is-wide .panel-index li {
-    break-inside: avoid;
-}
-.landing-end {
-    height: 56px;
+.internal-portal .portal-stream-card:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
 }
 .empty-note {
     color: var(--text-muted);
@@ -470,20 +419,7 @@ textarea.rf-input {
         flex: 1 1 100%;
         justify-content: center;
     }
-    .team-panels {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-    .team-panel {
-        padding: 22px 18px 8px 18px;
-    }
-    .team-panel h2 {
-        font-size: 1.4rem;
-    }
-    .team-panel.is-wide .panel-index {
-        columns: 1;
-    }
-
+    
     .internal-portal .nav-menu {
         padding-top: 12px;
     }
