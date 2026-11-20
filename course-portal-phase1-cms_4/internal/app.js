@@ -153,7 +153,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     function spaceOfTool(toolKey) {
         return activeSpaces().find((sp) => sp.tools.includes(toolKey)) || null;
     }
-    const spaceHome = (sp) => (sp.secs.length ? sectionUrl(sp.secs[0]) : TOOLS[sp.tools[0]].path);
+    // Where a box opens. /prepteam itself is the learning platform's home, so
+    // the Prep Team box opens on its first page (for example /prepteam/onboarding).
+    function spaceHome(sp) {
+        if (!sp.secs.length) return TOOLS[sp.tools[0]].path;
+        const section = sp.secs[0];
+        if (sectionUrl(section) === "/prepteam" && section.units.length) return unitUrl(section, section.units[0]);
+        return sectionUrl(section);
+    }
 
     // ---------- routing ----------
     // The address bar carries where you are, so the Back button works and any
@@ -285,21 +292,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    function panelRows(sp) {
-        const rows = [];
-        sp.tools.forEach((t) => rows.push({ label: TOOLS[t].label, href: TOOLS[t].path, tool: true }));
-        sp.entries.forEach(({ section, inline, noun }) => {
-            if (inline) {
-                section.units.forEach((u) => rows.push({ label: u.title, href: unitUrl(section, u) }));
-            } else {
-                const n = section.units.length;
-                const meta = noun && n ? `${n} ${noun}${n === 1 ? "" : "s"}` : "";
-                rows.push({ label: section.name, href: sectionUrl(section), meta });
-            }
-        });
-        return rows;
-    }
+    // Icons for the cards on the landing page, by box key. A box added later in
+    // the Admin Panel gets the folder icon.
+    const SPACE_ICONS = { prep: "fa-graduation-cap", comp: "fa-trophy", program: "fa-people-group" };
+    const DEFAULT_SPACE_ICON = "fa-folder-open";
 
+    // Same cards as the Prep Team learning platform's stream picker: one gold
+    // icon, the box's name, and a line about who it is for. Each opens that box.
     function renderLanding() {
         const host = document.getElementById("portal-groups");
         host.innerHTML = "";
@@ -310,31 +309,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const wrap = document.createElement("div");
-        wrap.className = "team-panels";
-        spaces.forEach((sp, i) => {
-            const panel = document.createElement("section");
-            // With an odd number of boxes the last one spans the full width.
-            const wide = spaces.length > 1 && spaces.length % 2 === 1 && i === spaces.length - 1;
-            panel.className = "team-panel" + (wide ? " is-wide" : "");
-            const rows = panelRows(sp);
-            panel.innerHTML = `
-                <h2><a href="${spaceHome(sp)}">${escapeHtml(sp.title)}</a></h2>
-                ${sp.blurb ? `<p class="team-blurb">${escapeHtml(sp.blurb)}</p>` : ""}
-                <ul class="panel-index">
-                    ${rows.map((r) => `
-                        <li><a href="${r.href}"${r.tool ? ' class="is-tool"' : ""}>
-                            <span>${escapeHtml(r.label)}</span>
-                            ${r.meta ? `<small>${escapeHtml(r.meta)}</small>` : ""}
-                        </a></li>`).join("")}
-                </ul>`;
-            wrap.appendChild(panel);
-        });
-        host.appendChild(wrap);
+        const head = document.createElement("section");
+        head.className = "portal-cta-header";
+        head.innerHTML = `
+            <h2>Select Your Section</h2>
+            <p>Select a section below to find handbooks, lessons, and forms.</p>`;
+        host.appendChild(head);
 
-        const end = document.createElement("div");
-        end.className = "landing-end";
-        host.appendChild(end);
+        const grid = document.createElement("div");
+        grid.className = "stream-grid";
+        spaces.forEach((sp, i) => {
+            const card = document.createElement("a");
+            card.className = "portal-stream-card";
+            card.href = spaceHome(sp);
+            card.style.setProperty("--i", i);
+            card.innerHTML = `
+                <div class="stream-icon"><i class="fa-solid ${SPACE_ICONS[sp.key] || DEFAULT_SPACE_ICON}"></i></div>
+                <h3>${escapeHtml(sp.title)}</h3>
+                ${sp.blurb ? `<p class="stream-blurb">${escapeHtml(sp.blurb)}</p>` : ""}
+                <span class="stream-action">Open &rarr;</span>`;
+            grid.appendChild(card);
+        });
+        host.appendChild(grid);
     }
 
     // ---------- shell: tabs along the top, this team's pages on the left ----------
