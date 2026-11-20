@@ -1,4 +1,20 @@
-const STREAM_ICONS = { business: "fa-briefcase", build: "fa-hammer", programming: "fa-code" };
+const STREAM_ICONS = { exploration: "fa-compass", business: "fa-briefcase", build: "fa-hammer", programming: "fa-code" };
+
+// The learning platform lives at /prepteam. A stream is /prepteam/build, a
+// unit is /prepteam/build/unit-title, and a page is .../lesson-title (or
+// .../assignment/title, .../resource/title). The address bar always carries
+// where you are, so the Back button works and any page can be shared.
+const BASE_PATH = "/prepteam";
+const SITE_TITLE = "Penticton Robotics - Prep Team";
+
+function slugify(text, used) {
+    const base = String(text || "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "page";
+    let slug = base;
+    let n = 2;
+    while (used.has(slug)) slug = `${base}-${n++}`;
+    used.add(slug);
+    return slug;
+}
 const DEFAULT_ICON = "fa-folder-open";
 
 let courseStreamsList = [];      // ordered array of streams
@@ -53,6 +69,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let currentUnitIndex = null; // which unit (within the current stream) is open
 
+    // Changes the address (and tab title) to match the screen. While the app
+    // is following the address itself (Back button, a shared link) it only
+    // updates the title, so history doesn't get extra entries.
+    let following = false;
+    function setUrl(path, title) {
+        document.title = title ? `${title} - ${SITE_TITLE}` : SITE_TITLE;
+        if (!following && location.pathname !== path) history.pushState({}, "", path);
+    }
+
     // Fetch every stream (with its published units, lessons, assignments,
     // resources, and mentors) from the CMS backend
     async function loadCourseData() {
@@ -65,7 +90,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             courseStreamsList = [];
         }
         courseStreamsByKey = {};
-        courseStreamsList.forEach((s) => (courseStreamsByKey[s.key] = s));
+        courseStreamsList.forEach((s) => {
+            courseStreamsByKey[s.key] = s;
+            const units = new Set();
+            s.units.forEach((u) => {
+                u.slug = slugify(u.title, units);
+                ["lessons", "assignments", "resources"].forEach((field) => {
+                    const used = new Set();
+                    u[field].forEach((item) => { item.slug = slugify(item.title, used); });
+                });
+            });
+        });
         dataLoaded = true;
     }
 
@@ -155,6 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const returnToPortal = () => {
         appInterface.style.display = "none";
         portalScreen.style.display = "flex";
+        setUrl(BASE_PATH);
         resetScroll();
     };
     btnBackHome.addEventListener("click", returnToPortal);
@@ -242,6 +278,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         homeView.classList.add("active-view");
         chapterView.classList.remove("active-view");
         lessonView.classList.remove("active-view");
+        const stream = courseStreamsByKey[currentStreamKey];
+        if (stream) setUrl(`${BASE_PATH}/${stream.key}`, stream.name);
         resetScroll();
     }
 
@@ -260,6 +298,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         homeView.classList.remove("active-view");
         lessonView.classList.remove("active-view");
         chapterView.classList.add("active-view");
+        setUrl(`${BASE_PATH}/${currentStreamKey}/${unit.slug}`, unit.title);
 
         viewChapterNum.textContent = unit.unit;
         viewChapterName.textContent = unit.title;
@@ -322,6 +361,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         lessonTitle.textContent = item.title;
         lessonBackUnitLabel.textContent = `Back to ${unit.unit}`;
+        setUrl(`${BASE_PATH}/${currentStreamKey}/${unit.slug}/${kind === "lesson" ? "" : kind + "/"}${item.slug}`, item.title);
 
         const hasContent = hasRealContent(item.content);
         lessonContentBody.innerHTML = hasContent ? item.content : "<p>No content added yet.</p>";
@@ -358,7 +398,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         return div.innerHTML;
     }
 
+    // Shows whatever screen the address names. Used on first load and for the
+    // browser's Back and Forward buttons.
+    function followAddress() {
+        following = true;
+        try {
+            const parts = location.pathname.split("/").filter(Boolean).slice(1);
+            const stream = courseStreamsByKey[parts[0]];
+            if (!stream) return returnToPortal();
+            goToStream(stream.key);
+            const unitIndex = stream.units.findIndex((u) => u.slug === parts[1]);
+            if (unitIndex < 0) return;
+            const kind = parts[2] === "assignment" || parts[2] === "resource" ? parts[2] : "lesson";
+            const slug = kind === "lesson" ? parts[2] : parts[3];
+            const itemIndex = slug ? stream.units[unitIndex][ITEM_KIND_CONFIG[kind].field].findIndex((i) => i.slug === slug) : -1;
+            if (itemIndex < 0) return showChapter(unitIndex);
+            showItemPage(kind, unitIndex, itemIndex);
+        } finally {
+            following = false;
+        }
+    }
+    window.addEventListener("popstate", followAddress);
+
     await loadCourseData();
     renderPortalCards();
     renderStreamSelector();
+    followAddress();
 });
