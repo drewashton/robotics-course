@@ -12,6 +12,7 @@ export const DEFAULT_LAYOUT = {
   },
   quickLinks: [
     { label: "Daily Reflection", url: "/reflection", primary: true },
+    { label: "Prep Team Learning Portal", url: "/prepteam", primary: false },
     { label: "Task Board", url: "https://board.pentictonrobotics.ca", primary: false },
   ],
   boxes: [
