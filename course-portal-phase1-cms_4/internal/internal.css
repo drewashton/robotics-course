@@ -1,15 +1,9 @@
-/* Styles that only the internal portal needs. Colors, type, the sidebar shell
-   and lesson content come from the shared /style.css; this file lays the
-   portal out around the two teams and quiets the shared "banner" styling so
-   it reads like a handbook, not a dashboard. Everything is scoped to
-   body.internal-portal so the learning platform is untouched. */
-
-/* --- No entrance animations: pages just appear --- */
-.internal-portal .view-section.active-view,
-.internal-portal .mentor-card,
-.internal-portal .card {
-    animation: none;
-}
+/* Styles that only the internal portal needs. The look (black banners with a
+   gold edge, white cards with black headers, the sidebar, lesson content)
+   comes from the shared /style.css, the same as the Prep Team learning
+   platform. This file only adds what the portal's links and the Daily
+   Reflection form need. Everything is scoped to body.internal-portal so the
+   learning platform is untouched. */
 
 /* ==========================================================================
    Landing
@@ -102,139 +96,62 @@
     text-decoration: none;
 }
 
-/* Sidebar lists everything in the current team */
-.internal-portal .nav-menu {
-    padding-top: 20px;
-}
+/* Sidebar items are links here, not buttons */
 .internal-portal .nav-item {
-    margin-bottom: 2px;
-    padding: 10px 12px;
-    font-weight: 500;
+    text-decoration: none;
     line-height: 1.35;
-    text-decoration: none;
-}
-.internal-portal .nav-item:hover {
-    transform: none;
-}
-.internal-portal .nav-item.nav-tool {
-    margin-bottom: 6px;
-}
-.internal-portal .nav-heading {
-    display: block;
-    padding: 20px 12px 6px 12px;
-    color: #8f8f8f;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-decoration: none;
-}
-.internal-portal .nav-heading:hover {
-    color: #ffffff;
-}
-.internal-portal .nav-heading.active {
-    color: var(--accent-gold);
-}
-.internal-portal .nav-tool + .nav-heading {
-    padding-top: 22px;
 }
 
-/* Page content: left aligned, readable line length */
-.internal-portal .content-body > .view-section {
-    max-width: 860px;
-}
-.page-head {
-    margin-bottom: 28px;
-}
-.crumb {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    line-height: 1.5;
-}
-.crumb a {
-    color: var(--text-muted);
+/* Where you are, as links in the small line above a banner's title */
+.internal-portal .chapter-number a {
+    color: inherit;
     text-decoration: none;
 }
-.crumb a:hover {
-    color: var(--text-dark);
+.internal-portal .chapter-number a:hover {
     text-decoration: underline;
 }
-.crumb:empty {
+.internal-portal .chapter-number span {
+    opacity: 0.6;
+}
+.internal-portal .chapter-number:empty {
     display: none;
 }
-.page-head h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    line-height: 1.15;
-    color: var(--text-dark);
-}
-.page-lede {
-    margin-top: 10px;
-    max-width: 62ch;
-    color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.65;
-}
-.sub-head {
-    margin: 34px 0 12px 0;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-dark);
-}
-.index-list {
-    list-style: none;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    margin-bottom: 8px;
-}
-.index-list li + li {
-    border-top: 1px solid var(--border-color);
-}
-.index-list a {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 15px 18px;
-    color: var(--text-dark);
-    font-size: 0.96rem;
-    font-weight: 600;
-    line-height: 1.4;
+
+/* Rows in a card: the whole row is the link; the black button is its label */
+.internal-portal .lesson-toc-list a.lesson-toc-row {
+    color: inherit;
     text-decoration: none;
 }
-.index-list a:hover {
-    background: #f4f4f4;
+.internal-portal .lesson-toc-list a.lesson-toc-row:hover .lesson-start-btn {
+    filter: brightness(1.4);
 }
-.row-title i {
+.internal-portal .lesson-toc-list a.lesson-toc-row:focus-visible {
+    outline: 2px solid var(--bg-sidebar);
+    outline-offset: 2px;
+}
+.lesson-toc-title i {
     margin-right: 10px;
     color: var(--text-muted);
 }
-.row-meta {
+.row-right {
     display: flex;
     align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
+    gap: 16px;
+    margin-left: auto;
+}
+.row-meta {
     color: var(--text-muted);
     font-size: 0.82rem;
     font-weight: 500;
 }
-.row-meta i {
-    font-size: 0.7rem;
-    color: #9a9a9a;
+.internal-portal a.lesson-back-link {
+    text-decoration: none;
 }
-.internal-portal #home-overview-card {
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    background: none;
-    margin-bottom: 24px;
+.internal-portal .welcome-card .chapter-number {
+    margin-bottom: 8px;
 }
-.internal-portal .mentor-row {
-    margin-bottom: 32px;
-}
-.internal-portal .lesson-body {
-    margin-bottom: 28px;
+.internal-portal .welcome-card .chapter-number + h3 {
+    margin-top: 0;
 }
 
 /* ==========================================================================
@@ -245,8 +162,12 @@
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    padding: 32px;
-    max-width: 760px;
+    padding: 24px;
+    max-width: 900px;
+    box-shadow: 0 1px 2px rgba(10,10,10,0.04), 0 4px 12px rgba(10,10,10,0.05);
+}
+.reflection-form .card-header {
+    margin-bottom: 24px;
 }
 .rf-trap {
     position: absolute;
@@ -355,14 +276,11 @@ textarea.rf-input {
 }
 .rf-submit:focus-visible,
 .rf-link:focus-visible,
-.index-list a:focus-visible,
 .stream-btn:focus-visible,
-.nav-item:focus-visible,
-.nav-heading:focus-visible {
+.nav-item:focus-visible {
     outline: 2px solid var(--accent-gold);
     outline-offset: 2px;
 }
-.index-list a:focus-visible,
 .stream-btn:focus-visible {
     outline-color: var(--bg-sidebar);
 }
@@ -420,20 +338,11 @@ textarea.rf-input {
         justify-content: center;
     }
     
-    .internal-portal .nav-menu {
-        padding-top: 12px;
-    }
     .internal-portal .chapters-list {
         align-items: center;
     }
-    .internal-portal .nav-heading {
-        flex-shrink: 0;
-        padding: 8px 4px 8px 12px;
-        white-space: nowrap;
-    }
     .internal-portal .nav-item {
         flex-shrink: 0;
-        margin-bottom: 0;
     }
     .internal-portal .stream-selector {
         gap: 8px;
@@ -443,15 +352,9 @@ textarea.rf-input {
         font-size: 0.8rem;
     }
 
-    .page-head h2 {
-        font-size: 1.55rem;
-    }
-    .index-list a {
-        padding: 14px 14px;
-    }
     .reflection-form,
     .rf-done {
-        padding: 20px 16px;
+        padding: 16px;
     }
     .rf-row {
         grid-template-columns: 1fr;
