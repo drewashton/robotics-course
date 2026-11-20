@@ -8,7 +8,7 @@
 let layoutData = null;
 
 const LAYOUT_TOOLS = { reflection: "Daily Reflection form" };
-const INTERNAL_URL = "https://internal.pentictonrobotics.ca/";
+const INTERNAL_URL = "/";
 
 const internalStreams = () => streamsData.filter((s) => s.site === "internal");
 const streamByKey = (key) => internalStreams().find((s) => s.stream_key === key) || null;
@@ -497,7 +497,7 @@ $("btn-save-heading").addEventListener("click", async () => {
 
     const bad = links.find((l) => !l.label || !/^(#\/|\/|https?:\/\/|mailto:)/i.test(l.url));
     if (bad) {
-        setStatus(status, `Each button needs text and a link that starts with https:// (or #/ for a page inside the portal).${bad.label ? ` Check "${bad.label}".` : ""}`, "error");
+        setStatus(status, `Each button needs text and a link that starts with https:// (or / for a page inside the portal).${bad.label ? ` Check "${bad.label}".` : ""}`, "error");
         return;
     }
     if (!$("layout-line1").value.trim()) {
