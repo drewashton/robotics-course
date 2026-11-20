@@ -32,7 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/style.css?v=18">
-    <link rel="stylesheet" href="/internal/internal.css?v=5">
+    <link rel="stylesheet" href="/internal/internal.css?v=6">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="internal-portal">
@@ -81,43 +81,71 @@
 
                 <!-- A SECTION (list of its groups) -->
                 <section id="home-view" class="view-section active-view">
-                    <div class="page-head">
-                        <h2 id="home-stream-title"></h2>
-                        <div class="page-lede" id="home-description-container"></div>
+                    <div class="welcome-card">
+                        <h3 id="home-stream-title"></h3>
+                        <div id="home-description-container"></div>
                     </div>
 
                     <div class="card" id="home-overview-card" hidden>
+                        <div class="card-header">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Overview</span>
+                        </div>
                         <div id="home-overview-box" class="content-box"></div>
                     </div>
 
-                    <ul class="index-list" id="home-tiles"></ul>
-                    <p class="empty-note" id="home-tiles-empty" hidden></p>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>In this section</span>
+                        </div>
+                        <ul class="lesson-toc-list" id="home-tiles"></ul>
+                        <div class="placeholder-box" id="home-tiles-empty" hidden></div>
+                    </div>
 
-                    <h3 class="sub-head" id="mentor-section-header" hidden>Help contacts</h3>
+                    <h3 class="card-header mentor-section-header" id="mentor-section-header" hidden>
+                        <i class="fa-solid fa-user-graduate"></i> Help Contacts
+                    </h3>
                     <div class="mentor-row" id="mentor-column"></div>
                 </section>
 
                 <!-- A GROUP (a role, a handbook chapter, ...) -->
                 <section id="chapter-view" class="view-section">
-                    <div class="page-head">
-                        <p class="crumb" id="chapter-crumb"></p>
-                        <h2 id="view-chapter-name"></h2>
+                    <div class="chapter-header-card">
+                        <span class="chapter-number" id="chapter-crumb"></span>
+                        <h3 id="view-chapter-name"></h3>
                     </div>
 
-                    <h3 class="sub-head" id="pages-card"><span id="pages-label">Pages</span></h3>
-                    <ul class="index-list" id="view-chapter-lessons"></ul>
+                    <div class="card" id="pages-card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span id="pages-label">Pages</span>
+                        </div>
+                        <ul class="lesson-toc-list" id="view-chapter-lessons"></ul>
+                    </div>
 
-                    <h3 class="sub-head" id="resources-card">Resources</h3>
-                    <ul class="index-list" id="view-chapter-resources"></ul>
+                    <div class="card" id="resources-card">
+                        <div class="card-header">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <span>Resources</span>
+                        </div>
+                        <ul class="lesson-toc-list" id="view-chapter-resources"></ul>
+                    </div>
 
-                    <p class="empty-note" id="chapter-empty" hidden>Nothing has been added here yet.</p>
+                    <div class="card" id="chapter-empty" hidden>
+                        <div class="placeholder-box">Nothing has been added here yet.</div>
+                    </div>
                 </section>
 
                 <!-- ONE PAGE OR RESOURCE -->
                 <section id="lesson-view" class="view-section">
-                    <div class="page-head">
-                        <p class="crumb" id="lesson-crumb"></p>
-                        <h2 id="lesson-title"></h2>
+                    <a class="lesson-back-link" id="lesson-back" href="/">
+                        <i class="fa-solid fa-arrow-left"></i> <span id="lesson-back-label">Back</span>
+                    </a>
+
+                    <div class="lesson-header-card">
+                        <span class="chapter-number" id="lesson-crumb"></span>
+                        <h3 id="lesson-title"></h3>
                     </div>
 
                     <div class="content-box lesson-body" id="lesson-content-body"></div>
@@ -134,13 +162,17 @@
 
                 <!-- DAILY REFLECTION FORM -->
                 <section id="reflection-view" class="view-section">
-                    <div class="page-head">
-                        <p class="crumb" id="reflection-crumb"></p>
-                        <h2>Daily Robotics Team Reflection</h2>
-                        <div class="page-lede"><p>Fill this in at the end of each meeting. A mentor reads your answers and gives you the day's mark after class.</p></div>
+                    <div class="welcome-card">
+                        <span class="chapter-number" id="reflection-crumb"></span>
+                        <h3>Daily Robotics Team Reflection</h3>
+                        <p>Fill this in at the end of each meeting. A mentor reads your answers and gives you the day's mark after class.</p>
                     </div>
 
                     <form id="reflection-form" class="reflection-form" novalidate>
+                        <div class="card-header">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Today's reflection</span>
+                        </div>
                         <input type="checkbox" name="botcheck" id="rf-botcheck" class="rf-trap" tabindex="-1" autocomplete="off" aria-hidden="true">
 
                         <div class="rf-row">
@@ -214,6 +246,6 @@
     </div>
 
     <script src="/internal/config.js?v=1"></script>
-    <script src="/internal/app.js?v=6"></script>
+    <script src="/internal/app.js?v=7"></script>
 </body>
 </html>
