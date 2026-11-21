@@ -50,6 +50,18 @@ export const DEFAULT_LAYOUT = {
 
 export const TOOL_KEYS = ["reflection"];
 
+// Older wordings that were saved before the text was simplified. If a saved
+// value is still exactly one of these, the new wording is shown instead. Text
+// edited in the Admin Panel to anything else is left alone.
+const OLD_TEXT = {
+  "Handbooks, team resources, and how the program runs. Everyone on the team, including parents and mentors, can see everything.": "Handbooks, resources and how our program runs. It's open to everyone on the team, parents and mentors too.",
+  "For students working through the learning pathway.": "For students going through the prep course.",
+  "For students on the competition roster.": "For students on the comp team.",
+  "For students, parents, and mentors.": "For students, parents and mentors.",
+  "Fill in at the end of each meeting. It is how your daily mark is given.": "Fill this out at the end of every meeting. It helps us give you a daily mark.",
+};
+const fresh = (s) => (Object.prototype.hasOwnProperty.call(OLD_TEXT, s) ? OLD_TEXT[s] : s);
+
 // The title and description shown for each built-in tool: its tile, its
 // sidebar entry, and the heading on its own page. Edited in the Admin Panel.
 export const DEFAULT_TOOL_TEXT = {
@@ -91,7 +103,7 @@ export function sanitizeLayout(input) {
   const hero = {
     line1: heroSrc.line1 === undefined ? d.hero.line1 : str(heroSrc.line1, 80),
     line2: heroSrc.line2 === undefined ? d.hero.line2 : str(heroSrc.line2, 80),
-    tagline: heroSrc.tagline === undefined ? d.hero.tagline : str(heroSrc.tagline, 400),
+    tagline: heroSrc.tagline === undefined ? d.hero.tagline : fresh(str(heroSrc.tagline, 400)),
   };
 
   const quickLinks = (Array.isArray(src.quickLinks) ? src.quickLinks : d.quickLinks)
@@ -124,7 +136,7 @@ export function sanitizeLayout(input) {
     boxes.push({
       key,
       title: str(b.title, 60) || "Untitled box",
-      blurb: str(b.blurb, 200),
+      blurb: fresh(str(b.blurb, 200)),
       tools: (Array.isArray(b.tools) ? b.tools : []).filter((t) => TOOL_KEYS.includes(t)),
       items,
     });
@@ -138,7 +150,7 @@ export function sanitizeLayout(input) {
     const dflt = DEFAULT_TOOL_TEXT[k];
     toolText[k] = {
       title: str(s.title, 60) || dflt.title,
-      blurb: s.blurb === undefined ? dflt.blurb : str(s.blurb, 200),
+      blurb: s.blurb === undefined ? dflt.blurb : fresh(str(s.blurb, 200)),
     };
   });
 
