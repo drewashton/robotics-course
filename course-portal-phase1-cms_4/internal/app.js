@@ -18,7 +18,7 @@ const FALLBACK_LAYOUT = {
 };
 
 const TOOLS = {
-    reflection: { label: "Daily Reflection", path: "/reflection", icon: "fa-pen-to-square" },
+    reflection: { label: "Daily Reflection", path: "/reflection", icon: "fa-pen-to-square", blurb: "Fill in at the end of each meeting. It is how your daily mark is given." },
 };
 
 // Every section lives at its own address: /competitionteam, /roles, and so
@@ -56,6 +56,60 @@ const sectionUrl = (section) => "/" + section.path;
 const unitUrl = (section, unit) => `/${section.path}/${unit.slug}`;
 const itemUrl = (section, unit, kind, item) =>
     `/${section.path}/${unit.slug}/${kind === "resource" ? "resource/" : ""}${item.slug}`;
+
+// Icons and one-line descriptions for the category cards on each home page.
+// They are matched on the category's address name, so a category added later
+// in the Admin Panel still gets a card (folder icon, and a page count instead
+// of a description).
+const CATEGORY_ICONS = {
+    "onboarding": "fa-door-open",
+    "learning-portal": "fa-graduation-cap",
+    "google-classroom": "fa-chalkboard-user",
+    "standardized-plan": "fa-calendar-check",
+    "course-credit-and-grading": "fa-clipboard-check",
+    "org-chart": "fa-sitemap",
+    "transfer-to-competition-team": "fa-arrow-right-arrow-left",
+    "platforms": "fa-layer-group",
+    "roles": "fa-id-badge",
+    "parents": "fa-hand-holding-heart",
+    "mentors": "fa-user-graduate",
+    "how-it-runs": "fa-gears",
+    "career": "fa-briefcase",
+    "training": "fa-person-chalkboard",
+    "expectations": "fa-list-check",
+    "resources": "fa-folder-open",
+    "contacts": "fa-address-book",
+    "policies": "fa-scale-balanced",
+    "prep-team-and-competition-team": "fa-people-arrows",
+    "first-certifications": "fa-certificate",
+    "first-scholarships": "fa-award",
+    "penticton-scholarship-foundation": "fa-hand-holding-dollar",
+};
+const CATEGORY_BLURBS = {
+    "onboarding": "What to know and do when you first join the team.",
+    "learning-portal": "The lessons, assignments, and resources for your stream.",
+    "google-classroom": "How the team uses Google Classroom for the course.",
+    "standardized-plan": "The plan each meeting follows, week to week.",
+    "course-credit-and-grading": "How course credit is earned and how marks are given.",
+    "org-chart": "Who leads what on the team.",
+    "transfer-to-competition-team": "How to move up from the Prep Team.",
+    "platforms": "The tools and accounts the team uses.",
+    "training": "Get ready to help.",
+    "expectations": "What the team asks of you.",
+    "resources": "Documents and links you may need.",
+    "contacts": "Who to reach, and how.",
+    "policies": "The rules that apply to everyone in the program.",
+    "prep-team-and-competition-team": "How the two teams fit together.",
+    "first-certifications": "FIRST certifications and what they involve.",
+    "first-scholarships": "FIRST scholarships and how to apply.",
+    "penticton-scholarship-foundation": "Scholarships through the Penticton Scholarship Foundation.",
+    // Whole sections shown as one card
+    "roles": "A handbook and resources for every role on the team.",
+    "parents": "Training, expectations, and contacts for parent volunteers.",
+    "mentors": "Training, expectations, and resources for mentors.",
+    "career": "Certifications and scholarships for students.",
+};
+const DEFAULT_CATEGORY_ICON = "fa-folder-open";
 
 const SITE_TITLE = "Penticton Robotics - Internal Portal";
 const CONFIG = window.PR_CONFIG || {};
@@ -153,13 +207,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     function spaceOfTool(toolKey) {
         return activeSpaces().find((sp) => sp.tools.includes(toolKey)) || null;
     }
-    // Where a box opens. /prepteam itself is the learning platform's home, so
-    // the Prep Team box opens on its first page (for example /prepteam/onboarding).
+    // Every box has its own home page, at /<box key> (for example /prep, /comp,
+    // /program), that shows its categories as cards.
     function spaceHome(sp) {
-        if (!sp.secs.length) return TOOLS[sp.tools[0]].path;
-        const section = sp.secs[0];
-        if (sectionUrl(section) === "/prepteam" && section.units.length) return unitUrl(section, section.units[0]);
-        return sectionUrl(section);
+        return "/" + sp.key;
     }
 
     // ---------- routing ----------
@@ -176,7 +227,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!segs.length) return { home: true };
         if (segs[0] === "reflection") return { reflection: true };
         const section = sections.find((s) => s.path === segs[0]);
-        if (!section) return { missing: true };
+        if (!section) {
+            const space = segs.length === 1 ? activeSpaces().find((sp) => sp.key === segs[0]) : null;
+            return space ? { space } : { missing: true };
+        }
         const unit = segs[1] ? section.units.find((u) => u.slug === segs[1]) : null;
         if (segs[1] && !unit) return { missing: true };
         const kind = segs[2] === "resource" ? "resource" : "lesson";
@@ -192,6 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const segs = path.split("/").filter(Boolean);
         if (!segs.length || segs[0] === "reflection") return true;
         if (segs[0] === "prepteam" && segs.length === 1) return false;
+        if (segs.length === 1 && activeSpaces().some((sp) => sp.key === segs[0])) return true;
         return sections.some((s) => s.path === segs[0]);
     }
 
@@ -242,6 +297,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             state = { home: true };
         }
 
+        if (state.space) {
+            showShell();
+            buildShell(state.space, { home: true });
+            return showSpace(state.space);
+        }
+
         const { section, unit, kind, item } = state;
         if (!section) {
             appInterface.style.display = "none";
@@ -253,7 +314,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const space = spaceOfSection(section.key);
         showShell();
-        buildShell(space, { section: section.key, unit: unit ? unit.id : null });
+        const entry = space && space.entries.find((e) => e.section.key === section.key);
+        buildShell(space, { section: section.key, unit: unit ? unit.id : null, home: !unit && !!(entry && entry.inline) });
         if (!unit) return showHome(section, space);
         if (!item) return showUnit(section, unit, space);
         showItem(section, unit, space, kind, kind === "resource" ? "resources" : "lessons", item);
@@ -353,40 +415,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         chaptersNav.innerHTML = "";
         if (!space) return;
 
-        space.tools.forEach((t) => {
+        const item = (href, icon, label, cls) => {
             const a = document.createElement("a");
-            a.className = "nav-item nav-tool" + (active.tool === t ? " active" : "");
-            a.href = TOOLS[t].path;
-            a.innerHTML = `<i class="fa-solid ${TOOLS[t].icon}"></i> ${escapeHtml(TOOLS[t].label)}`;
+            a.className = "nav-item" + (cls ? " " + cls : "");
+            a.href = href;
+            a.innerHTML = `<i class="fa-solid ${icon}"></i> ${escapeHtml(label)}`;
             chaptersNav.appendChild(a);
+            return a;
+        };
+
+        // One flat list per team: its home page, then every category once.
+        // A category that opens into its own list of pages (like Role
+        // Handbooks) shows those pages underneath while you are inside it.
+        item(spaceHome(space), "fa-house", "Home", active.home ? "active" : "");
+        const rule = document.createElement("div");
+        rule.className = "sidebar-divider";
+        chaptersNav.appendChild(rule);
+
+        space.tools.forEach((t) => {
+            item(TOOLS[t].path, TOOLS[t].icon, TOOLS[t].label, active.tool === t ? "active" : "");
         });
 
-        space.secs.forEach((s, i) => {
-            // The section's own page first (like "Syllabus" in the learning platform), then its groups.
-            const home = document.createElement("a");
-            home.className = "nav-item" + (active.section === s.key && active.unit == null ? " active" : "");
-            home.href = sectionUrl(s);
-            home.innerHTML = `<i class="fa-solid fa-house"></i> ${escapeHtml(s.name)}`;
-            chaptersNav.appendChild(home);
-
-            if (s.units.length) {
-                const rule = document.createElement("div");
-                rule.className = "sidebar-divider";
-                chaptersNav.appendChild(rule);
+        space.entries.forEach(({ section: s, inline }) => {
+            if (inline) {
+                s.units.forEach((u) => {
+                    item(unitUrl(s, u), categoryIcon(u.slug), u.title, active.section === s.key && active.unit === u.id ? "active" : "");
+                });
+                return;
             }
-
-            s.units.forEach((u) => {
-                const a = document.createElement("a");
-                a.className = "nav-item" + (active.section === s.key && active.unit === u.id ? " active" : "");
-                a.href = unitUrl(s, u);
-                a.innerHTML = `<i class="fa-solid fa-folder"></i> ${escapeHtml(u.title)}`;
-                chaptersNav.appendChild(a);
-            });
-
-            if (i < space.secs.length - 1) {
-                const rule = document.createElement("div");
-                rule.className = "sidebar-divider";
-                chaptersNav.appendChild(rule);
+            const here = active.section === s.key;
+            item(sectionUrl(s), categoryIcon(s.key), s.name, here && active.unit == null ? "active" : here ? "open" : "");
+            if (here) {
+                s.units.forEach((u) => {
+                    item(unitUrl(s, u), "fa-angle-right", u.title, "nav-sub" + (active.unit === u.id ? " active" : ""));
+                });
             }
         });
 
@@ -397,6 +459,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- views ----------
 
     function showOnly(view) {
+        // A finished reflection stays on screen until you leave; coming back gives a fresh form.
+        if (view !== reflectionView && !document.getElementById("rf-done").hidden) resetForm();
         [homeView, chapterView, lessonView, reflectionView].forEach((v) => v.classList.toggle("active-view", v === view));
     }
 
@@ -421,6 +485,63 @@ document.addEventListener("DOMContentLoaded", async () => {
         </a>`;
     }
 
+    const categoryIcon = (slug) => CATEGORY_ICONS[slug] || DEFAULT_CATEGORY_ICON;
+
+    function countsText(unit) {
+        const pages = unit.lessons.length;
+        const res = unit.resources.length;
+        const bits = [];
+        if (pages) bits.push(`${pages} ${pages === 1 ? "page" : "pages"}`);
+        if (res) bits.push(`${res} ${res === 1 ? "resource" : "resources"}`);
+        return bits.join(", ");
+    }
+
+    // One card on a home page: a black tile with a gold icon, the title, and
+    // a line about what is inside. The whole card is the link.
+    function cardHtml(href, icon, title, blurb) {
+        return `<a class="cat-card" href="${href}">
+            <span class="cat-icon"><i class="fa-solid ${icon}"></i></span>
+            <span class="cat-text">
+                <span class="cat-title">${escapeHtml(title)}</span>
+                ${blurb ? `<span class="cat-desc">${escapeHtml(blurb)}</span>` : ""}
+            </span>
+        </a>`;
+    }
+
+    function unitCard(section, unit) {
+        return cardHtml(unitUrl(section, unit), categoryIcon(unit.slug), unit.title, CATEGORY_BLURBS[unit.slug] || countsText(unit));
+    }
+
+    function setCards(cards, emptyText) {
+        const grid = document.getElementById("home-tiles");
+        grid.innerHTML = cards.join("");
+        grid.hidden = cards.length === 0;
+        const empty = document.getElementById("home-tiles-empty");
+        empty.hidden = cards.length > 0;
+        empty.textContent = emptyText;
+    }
+
+    // A team's home page: every category in the team, as cards.
+    function showSpace(space) {
+        showOnly(homeView);
+        document.title = `${space.title} - ${SITE_TITLE}`;
+        document.getElementById("home-stream-title").textContent = space.title;
+        document.getElementById("home-description-container").innerHTML = space.blurb ? `<p>${escapeHtml(space.blurb)}</p>` : "";
+        document.getElementById("home-overview-card").hidden = true;
+
+        const cards = [];
+        space.tools.forEach((t) => {
+            cards.push(cardHtml(TOOLS[t].path, TOOLS[t].icon, TOOLS[t].label, TOOLS[t].blurb));
+        });
+        space.entries.forEach(({ section, inline }) => {
+            if (inline) section.units.forEach((u) => cards.push(unitCard(section, u)));
+            else cards.push(cardHtml(sectionUrl(section), categoryIcon(section.key), section.name, CATEGORY_BLURBS[section.key] || section.description));
+        });
+        setCards(cards, "Nothing has been added here yet.");
+        renderContacts(null);
+        resetScroll();
+    }
+
     function showHome(section, space) {
         showOnly(homeView);
         document.title = `${section.name} - ${SITE_TITLE}`;
@@ -433,26 +554,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         overviewCard.hidden = !showOverview;
         document.getElementById("home-overview-box").innerHTML = showOverview ? section.objectives : "";
 
-        const roles = section.key === "roles";
-        const tiles = document.getElementById("home-tiles");
-        const rows = [];
-        if (space && space.secs[0] && space.secs[0].key === section.key) {
-            space.tools.forEach((t) => rows.push(rowHtml(TOOLS[t].path, TOOLS[t].label, "", TOOLS[t].icon)));
-        }
-        section.units.forEach((unit) => {
-            const pages = unit.lessons.length;
-            const res = unit.resources.length;
-            const bits = [];
-            if (pages) bits.push(`${pages} ${pages === 1 ? "page" : "pages"}`);
-            if (res) bits.push(`${res} ${res === 1 ? "resource" : "resources"}`);
-            rows.push(rowHtml(unitUrl(section, unit), unit.title, bits.join(", ")));
-        });
-        tiles.innerHTML = rows.map((r) => `<li>${r}</li>`).join("");
-        tiles.hidden = rows.length === 0;
-
-        const empty = document.getElementById("home-tiles-empty");
-        empty.hidden = rows.length > 0;
-        empty.textContent = roles ? "Role handbooks are being added." : "Nothing has been added to this section yet.";
+        setCards(
+            section.units.map((u) => unitCard(section, u)),
+            section.key === "roles" ? "Role handbooks are being added." : "Nothing has been added to this section yet."
+        );
 
         renderContacts(section.mentors);
         resetScroll();
@@ -654,8 +759,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         showOnly(reflectionView);
         document.title = `Daily Reflection - ${SITE_TITLE}`;
         document.getElementById("reflection-crumb").innerHTML = crumbHtml(space, null, null);
-        document.getElementById("rf-back").href = spaceHome(space);
-        document.getElementById("rf-back").textContent = `Back to the ${space.title}`;
         if (rfDone.hidden) {
             if (!fieldEl("name").value) fieldEl("name").value = recall("pr-reflection-name");
             if (!fieldEl("date").value) fieldEl("date").value = todayLocal();
@@ -703,15 +806,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         form.hidden = true;
         rfDone.hidden = false;
         document.getElementById("rf-done-text").textContent =
-            `Thanks, ${fields[FORM_KEYS.name]}. Your reflection for ${fields[FORM_KEYS.date]} is in. A mentor will read it and give you the day's mark after class.`;
+            `Thanks, ${fields[FORM_KEYS.name]}. Your reflection for ${fields[FORM_KEYS.date]} is in.`;
         resetScroll();
         rfDone.focus();
     }
-
-    document.getElementById("rf-again").addEventListener("click", () => {
-        resetForm();
-        fieldEl("q1").focus();
-    });
 
     // ---------- start ----------
 
