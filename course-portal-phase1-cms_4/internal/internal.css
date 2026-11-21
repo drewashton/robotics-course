@@ -147,6 +147,81 @@
 .internal-portal a.lesson-back-link {
     text-decoration: none;
 }
+/* Category cards on a team's home page and on a section page */
+.cat-grid[hidden] { display: none; }
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.cat-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-dark);
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(10,10,10,0.04), 0 4px 12px rgba(10,10,10,0.05);
+}
+.cat-card:hover {
+    border-color: var(--bg-sidebar);
+}
+.cat-card:focus-visible {
+    outline: 2px solid var(--bg-sidebar);
+    outline-offset: 2px;
+}
+.cat-icon {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-sidebar);
+    color: var(--accent-gold);
+    border-radius: var(--radius);
+    font-size: 1.15rem;
+}
+.cat-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+.cat-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+.cat-desc {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+#home-tiles-empty {
+    padding: 24px;
+    color: var(--text-muted);
+}
+
+/* A category's own pages, listed under it in the sidebar */
+.internal-portal .nav-item.open {
+    color: #ffffff;
+}
+.internal-portal .nav-item.nav-sub {
+    margin-left: 18px;
+    width: calc(100% - 18px);
+    padding: 8px 12px;
+    font-size: 0.8rem;
+}
+
 .internal-portal .welcome-card .chapter-number {
     margin-bottom: 8px;
 }
@@ -311,13 +386,6 @@ textarea.rf-input {
     color: var(--text-muted);
     line-height: 1.6;
 }
-.rf-done-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 14px 22px;
-    margin-top: 24px;
-}
 .rf-link {
     color: var(--text-dark);
     font-weight: 600;
@@ -355,6 +423,13 @@ textarea.rf-input {
     .reflection-form,
     .rf-done {
         padding: 16px;
+    }
+    .internal-portal .nav-item.nav-sub {
+        margin-left: 0;
+        width: auto;
+    }
+    .cat-grid {
+        grid-template-columns: 1fr;
     }
     .rf-row {
         grid-template-columns: 1fr;
