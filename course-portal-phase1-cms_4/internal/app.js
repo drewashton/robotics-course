@@ -761,7 +761,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function showReflection(space) {
         showOnly(reflectionView);
-        document.title = `Daily Reflection - ${SITE_TITLE}`;
+        document.title = `${TOOLS.reflection.label} - ${SITE_TITLE}`;
+        document.getElementById("reflection-title").textContent = TOOLS.reflection.label;
+        const reflectionDesc = document.getElementById("reflection-desc");
+        reflectionDesc.textContent = TOOLS.reflection.blurb;
+        reflectionDesc.hidden = !TOOLS.reflection.blurb;
         if (rfDone.hidden) {
             if (!fieldEl("name").value) fieldEl("name").value = recall("pr-reflection-name");
             if (!fieldEl("date").value) fieldEl("date").value = todayLocal();
@@ -866,6 +870,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error(err);
         sections = [];
     }
+
+    // The Daily Reflection's title and description can be changed in the Admin Panel.
+    const toolText = (layout.toolText && layout.toolText.reflection) || {};
+    if (toolText.title) TOOLS.reflection.label = toolText.title;
+    if (typeof toolText.blurb === "string") TOOLS.reflection.blurb = toolText.blurb;
 
     // Sections hidden in the Admin Panel are not on the site at all.
     const hiddenKeys = new Set();
