@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const space = spaceOfSection(section.key);
         showShell();
         const entry = space && space.entries.find((e) => e.section.key === section.key);
-        buildShell(space, { section: section.key, unit: unit ? unit.id : null, home: !unit && !!(entry && entry.inline) });
+        buildShell(space, { section: section.key, unit: unit ? unit.id : null, item: item ? kind + ":" + item.slug : null, home: !unit && !!(entry && entry.inline) });
         if (!unit) return showHome(section, space);
         if (!item) return showUnit(section, unit, space);
         showItem(section, unit, space, kind, kind === "resource" ? "resources" : "lessons", item);
@@ -439,14 +439,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         space.entries.forEach(({ section: s, inline }) => {
             if (inline) {
                 s.units.forEach((u) => {
-                    item(unitUrl(s, u), categoryIcon(u.slug), u.title, active.section === s.key && active.unit === u.id ? "active" : "");
+                    const inUnit = active.section === s.key && active.unit === u.id;
+                    item(unitUrl(s, u), categoryIcon(u.slug), u.title, inUnit && !active.item ? "active" : "");
+                    // Its pages and resources, listed underneath
+                    u.lessons.forEach((l) => {
+                        item(itemUrl(s, u, "lesson", l), "fa-angle-right", l.title, "nav-sub" + (inUnit && active.item === "lesson:" + l.slug ? " active" : ""));
+                    });
+                    u.resources.forEach((r) => {
+                        item(itemUrl(s, u, "resource", r), "fa-file-lines", r.title, "nav-sub" + (inUnit && active.item === "resource:" + r.slug ? " active" : ""));
+                    });
                 });
                 return;
             }
             const here = active.section === s.key;
             item(sectionUrl(s), categoryIcon(s.key), s.name, here && active.unit == null ? "active" : here ? "open" : "");
             s.units.forEach((u) => {
-                item(unitUrl(s, u), "fa-angle-right", u.title, "nav-sub" + (active.unit === u.id ? " active" : ""));
+                item(unitUrl(s, u), "fa-angle-right", u.title, "nav-sub" + (active.unit === u.id && !active.item ? " active" : ""));
             });
         });
 
