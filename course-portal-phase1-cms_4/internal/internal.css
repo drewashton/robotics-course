@@ -91,9 +91,38 @@
 /* ==========================================================================
    Inside a team: tabs, sidebar, pages
    ========================================================================== */
+/* The team tabs along the top: small photo tiles, like the cards on the landing page */
 .internal-portal .stream-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background-color: #0a0a0a;
+    background-image: linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.8)), url('/robotphoto.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    font-size: 0.9rem;
     text-decoration: none;
+}
+.internal-portal .stream-btn i {
+    color: var(--accent-gold);
+    font-size: 1rem;
+}
+.internal-portal .stream-btn:hover {
+    color: #ffffff;
+    border-color: var(--accent-gold);
+    background-color: #0a0a0a;
+}
+.internal-portal .stream-btn.active {
+    color: #ffffff;
+    border-color: var(--accent-gold);
+    background-color: #0a0a0a;
+    background-image: linear-gradient(rgba(10, 10, 10, 0.55), rgba(10, 10, 10, 0.55)), url('/robotphoto.jpg');
+    box-shadow: inset 0 0 0 1px var(--accent-gold);
 }
 
 /* Sidebar items are links here, not buttons */
@@ -416,7 +445,9 @@ textarea.rf-input {
         gap: 8px;
     }
     .internal-portal .stream-btn {
-        padding: 8px 12px;
+        height: 40px;
+        padding: 0 12px;
+        gap: 8px;
         font-size: 0.8rem;
     }
 
