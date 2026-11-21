@@ -189,7 +189,7 @@ function rowItem(row, box, index) {
 
     let title, tag = "", shown = true, canUp = false, canDown = false;
     if (row.kind === "tool") {
-        title = LAYOUT_TOOLS[row.tool];
+        title = (layoutData.toolText && layoutData.toolText[row.tool] && layoutData.toolText[row.tool].title) || LAYOUT_TOOLS[row.tool];
         tag = "Built in";
     } else if (row.kind === "unit") {
         title = row.unit.title;
@@ -230,6 +230,7 @@ function rowItem(row, box, index) {
     const acts = document.createElement("div");
     acts.className = "layout-row-actions";
     if (row.kind === "tool") {
+        acts.appendChild(actionButton("Edit text", () => editToolText(row.tool)));
         acts.appendChild(actionButton("Move", () => moveRowToBox(row, box)));
         acts.appendChild(actionButton("Take out", () => layoutAction(async () => {
             box.tools = box.tools.filter((t) => t !== row.tool);
@@ -271,6 +272,23 @@ async function renameRow(row) {
         if (row.kind === "unit") await api("/api/admin/units", { method: "PUT", body: JSON.stringify({ id: row.unit.id, title: res[0] }) });
         else await api("/api/admin/streams", { method: "PUT", body: JSON.stringify({ id: row.stream.id, name: res[0] }) });
     }, "Renamed.");
+}
+
+async function editToolText(tool) {
+    const cur = (layoutData.toolText && layoutData.toolText[tool]) || {};
+    const res = await openModal({
+        title: `Edit the ${LAYOUT_TOOLS[tool]}`,
+        fields: [
+            { label: "Title", value: cur.title || "" },
+            { label: "Description", value: cur.blurb || "" },
+        ],
+        confirmLabel: "Save",
+    });
+    if (!res || !res[0]) return;
+    await layoutAction(async () => {
+        layoutData.toolText = Object.assign({}, layoutData.toolText, { [tool]: { title: res[0], blurb: res[1] } });
+        await saveLayoutData();
+    }, "Saved. The portal shows the new text.");
 }
 
 async function toggleRow(row, shown) {
