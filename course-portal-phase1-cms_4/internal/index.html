@@ -32,7 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/style.css?v=18">
-    <link rel="stylesheet" href="/internal/internal.css?v=6">
+    <link rel="stylesheet" href="/internal/internal.css?v=7">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="internal-portal">
@@ -94,14 +94,8 @@
                         <div id="home-overview-box" class="content-box"></div>
                     </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fa-solid fa-list-check"></i>
-                            <span>In this section</span>
-                        </div>
-                        <ul class="lesson-toc-list" id="home-tiles"></ul>
-                        <div class="placeholder-box" id="home-tiles-empty" hidden></div>
-                    </div>
+                    <div class="cat-grid" id="home-tiles"></div>
+                    <div class="card" id="home-tiles-empty" hidden></div>
 
                     <h3 class="card-header mentor-section-header" id="mentor-section-header" hidden>
                         <i class="fa-solid fa-user-graduate"></i> Help Contacts
@@ -235,10 +229,6 @@
                     <div class="rf-done" id="rf-done" hidden tabindex="-1">
                         <h3 id="rf-done-title">Reflection sent</h3>
                         <p id="rf-done-text"></p>
-                        <div class="rf-done-actions">
-                            <button class="lesson-nav-btn" id="rf-again" type="button">Fill in another</button>
-                            <a class="rf-link" id="rf-back" href="/competitionteam">Back to the Competition Team</a>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -246,6 +236,6 @@
     </div>
 
     <script src="/internal/config.js?v=1"></script>
-    <script src="/internal/app.js?v=7"></script>
+    <script src="/internal/app.js?v=8"></script>
 </body>
 </html>
