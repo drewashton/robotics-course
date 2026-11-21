@@ -374,8 +374,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const head = document.createElement("section");
         head.className = "portal-cta-header";
         head.innerHTML = `
-            <h2>Select Your Section</h2>
-            <p>Select a section below to find handbooks, lessons, and forms.</p>`;
+            <h2>Pick your section</h2>
+            <p>Choose a section to find handbooks, lessons and forms.</p>`;
         host.appendChild(head);
 
         const grid = document.createElement("div");
