@@ -8,7 +8,7 @@ export const DEFAULT_LAYOUT = {
   hero: {
     line1: "Penticton Robotics",
     line2: "Internal Portal",
-    tagline: "Handbooks, team resources, and how the program runs. Everyone on the team, including parents and mentors, can see everything.",
+    tagline: "Handbooks, resources and how our program runs. It's open to everyone on the team, parents and mentors too.",
   },
   quickLinks: [
     { label: "Daily Reflection", url: "/reflection", primary: true },
@@ -19,14 +19,14 @@ export const DEFAULT_LAYOUT = {
     {
       key: "prep",
       title: "Prep Team",
-      blurb: "For students working through the learning pathway.",
+      blurb: "For students going through the prep course.",
       tools: [],
       items: [{ stream: "prep-team", inline: true, hidden: false }],
     },
     {
       key: "comp",
       title: "Competition Team",
-      blurb: "For students on the competition roster.",
+      blurb: "For students on the comp team.",
       tools: ["reflection"],
       items: [
         { stream: "comp-team", inline: true, hidden: false },
@@ -36,7 +36,7 @@ export const DEFAULT_LAYOUT = {
     {
       key: "program",
       title: "Whole Program",
-      blurb: "For students, parents, and mentors.",
+      blurb: "For students, parents and mentors.",
       tools: [],
       items: [
         { stream: "parents", inline: false, hidden: false },
@@ -53,7 +53,7 @@ export const TOOL_KEYS = ["reflection"];
 // The title and description shown for each built-in tool: its tile, its
 // sidebar entry, and the heading on its own page. Edited in the Admin Panel.
 export const DEFAULT_TOOL_TEXT = {
-  reflection: { title: "Daily Reflection", blurb: "Fill in at the end of each meeting. It is how your daily mark is given." },
+  reflection: { title: "Daily Reflection", blurb: "Fill this out at the end of every meeting. It helps us give you a daily mark." },
 };
 
 async function ensureTable(env) {
