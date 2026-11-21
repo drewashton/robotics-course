@@ -7,9 +7,9 @@ window.PR_CONFIG = {
 
     // The "Web app" address from the marks sheet script (Deploy > Web app).
     // Leave empty if you are not using the marks sheet yet.
-    sheetUrl: "",
+    sheetUrl: "https://script.google.com/macros/s/AKfycbzP_b6OI695rxIA9z1MtQzwagjl9rBlcMubIPkNPzJerHl7Zxp1jPh45LM02v0ddf0/exec",
 
     // Any word or phrase. It must be the same as SHARED_TOKEN in the marks
     // sheet script. It stops random visitors from adding rows to the sheet.
-    sheetToken: ""
+    sheetToken: "gears-df9e8eb8ce556ef2"
 };
