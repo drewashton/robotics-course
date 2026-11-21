@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const grid = document.getElementById("stream-grid");
         grid.innerHTML = "";
         if (courseStreamsList.length === 0) {
-            grid.innerHTML = `<p class="chapter-desc-placeholder" style="color:#999;">No streams available yet. Check back soon.</p>`;
+            grid.innerHTML = `<p class="chapter-desc-placeholder" style="color:#999;">No streams yet. Check back soon.</p>`;
             return;
         }
         courseStreamsList.forEach((stream, index) => {
@@ -248,8 +248,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         homeStreamTitle.textContent = stream.name;
         homeDescriptionContainer.innerHTML = `<p>${stream.description || ""}</p>`;
-        fillBox(homeObjectivesBox, stream.objectives, "Learning objectives haven't been added yet.");
-        fillBox(homeScheduleBox, stream.schedule, "A recommended schedule hasn't been added yet.");
+        fillBox(homeObjectivesBox, stream.objectives, "Nothing here yet.");
+        fillBox(homeScheduleBox, stream.schedule, "Nothing here yet.");
         renderMentors(stream.mentors);
 
         // Populate Left-hand Units list
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const empty = document.createElement("p");
             empty.className = "chapter-desc-placeholder";
             empty.style.padding = "12px";
-            empty.textContent = "No units published yet.";
+            empty.textContent = "No units yet.";
             chaptersNav.appendChild(empty);
         }
     }
@@ -364,7 +364,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         setUrl(`${BASE_PATH}/${currentStreamKey}/${unit.slug}/${kind === "lesson" ? "" : kind + "/"}${item.slug}`, item.title);
 
         const hasContent = hasRealContent(item.content);
-        lessonContentBody.innerHTML = hasContent ? item.content : "<p>No content added yet.</p>";
+        lessonContentBody.innerHTML = hasContent ? item.content : "<p>Nothing here yet.</p>";
 
         const hasPrev = showNav && itemIndex > 0;
         const hasNext = showNav && itemIndex < items.length - 1;
