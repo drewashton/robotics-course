@@ -750,7 +750,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         rfStatus.textContent = "";
         rfStatus.classList.remove("is-error");
         rfSubmit.disabled = false;
-        rfSubmit.textContent = "Submit reflection";
+        rfSubmit.textContent = "Submit";
         form.hidden = false;
         rfDone.hidden = true;
     }
@@ -792,7 +792,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (err) {
             console.error(err);
             rfSubmit.disabled = false;
-            rfSubmit.textContent = "Submit reflection";
+            rfSubmit.textContent = "Submit";
             rfStatus.classList.add("is-error");
             rfStatus.textContent = "Your reflection did not send. Check your connection and press Submit again. Nothing you typed is lost.";
             return;
