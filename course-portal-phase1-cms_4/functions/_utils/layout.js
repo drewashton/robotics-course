@@ -50,6 +50,12 @@ export const DEFAULT_LAYOUT = {
 
 export const TOOL_KEYS = ["reflection"];
 
+// The title and description shown for each built-in tool: its tile, its
+// sidebar entry, and the heading on its own page. Edited in the Admin Panel.
+export const DEFAULT_TOOL_TEXT = {
+  reflection: { title: "Daily Reflection", blurb: "Fill in at the end of each meeting. It is how your daily mark is given." },
+};
+
 async function ensureTable(env) {
   await env.DB.prepare(
     "CREATE TABLE IF NOT EXISTS portal_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
@@ -125,7 +131,18 @@ export function sanitizeLayout(input) {
   });
   if (boxes.length === 0) return sanitizeLayout(DEFAULT_LAYOUT);
 
-  return { hero, quickLinks, boxes };
+  const ttSrc = src.toolText && typeof src.toolText === "object" ? src.toolText : {};
+  const toolText = {};
+  TOOL_KEYS.forEach((k) => {
+    const s = ttSrc[k] && typeof ttSrc[k] === "object" ? ttSrc[k] : {};
+    const dflt = DEFAULT_TOOL_TEXT[k];
+    toolText[k] = {
+      title: str(s.title, 60) || dflt.title,
+      blurb: s.blurb === undefined ? dflt.blurb : str(s.blurb, 200),
+    };
+  });
+
+  return { hero, quickLinks, boxes, toolText };
 }
 
 // "Safety Team" -> "safety-team", made unique among the given keys.
