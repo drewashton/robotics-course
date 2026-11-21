@@ -100,8 +100,8 @@ async function learningKeys(env) {
 // Preview text and image for each page, used when a link is shared (the
 // title, description and picture that Messages, Slack and so on show) and for
 // the tab title. The key is the first part of the address. Anything not
-// listed here, such as a section added later, uses the portal home. Pictures
-// are in /og/.
+// listed here, such as a section added later, uses the portal home. The
+// picture is always the team logo.
 const META = {
   home: { title: "Program Portal - Penticton Robotics", desc: "Handbooks, resources and how our program runs, for students, parents and mentors." },
   prepteam: { title: "Prep Team - Penticton Robotics", desc: "Lessons, assignments and resources for the Prep Team." },
@@ -122,7 +122,7 @@ function withMeta(response, url) {
   const parts = url.pathname.split("/").filter(Boolean);
   const key = META[parts[0]] ? parts[0] : "home";
   const m = META[key];
-  const image = `${url.origin}/og/${key}.jpg`;
+  const image = `${url.origin}/pr_logo2x.PNG`;
   const set = (value) => ({ element(el) { el.setAttribute("content", value); } });
   return new HTMLRewriter()
     .on("title", { element(el) { el.setInnerContent(m.title); } })
@@ -132,10 +132,11 @@ function withMeta(response, url) {
     .on('meta[property="og:description"]', set(m.desc))
     .on('meta[property="og:url"]', set(url.origin + url.pathname))
     .on('meta[property="og:image"]', set(image))
-    .on('meta[property="og:image:type"]', set("image/jpeg"))
-    .on('meta[property="og:image:width"]', set("1200"))
-    .on('meta[property="og:image:height"]', set("630"))
-    .on('meta[property="og:image:alt"]', set(m.title))
+    .on('meta[property="og:image:type"]', set("image/png"))
+    .on('meta[property="og:image:width"]', set("2000"))
+    .on('meta[property="og:image:height"]', set("2000"))
+    .on('meta[property="og:image:alt"]', set("Penticton Robotics logo"))
+    .on('meta[name="twitter:card"]', set("summary"))
     .on('meta[name="twitter:title"]', set(m.title))
     .on('meta[name="twitter:description"]', set(m.desc))
     .on('meta[name="twitter:image"]', set(image))
