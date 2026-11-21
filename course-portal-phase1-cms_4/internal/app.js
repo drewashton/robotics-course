@@ -406,7 +406,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const a = document.createElement("a");
             a.className = "stream-btn" + (space && sp.key === space.key ? " active" : "");
             a.href = spaceHome(sp);
-            a.textContent = sp.title;
+            a.innerHTML = `<i class="fa-solid ${SPACE_ICONS[sp.key] || DEFAULT_SPACE_ICON}"></i><span>${escapeHtml(sp.title)}</span>`;
             a.setAttribute("role", "tab");
             if (a.classList.contains("active")) a.setAttribute("aria-selected", "true");
             selector.appendChild(a);
@@ -445,11 +445,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             const here = active.section === s.key;
             item(sectionUrl(s), categoryIcon(s.key), s.name, here && active.unit == null ? "active" : here ? "open" : "");
-            if (here) {
-                s.units.forEach((u) => {
-                    item(unitUrl(s, u), "fa-angle-right", u.title, "nav-sub" + (active.unit === u.id ? " active" : ""));
-                });
-            }
+            s.units.forEach((u) => {
+                item(unitUrl(s, u), "fa-angle-right", u.title, "nav-sub" + (active.unit === u.id ? " active" : ""));
+            });
         });
 
         const current = chaptersNav.querySelector(".nav-item.active");
@@ -590,7 +588,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         showOnly(chapterView);
         document.title = `${unit.title} - ${SITE_TITLE}`;
 
-        document.getElementById("chapter-crumb").innerHTML = crumbHtml(space, section, null);
         document.getElementById("view-chapter-name").textContent = unit.title;
         document.getElementById("pages-label").textContent = pagesLabel(section);
 
@@ -615,7 +612,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         showOnly(lessonView);
         document.title = `${item.title} - ${SITE_TITLE}`;
 
-        document.getElementById("lesson-crumb").innerHTML = crumbHtml(space, section, unit);
         lessonTitle.textContent = item.title;
         document.getElementById("lesson-back").href = unitUrl(section, unit);
         document.getElementById("lesson-back-label").textContent = `Back to ${unit.title}`;
@@ -758,7 +754,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showReflection(space) {
         showOnly(reflectionView);
         document.title = `Daily Reflection - ${SITE_TITLE}`;
-        document.getElementById("reflection-crumb").innerHTML = crumbHtml(space, null, null);
         if (rfDone.hidden) {
             if (!fieldEl("name").value) fieldEl("name").value = recall("pr-reflection-name");
             if (!fieldEl("date").value) fieldEl("date").value = todayLocal();
