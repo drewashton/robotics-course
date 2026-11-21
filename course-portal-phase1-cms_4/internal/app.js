@@ -18,7 +18,7 @@ const FALLBACK_LAYOUT = {
 };
 
 const TOOLS = {
-    reflection: { label: "Daily Reflection", path: "/reflection", icon: "fa-pen-to-square", blurb: "Fill in at the end of each meeting. It is how your daily mark is given." },
+    reflection: { label: "Daily Reflection", path: "/reflection", icon: "fa-pen-to-square", blurb: "Fill this out at the end of every meeting. It helps us give you a daily mark." },
 };
 
 // Every section lives at its own address: /competitionteam, /roles, and so
@@ -86,27 +86,27 @@ const CATEGORY_ICONS = {
     "penticton-scholarship-foundation": "fa-hand-holding-dollar",
 };
 const CATEGORY_BLURBS = {
-    "onboarding": "What to know and do when you first join the team.",
-    "learning-portal": "The lessons, assignments, and resources for your stream.",
-    "google-classroom": "How the team uses Google Classroom for the course.",
-    "standardized-plan": "The plan each meeting follows, week to week.",
-    "course-credit-and-grading": "How course credit is earned and how marks are given.",
+    "onboarding": "What to know when you first join the team.",
+    "learning-portal": "Lessons, assignments and resources for your stream.",
+    "google-classroom": "How we use Google Classroom for the course.",
+    "standardized-plan": "What each meeting looks like, week to week.",
+    "course-credit-and-grading": "How you earn course credit and how marks work.",
     "org-chart": "Who leads what on the team.",
     "transfer-to-competition-team": "How to move up from the Prep Team.",
-    "platforms": "The tools and accounts the team uses.",
-    "training": "Get ready to help.",
-    "expectations": "What the team asks of you.",
-    "resources": "Documents and links you may need.",
-    "contacts": "Who to reach, and how.",
-    "policies": "The rules that apply to everyone in the program.",
-    "prep-team-and-competition-team": "How the two teams fit together.",
+    "platforms": "The tools and accounts we use.",
+    "training": "Get ready to help out.",
+    "expectations": "What we ask of you.",
+    "resources": "Documents and links you might need.",
+    "contacts": "Who to reach out to.",
+    "policies": "The rules everyone in the program follows.",
+    "prep-team-and-competition-team": "How the two teams work together.",
     "first-certifications": "FIRST certifications and what they involve.",
     "first-scholarships": "FIRST scholarships and how to apply.",
-    "penticton-scholarship-foundation": "Scholarships through the Penticton Scholarship Foundation.",
+    "penticton-scholarship-foundation": "Scholarships from the Penticton Scholarship Foundation.",
     // Whole sections shown as one card
-    "roles": "A handbook and resources for every role on the team.",
-    "parents": "Training, expectations, and contacts for parent volunteers.",
-    "mentors": "Training, expectations, and resources for mentors.",
+    "roles": "A handbook and resources for each role on the team.",
+    "parents": "Training, expectations and contacts for parent volunteers.",
+    "mentors": "Training, expectations and resources for mentors.",
     "career": "Certifications and scholarships for students.",
 };
 const DEFAULT_CATEGORY_ICON = "fa-folder-open";
@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const spaces = activeSpaces();
         if (spaces.length === 0) {
-            host.innerHTML = `<p class="empty-note on-dark">The portal is being set up. Check back soon.</p>`;
+            host.innerHTML = `<p class="empty-note on-dark">Nothing here yet. Check back soon.</p>`;
             return;
         }
 
@@ -543,7 +543,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (inline) section.units.forEach((u) => cards.push(unitCard(section, u)));
             else cards.push(cardHtml(sectionUrl(section), categoryIcon(section.key), section.name, CATEGORY_BLURBS[section.key] || section.description));
         });
-        setCards(cards, "Nothing has been added here yet.");
+        setCards(cards, "Nothing here yet.");
         renderContacts(null);
         resetScroll();
     }
@@ -562,7 +562,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         setCards(
             section.units.map((u) => unitCard(section, u)),
-            section.key === "roles" ? "Role handbooks are being added." : "Nothing has been added to this section yet."
+            section.key === "roles" ? "Role handbooks are being added." : "Nothing here yet."
         );
 
         renderContacts(section.mentors);
@@ -624,7 +624,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("lesson-back").href = unitUrl(section, unit);
         document.getElementById("lesson-back-label").textContent = `Back to ${unit.title}`;
 
-        lessonContentBody.innerHTML = hasRealContent(item.content) ? item.content : "<p>No content added yet.</p>";
+        lessonContentBody.innerHTML = hasRealContent(item.content) ? item.content : "<p>Nothing here yet.</p>";
         addPdfLinks(lessonContentBody);
 
         const items = unit[kindField];
@@ -704,7 +704,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (mark === "") bad("q3", "Enter a mark from 0 to 100.");
         else if (!/^\d{1,3}$/.test(mark) || Number(mark) > 100) bad("q3", "Use a whole number from 0 to 100.");
         if (!v("q4")) bad("q4", "Explain why you gave yourself this mark.");
-        if (!v("q5")) bad("q5", "Add one thing you want to accomplish next time.");
+        if (!v("q5")) bad("q5", "Add one thing for next time.");
         if (firstBad) firstBad.focus();
         return !firstBad;
     }
@@ -787,7 +787,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!CONFIG.web3formsKey) {
             rfStatus.classList.add("is-error");
-            rfStatus.textContent = "This form is not connected yet. Tell a mentor, who can finish the setup.";
+            rfStatus.textContent = "The form isn't set up yet. Let a mentor know.";
             return;
         }
 
@@ -801,7 +801,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             rfSubmit.disabled = false;
             rfSubmit.textContent = "Submit";
             rfStatus.classList.add("is-error");
-            rfStatus.textContent = "Your reflection did not send. Check your connection and press Submit again. Nothing you typed is lost.";
+            rfStatus.textContent = "That didn't send. Check your internet and press Submit again. Your answers are still here.";
             return;
         }
         await sendToSheet(fields);
