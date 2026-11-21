@@ -97,6 +97,61 @@ async function learningKeys(env) {
   }
 }
 
+// Preview text and image for each page, used when a link is shared (the
+// title, description and picture that Messages, Slack and so on show) and for
+// the tab title. The key is the first part of the address. Anything not
+// listed here, such as a section added later, uses the portal home. Pictures
+// are in /og/.
+const META = {
+  home: { title: "Program Portal - Penticton Robotics", desc: "Handbooks, resources and how our program runs, for students, parents and mentors." },
+  prepteam: { title: "Prep Team - Penticton Robotics", desc: "Lessons, assignments and resources for the Prep Team." },
+  competitionteam: { title: "Competition Team - Penticton Robotics", desc: "Handbooks, resources and the daily reflection for the competition team." },
+  reflection: { title: "Daily Reflection - Penticton Robotics", desc: "Fill this out at the end of every meeting. It helps us give you a daily mark." },
+  roles: { title: "Role Handbooks - Penticton Robotics", desc: "A handbook and resources for each role on the team." },
+  parents: { title: "Parents - Penticton Robotics", desc: "Training, expectations and contacts for parent volunteers." },
+  mentors: { title: "Mentors - Penticton Robotics", desc: "Training, expectations and resources for mentors." },
+  "how-it-runs": { title: "How the Program Runs - Penticton Robotics", desc: "Everything about how our program works." },
+  career: { title: "Career and Scholarships - Penticton Robotics", desc: "Certifications and scholarships for students." },
+};
+
+const NO_INDEX = "noindex, nofollow, noarchive";
+
+function withMeta(response, url) {
+  const type = response.headers.get("Content-Type") || "";
+  if (!type.includes("text/html")) return response;
+  const parts = url.pathname.split("/").filter(Boolean);
+  const key = META[parts[0]] ? parts[0] : "home";
+  const m = META[key];
+  const image = `${url.origin}/og/${key}.jpg`;
+  const set = (value) => ({ element(el) { el.setAttribute("content", value); } });
+  return new HTMLRewriter()
+    .on("title", { element(el) { el.setInnerContent(m.title); } })
+    .on('meta[name="robots"]', set(NO_INDEX))
+    .on('meta[name="description"]', set(m.desc))
+    .on('meta[property="og:title"]', set(m.title))
+    .on('meta[property="og:description"]', set(m.desc))
+    .on('meta[property="og:url"]', set(url.origin + url.pathname))
+    .on('meta[property="og:image"]', set(image))
+    .on('meta[property="og:image:type"]', set("image/jpeg"))
+    .on('meta[property="og:image:width"]', set("1200"))
+    .on('meta[property="og:image:height"]', set("630"))
+    .on('meta[property="og:image:alt"]', set(m.title))
+    .on('meta[name="twitter:title"]', set(m.title))
+    .on('meta[name="twitter:description"]', set(m.desc))
+    .on('meta[name="twitter:image"]', set(image))
+    .on('meta[name="apple-mobile-web-app-title"]', set(m.title))
+    .transform(response);
+}
+
+// Nothing here is meant to be found through a search engine. Only people who
+// have the link should get in, so every answer says "do not index".
+function noIndex(response) {
+  if (response.status >= 300 && response.status < 400) return response;
+  const headers = new Headers(response.headers);
+  headers.set("X-Robots-Tag", NO_INDEX);
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
 async function serveSite(request, env, url) {
   const path = url.pathname;
   const host = url.hostname;
@@ -127,12 +182,12 @@ async function serveSite(request, env, url) {
   const load = (file) => env.ASSETS.fetch(new Request(new URL(file, url), request));
   const parts = path.split("/").filter(Boolean);
   if (parts[0] === LEARNING && (parts.length === 1 || (await learningKeys(env)).has(parts[1]))) {
-    return load("/");
+    return withMeta(await load("/"), url);
   }
-  return load("/internal/");
+  return withMeta(await load("/internal/"), url);
 }
 
-export default {
+const app = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
@@ -199,5 +254,11 @@ export default {
         headers: { "Content-Type": "application/json" },
       });
     }
+  },
+};
+
+export default {
+  async fetch(request, env, ctx) {
+    return noIndex(await app.fetch(request, env, ctx));
   },
 };
